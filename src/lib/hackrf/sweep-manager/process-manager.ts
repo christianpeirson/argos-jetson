@@ -1,5 +1,4 @@
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join } from 'node:path';
 
 import { type ChildProcess, spawn } from 'child_process';
 
@@ -35,10 +34,17 @@ export class ProcessManager {
 		};
 	}
 
+	/**
+	 * Resolve the auto_sweep.sh path. Mirrors the spectrum/b205-source.ts
+	 * pattern (process.cwd() + repo-relative path) — `__dirname`-based
+	 * resolution breaks in `npm run build` because Vite never copies the
+	 * shell script into `build/server/chunks/`. argos-final's systemd unit
+	 * pins WorkingDirectory to /home/jetson2/code/Argos, so process.cwd()
+	 * is reliable in prod. ARGOS_AUTO_SWEEP_SCRIPT env override exists for
+	 * non-standard cwd setups (CI runners, dev shells from elsewhere).
+	 */
 	private resolveScriptPath(): string {
-		const __filename = fileURLToPath(import.meta.url);
-		const __dirname = dirname(__filename);
-		return join(__dirname, 'auto_sweep.sh');
+		return process.env.ARGOS_AUTO_SWEEP_SCRIPT ?? join(process.cwd(), 'scripts/sweep/auto_sweep.sh');
 	}
 
 	private registerProcess(sweepProcess: ChildProcess): ProcessState {
