@@ -43,7 +43,7 @@ For ANY question about a third-party library, framework, SDK, or CLI tool (React
 
 ### Rule 6 — Sentrux session bracketing on every PR
 
-Every PR is bracketed by sentrux:
+Every PR is bracketed by sentrux. Bracketing is **per-branch**, not per-phase or per-commit. Under the batched-commit cadence (Rule 10), `session_start` fires ONCE at branch creation and `session_end` + `rescan` + `check_rules` fire ONCE pre-merge — even when the branch contains multiple phases worth of commits. Mid-session optional rescan is allowed after structurally-risky phases (chassis additions, deletions of >5 files) but is not required.
 
 1. **Branch creation**: after `git checkout -b feature/...`, call `mcp__plugin_sentrux_sentrux__session_start` (captures pre-change graph baseline).
 2. **Pre-merge**: before `gh pr merge --squash`, call in order:
@@ -119,6 +119,69 @@ The `tail -3` cost is ~50 tokens; the cost of NOT parallelizing is 1-3 minutes o
 `Monitor` is a Claude Code-internal tool (sibling of `Bash`/`Read`/`Edit`). Surfaced via `ToolSearch` if its schema isn't already loaded — query `select:Monitor` to fetch.
 
 Full 6-incident catalogue (escalating remediation across 2026-04-27 → 2026-04-29) + lightweight-vs-heavy ops table + conflict-matrix for parallel PRs in user memory `feedback_parallel_work_during_waits.md`.
+
+**Cadence-coupling note** (added with Rule 10): under batched-commit cadence the `gh pr create` + CR-loop bg dispatches happen ONCE at end-of-day, not per-phase. The per-phase parallel-work obligation is therefore reduced — between phases, the assistant runs local quality gates (eslint + selective svelte-check) and waits at the `keep going / commit` checkpoint prompt for user input. The Rule 9 obligation continues to apply at end-of-day when `npm run build` + `git push` + `gh pr create` + CR poll fire.
+
+### Rule 10 — Batched-commit cadence (default for multi-phase work)
+
+Default cadence for any multi-phase migration / multi-PR cleanup / multi-task feature work: **batch commits into one end-of-day PR**. Per-phase PR is the EXCEPTION, not the default. Per-phase PRs paid ~10-15 min wall-clock overhead each (build + CI + CR + wakeup loops + memory writes) regardless of code size — batching collapses N PR overheads into 1 while preserving in-PR commit granularity for bisect.
+
+**Per-phase loop** (mid-day, before any commit):
+
+1. Code the phase (chassis wrapper / site migrations / spec docs / roadmap update).
+2. Run local quality gates: `npx eslint <touched-files> --config config/eslint.config.js`; `npx svelte-check` only if structural type changes.
+3. Self-verify the diff.
+4. **Stop. Print the checkpoint prompt** (template below).
+5. **Wait for user**: `keep going` → loop. `commit` → end-of-day commit + push + PR sequence.
+
+**Checkpoint prompt** (non-skippable, exact format):
+
+```
+Phase X.Y complete locally. Local gates passed (eslint clean, svelte-check clean, no typecheck regression).
+
+Files touched (N):
+  - path/to/file1
+  - path/to/file2
+
+Next phase ready: <name + LOC estimate>
+Bundled work since last commit: <list of phases not yet committed>
+
+Continue to next phase, OR commit + push + PR the current bundle? [keep going / commit]
+```
+
+Assistant MUST NOT auto-proceed to the next phase. Prompt is non-skippable.
+
+**End-of-day commit sequence** (when user says `commit`):
+
+1. Pre-stage audit: `git status` + `git diff --stat` (catch trunk auto-fix pollution per `feedback_trunk_autofix_pollution.md`).
+2. Stage explicitly by path — never `git add -A` or `git add .`.
+3. ONE conventional commit per logical phase (intermediate trail) — preserves bisect granularity inside the squashed PR.
+4. Sentrux pre-push gate: `rescan` → `scan` → `check_rules` (quality_signal must not regress).
+5. `npm run build` in background (per `feedback_argos_commit_always_bg.md`). Do parallel work per Rule 9 while build runs.
+6. `git push -u origin <branch>` (pre-push hook fires once for the whole bundle ~13-25s).
+7. `gh pr create` with body listing all bundled phases + per-phase commit SHAs + sentrux delta.
+8. CR loop per `feedback_pr_wait_pattern.md` — `ScheduleWakeup ~270s` then dual-check `gh pr view --json statusCheckRollup` AND CR reviewThreads.
+9. Merge with `--admin` if Danger 2000-LOC cap warns OR if PR is doc-only / CR has nothing actionable (per `project_review_workflow.md`).
+10. Tag end-of-day: `git tag eod-YYYY-MM-DD <sha> && git push origin <tag>`.
+11. Cleanup worktree + post-merge sentrux scan from main checkout.
+12. ONE memory entry covering the full daily batch. ONE pointer line in MEMORY.md.
+13. Refresh phase board per Rule 8 — print FULL updated phase table marking all phases that landed.
+
+**WIP recovery checkpoint** (between phases): each phase end pushes `wip/YYYY-MM-DD-phase-N` with `git push --force-with-lease origin <wip-branch>`. NO PR opened. Wip branches deleted after end-of-day PR merges. This is the recovery path if the worktree is accidentally removed or the session crashes mid-day.
+
+**SKIP_TESTS=1 decision tree** (auto-applied without asking):
+
+```
+Is the diff > 1500 LOC OR touches src/lib/state/ OR src/app.css OR > 6 files in src/lib/server/?
+  YES → use SKIP_TESTS=1 git push (CI re-runs full suite)
+  NO  → standard git push
+```
+
+**Per-PR cadence (one PR per phase) is RESERVED for**: (a) urgent hotfixes, (b) PR that needs isolated rollback granularity, (c) cross-subsystem changes that exceed Danger 2000-LOC cap, (d) explicit user override.
+
+**Worktree naming under batched cadence**: per-day directory at `/home/jetson2/code/Argos-batch-YYYY-MM-DD` instead of per-phase. Symlink `node_modules` and `.env` once per `project_argos_worktree_pattern.md`.
+
+Catalogue: `feedback_batched_commit_cadence.md`.
 
 ## Active MCP Servers
 
