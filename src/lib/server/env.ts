@@ -93,6 +93,7 @@ const envSchema = z.object({
 	ARGOS_VNC_WEBSOCKIFY_BIN: z.string().optional(),
 	ARGOS_VNC_WIRESHARK_BIN: z.string().optional(),
 	ARGOS_VNC_TSHARK_BIN: z.string().optional(),
+	ARGOS_VNC_GNURADIO_COMPANION_BIN: z.string().optional(),
 	ARGOS_WEBTAK_CHROMIUM_BIN: z.string().optional(),
 	SIGHTLINE_DIR: z.string().optional(),
 
