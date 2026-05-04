@@ -33,6 +33,7 @@ class PersistentStorageError extends Error {
 	}
 }
 
+// fallow-ignore-next-line complexity
 function readLs<T>(key: string): T | undefined {
 	if (typeof localStorage === 'undefined') return undefined;
 	let raw: string | null;

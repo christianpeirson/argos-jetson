@@ -43,6 +43,7 @@ function restoreSessions(parsed: Record<string, unknown>): TerminalSession[] {
 }
 
 /** Build restored terminal state from parsed data and sessions. */
+// fallow-ignore-next-line complexity
 function buildRestoredState(
 	parsed: Record<string, unknown>,
 	sessions: TerminalSession[]

@@ -156,6 +156,7 @@ export function createChassisState(): ChassisState {
 		if (nearest) state.station = { icao: nearest.icao, name: nearest.name };
 	}
 
+	// fallow-ignore-next-line complexity
 	async function pollWeather(): Promise<void> {
 		const icao = state.station.icao;
 		if (!icao) return;

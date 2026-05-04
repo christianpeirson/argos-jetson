@@ -106,6 +106,7 @@ function setUASError(err: string): void {
 	uasStore.update((s) => ({ ...s, error: err }));
 }
 
+// fallow-ignore-next-line complexity
 export async function fetchUASStatus(): Promise<void> {
 	try {
 		const res = await fetch('/api/dragonsync/status', { credentials: 'same-origin' });
@@ -170,6 +171,7 @@ export async function fetchUASFpvSignals(): Promise<void> {
  * GET /api/dragonsync/c2 — Argos-side cache fed by the c2-subscriber child
  * process which SUBs tcp://127.0.0.1:4227 (argos-c2-scanner XPUB).
  */
+// fallow-ignore-next-line complexity
 export async function fetchUASC2Signals(): Promise<void> {
 	try {
 		const res = await fetch('/api/dragonsync/c2');

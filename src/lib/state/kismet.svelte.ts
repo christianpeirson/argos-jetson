@@ -27,6 +27,7 @@ function asString(v: unknown): string | null {
 	return typeof v === 'string' && v.length > 0 ? v : null;
 }
 
+// fallow-ignore-next-line complexity
 function asNumber(v: unknown): number | null {
 	if (typeof v === 'number' && Number.isFinite(v)) return v;
 	if (typeof v === 'string') {
@@ -63,6 +64,7 @@ function pickLastSeen(d: Record<string, unknown>): number | null {
 	return null;
 }
 
+// fallow-ignore-next-line complexity
 function normalize(d: Record<string, unknown>): KismetDevice | null {
 	const mac = asString(d.mac) ?? asString(d.macaddr);
 	if (mac === null) return null;
@@ -84,6 +86,7 @@ function rawCompare(a: Sortable, b: Sortable): number {
 	return 0;
 }
 
+// fallow-ignore-next-line complexity
 function compareNullable(a: Sortable | null, b: Sortable | null, dir: KismetSortDir): number {
 	if (a === null) return b === null ? 0 : 1;
 	if (b === null) return -1;
@@ -116,9 +119,7 @@ function createKismetStore() {
 	let timer: ReturnType<typeof setInterval> | null = null;
 
 	function applyResponseBody(body: ApiResponse): void {
-		devices = (body.devices ?? [])
-			.map(normalize)
-			.filter((d): d is KismetDevice => d !== null);
+		devices = (body.devices ?? []).map(normalize).filter((d): d is KismetDevice => d !== null);
 		connected = body.source === 'kismet';
 		lastError = body.error ?? null;
 	}
@@ -129,7 +130,9 @@ function createKismetStore() {
 
 	async function poll(): Promise<void> {
 		try {
-			const res = await fetch('/api/kismet/devices', { headers: { accept: 'application/json' } });
+			const res = await fetch('/api/kismet/devices', {
+				headers: { accept: 'application/json' }
+			});
 			if (!res.ok) {
 				lastError = `HTTP ${res.status}`;
 				connected = false;

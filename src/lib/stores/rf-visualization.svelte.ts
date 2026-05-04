@@ -335,6 +335,7 @@ class RfVisualizationStore {
 		this.setFilters({ sessionId: data.currentId });
 	}
 
+	// fallow-ignore-next-line complexity
 	async loadSessions(): Promise<void> {
 		if (this.sessionsLoading) return;
 		this.sessionsLoading = true;

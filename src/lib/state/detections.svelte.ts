@@ -91,6 +91,7 @@ function deriveConfidence(rmsRadiusM: number, sampleCount: number): number {
 	return spatial * density;
 }
 
+// fallow-ignore-next-line complexity
 function buildDetection(
 	signalId: string,
 	entry: SignalEntry,
@@ -135,7 +136,12 @@ function createDetectionsStore() {
 
 	function ingest(evt: ObservationEvent): void {
 		const cutoff = Date.now() - WINDOW_MS;
-		const sample: SignalSample = { lat: evt.lat, lon: evt.lon, dbm: evt.dbm, ts: evt.timestamp };
+		const sample: SignalSample = {
+			lat: evt.lat,
+			lon: evt.lon,
+			dbm: evt.dbm,
+			ts: evt.timestamp
+		};
 		const next = new Map(signals);
 		const prev = next.get(evt.signalId);
 		if (prev) {

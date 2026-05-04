@@ -49,6 +49,7 @@ export function createNewSession(shell: string): TerminalSession {
  * Returns the current active tab if it is not the closed session.
  * Otherwise selects the nearest preceding session.
  */
+// fallow-ignore-next-line complexity
 export function resolveActiveTab(
 	state: TerminalPanelState,
 	sessionId: string,

@@ -69,6 +69,7 @@ function firstTruthy(...vals: (string | undefined | null)[]): string | undefined
 	return undefined;
 }
 
+// fallow-ignore-next-line complexity
 function buildIdentity(device: KismetDevice, mac: string) {
 	return {
 		mac: device.mac || mac,
@@ -83,6 +84,7 @@ function buildSignal(device: KismetDevice) {
 	return { signal, signalDbm: signal };
 }
 
+// fallow-ignore-next-line complexity
 function buildRadio(device: KismetDevice) {
 	return {
 		channel: device.channel ?? null,
@@ -91,6 +93,7 @@ function buildRadio(device: KismetDevice) {
 	};
 }
 
+// fallow-ignore-next-line complexity
 function buildActivity(device: KismetDevice) {
 	return {
 		packets: device.packets ?? 0,

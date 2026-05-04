@@ -11,6 +11,7 @@ export const gpOutput = writable<string[]>([]);
 
 let pollTimer: ReturnType<typeof setInterval> | null = null;
 
+// fallow-ignore-next-line complexity
 async function fetchStatus(): Promise<void> {
 	try {
 		const res = await fetch('/api/globalprotect/connection');

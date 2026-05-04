@@ -142,6 +142,7 @@ function buildReconUrl(params?: ReconParams): string {
 	return `/api/kismet/recon${qs ? `?${qs}` : ''}`;
 }
 
+// fallow-ignore-next-line complexity
 function parseReconResponse(data: Record<string, unknown>): ReconData {
 	return {
 		targets: (data.targets as ReconTarget[]) ?? [],

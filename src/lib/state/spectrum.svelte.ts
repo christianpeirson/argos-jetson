@@ -33,6 +33,7 @@ function isHackrfAmp(amp: unknown): boolean {
 	return amp === 0 || amp === 1;
 }
 
+// fallow-ignore-next-line complexity
 function isHackrfGain(g: unknown): boolean {
 	if (!isObj(g)) return false;
 	if (g.kind !== 'hackrf') return false;

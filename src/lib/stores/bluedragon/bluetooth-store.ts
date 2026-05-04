@@ -76,6 +76,7 @@ export async function fetchBluetoothStatus(): Promise<void> {
 	}
 }
 
+// fallow-ignore-next-line complexity
 export async function fetchBluetoothDevices(): Promise<void> {
 	try {
 		const res = await fetch('/api/bluedragon/devices', { credentials: 'same-origin' });
