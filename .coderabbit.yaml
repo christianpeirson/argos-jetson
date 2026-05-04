@@ -59,6 +59,15 @@ reviews:
       - main
       - dev
 
+  # GitHub Checks integration. Argos pre-push fallow audit + Jetson CI
+  # regularly exceed CR's default 90s timeout, causing the github-checks
+  # tool to silently abort. 900_000 ms = 15 min, the upstream maximum.
+  # See https://docs.coderabbit.ai/tools/github-checks
+  tools:
+    github-checks:
+      enabled: true
+      timeout_ms: 900000
+
   # Path-scoped review rules. Each `instructions` field max 20,000 chars
   # per schema. AGENTS.md carries the global conventions; these blocks
   # surface domain-specific reminders that should fire on the relevant
