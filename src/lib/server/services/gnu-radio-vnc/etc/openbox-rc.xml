@@ -750,8 +750,10 @@
 -->
 
   <!-- Argos: maximize GRC on first map so the GUI fills the noVNC viewport.
-       Class "Gnuradio-companion" matches WM_CLASS set by gnuradio-companion. -->
-  <application class="Gnuradio-companion">
+       GRC's WM_CLASS is ("gnuradio-companion" "") — the class field is empty,
+       only the resource-name is populated. Matching on `name=` (not `class=`)
+       is required. Verified via `xprop WM_CLASS` on the live window. -->
+  <application name="gnuradio-companion">
     <decor>yes</decor>
     <maximized>true</maximized>
     <position force="yes"><x>0</x><y>0</y></position>
