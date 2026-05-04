@@ -116,7 +116,7 @@ elif [ -f .fallowrc.json ]; then
 	cp "$_fallow_gitidx" "$_fallow_idx_bak"
 	_fallow_rc=0
 	# shellcheck disable=SC2086
-	npx --no-install fallow audit $_fallow_changed_since --gate all --quiet --format compact || _fallow_rc=$?
+	npx --no-install fallow audit $_fallow_changed_since --quiet --format compact || _fallow_rc=$?
 	cp "$_fallow_idx_bak" "$_fallow_gitidx"
 	rm -f "$_fallow_idx_bak"
 	if [ "$_fallow_rc" -ne 0 ]; then

@@ -52,7 +52,11 @@
 		"**/*.min.js",
 		"**/*.bundle.js",
 		"**/*.chunk.js",
-		"**/vendor/**"
+		"**/vendor/**",
+		"docs/carbon-design-system/**",
+		"docs/carbon-website/**",
+		"docs/argos-v2-mockup/**",
+		"docs/export_pen_files/**"
 	],
 	"audit": {
 		"deadCodeBaseline": ".fallow-deadcode-baseline.json",
