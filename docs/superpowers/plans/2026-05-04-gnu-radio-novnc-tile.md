@@ -1378,15 +1378,13 @@ blocks:
       rotation: 0
       state: enabled
 
-  - name: blocks_throttle2_0
-    id: blocks_throttle2
+  - name: blocks_throttle_0
+    id: blocks_throttle
     parameters:
       affinity: ''
       alias: ''
       comment: ''
       ignoretag: 'True'
-      limit: auto
-      maximum: '0.1'
       maxoutbuf: '0'
       minoutbuf: '0'
       samples_per_second: samp_rate
@@ -1419,12 +1417,12 @@ blocks:
       state: enabled
 
 connections:
-  - [analog_sig_source_x_0, '0', blocks_throttle2_0, '0']
-  - [blocks_throttle2_0, '0', blocks_null_sink_0, '0']
+  - [analog_sig_source_x_0, '0', blocks_throttle_0, '0']
+  - [blocks_throttle_0, '0', blocks_null_sink_0, '0']
 
 metadata:
   file_format: 1
-  grc_version: 3.10.7.0
+  grc_version: 3.10.1.1
 ```
 
 - [ ] **Step 2: Verify GRC parses the fixture**
@@ -1438,7 +1436,7 @@ print('blocks:', [b.name for b in fg.blocks])
 "
 ```
 
-Expected: prints `blocks: ['samp_rate', 'analog_sig_source_x_0', 'blocks_throttle2_0', 'blocks_null_sink_0']` (or similar). No traceback.
+Expected: prints `blocks: ['samp_rate', 'analog_sig_source_x_0', 'blocks_throttle_0', 'blocks_null_sink_0']` (or similar). No traceback.
 
 If `DISPLAY=:0` does not exist (headless), substitute the host's working display from earlier smoke test or temporarily start `Xtigervnc :95` then `DISPLAY=:95 ...`.
 
@@ -1473,7 +1471,7 @@ Expected: `{"success": true, "wsPort": 6084, "flowgraph": "/tmp/argos-grc-demo.g
 
 - [ ] **Step 3: User opens Tools → Offnet → Utilities → Signal Recording → GNU Radio**
 
-Three blocks render on canvas: `analog_sig_source_x_0` → `blocks_throttle2_0` → `blocks_null_sink_0`, plus the `samp_rate` variable widget.
+Three blocks render on canvas: `analog_sig_source_x_0` → `blocks_throttle_0` → `blocks_null_sink_0`, plus the `samp_rate` variable widget.
 
 - [ ] **Step 4: User decision gate**
 
