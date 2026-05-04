@@ -144,6 +144,35 @@ Per `migration-roadmap.md`:
 
 ---
 
+## Phase 8.7 — `bits-ui` dependency drop ✅ Done 2026-05-04
+
+**Branch:** `session-2` → `dev`
+
+**Landed:**
+
+- `src/lib/components/chassis/forms/Toggle.svelte` — thin chassis around Carbon `<Toggle>`. Bridges Carbon's `on:toggle` `CustomEvent` to a Svelte 5 `onToggle(toggled: boolean)` callback. Enforces `labelText` REQUIRED at the type level (matches `<Checkbox>` / `<PanelStatus>` discipline).
+- `src/lib/components/chassis/forms/Separator.svelte` — third bespoke chassis primitive (after `<PanelStatus>` Phase 8.4 and `<EditorTabBar>` Phase 8.6). Carbon ships no Separator; ~25 LOC implementing WAI-ARIA APG Separator pattern (`role="separator"` + `aria-orientation`, no tabindex).
+- `specs/026-lunaris-design-system/components/toggle/{usage,style,code,accessibility}.md` — full spec docs citing Carbon Toggle source.
+- `specs/026-lunaris-design-system/components/separator/{usage,style,code,accessibility}.md` — full spec docs citing WAI-ARIA APG Separator pattern (no Carbon source).
+
+**Migrated consumers:**
+
+- `src/lib/components/dashboard/panels/SettingsPanel.svelte` — 4 bits-ui Select sub-imports → chassis `<Select>` + Carbon `<SelectItem>` children.
+- `src/lib/components/dashboard/tak/TakServerForm.svelte` — bits-ui `<Switch>` → chassis `<Toggle>` (sibling `<label>` wrapper dropped; Carbon Toggle owns its own label).
+- `src/lib/components/dashboard/tak/TakConfigView.svelte` — Separator import path swap (6 instances).
+- `src/lib/components/dashboard/globalprotect/GpConfigView.svelte` — Separator import path swap (2 instances).
+
+**Retired:**
+
+- `src/lib/components/ui/select/` — 7 bits-ui-backed wrapper files (select.svelte, select-content, select-item, select-portal, select-trigger, select-scroll-up-button, select-scroll-down-button).
+- `src/lib/components/ui/switch/switch.svelte` — bits-ui Switch wrapper.
+- `src/lib/components/ui/separator/separator.svelte` — bits-ui Separator wrapper.
+- `bits-ui` — dropped from `package.json`. Total dep footprint reduced.
+
+**Closes:** Phase 8.7 row of `migration-roadmap.md`. Only sub-phase 8.8 (ESLint config restructure) remains.
+
+---
+
 ## Phase 8.6 — `EditorTabBar` chassis ✅ Done 2026-05-04
 
 **Branch:** `session-2` → `dev`
