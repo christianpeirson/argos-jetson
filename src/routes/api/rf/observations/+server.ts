@@ -2,6 +2,7 @@ import { error, json } from '@sveltejs/kit';
 import { z } from 'zod';
 
 import { createHandler } from '$lib/server/api/create-handler';
+import { BBoxSchema, IntSchema } from '$lib/server/api/rf-query-schemas';
 import { computeDeviceEllipse } from '$lib/server/db/device-ellipse';
 import { getDeviceObservations } from '$lib/server/db/rf-aggregation';
 
@@ -15,43 +16,6 @@ import { getDeviceObservations } from '$lib/server/db/rf-aggregation';
  *
  * Auth inherits from the global /api/* fail-closed gate.
  */
-
-function parseBboxNumbers(raw: string): number[] | null {
-	const parts = raw.split(',').map((s) => Number(s.trim()));
-	if (parts.length !== 4 || parts.some((n) => !Number.isFinite(n))) return null;
-	return parts;
-}
-
-function latsOutOfRange(minLat: number, maxLat: number): boolean {
-	return minLat < -90 || maxLat > 90 || minLat >= maxLat;
-}
-
-function lonsOutOfRange(minLon: number, maxLon: number): boolean {
-	return minLon < -180 || maxLon > 180 || minLon >= maxLon;
-}
-
-function bboxOutOfRange(minLon: number, minLat: number, maxLon: number, maxLat: number): boolean {
-	return latsOutOfRange(minLat, maxLat) || lonsOutOfRange(minLon, maxLon);
-}
-
-const BBoxSchema = z.string().transform((raw, ctx) => {
-	const parts = parseBboxNumbers(raw);
-	if (!parts) {
-		ctx.addIssue({ code: 'custom', message: 'bbox must be "minLon,minLat,maxLon,maxLat"' });
-		return z.NEVER;
-	}
-	const [minLon, minLat, maxLon, maxLat] = parts;
-	if (bboxOutOfRange(minLon, minLat, maxLon, maxLat)) {
-		ctx.addIssue({ code: 'custom', message: 'bbox coordinates out of range or inverted' });
-		return z.NEVER;
-	}
-	return [minLon, minLat, maxLon, maxLat] as const;
-});
-
-const IntSchema = z
-	.string()
-	.regex(/^-?\d+$/)
-	.transform((s) => Number.parseInt(s, 10));
 
 const QuerySchema = z.object({
 	bssid: z.string().min(1),
