@@ -2,6 +2,7 @@
 	import { untrack } from 'svelte';
 	import { z } from 'zod';
 
+	import Separator from '$lib/components/chassis/forms/Separator.svelte';
 	import TakAuthEnroll from '$lib/components/dashboard/tak/TakAuthEnroll.svelte';
 	import TakAuthImport from '$lib/components/dashboard/tak/TakAuthImport.svelte';
 	import TakAuthMethodPicker from '$lib/components/dashboard/tak/TakAuthMethodPicker.svelte';
@@ -10,7 +11,6 @@
 	import TakStatusSection from '$lib/components/dashboard/tak/TakStatusSection.svelte';
 	import TakTruststore from '$lib/components/dashboard/tak/TakTruststore.svelte';
 	import ToolViewWrapper from '$lib/components/dashboard/views/ToolViewWrapper.svelte';
-	import Separator from '$lib/components/ui/separator/separator.svelte';
 	import { activeView } from '$lib/stores/dashboard/dashboard-store';
 	import { takStatus } from '$lib/stores/tak-store';
 	import type { TakServerConfig } from '$lib/types/tak';

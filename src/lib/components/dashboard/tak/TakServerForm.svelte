@@ -1,7 +1,7 @@
 <script lang="ts">
 	import NumberInput from '$lib/components/chassis/forms/NumberInput.svelte';
+	import Toggle from '$lib/components/chassis/forms/Toggle.svelte';
 	import Input from '$lib/components/ui/input/input.svelte';
-	import Switch from '$lib/components/ui/switch/switch.svelte';
 	import type { TakServerConfig } from '$lib/types/tak';
 
 	let { config = $bindable() }: { config: TakServerConfig } = $props();
@@ -47,11 +47,14 @@
 				/>
 			</div>
 		</div>
-		<label
-			class="flex cursor-pointer flex-row items-center gap-2 rounded-md border border-border/40 bg-muted/20 px-3 py-2 text-xs font-medium text-foreground transition-colors hover:bg-muted/40"
+		<div
+			class="flex flex-row items-center gap-2 rounded-md border border-border/40 bg-muted/20 px-3 py-2 text-xs font-medium text-foreground transition-colors hover:bg-muted/40"
 		>
-			<Switch bind:checked={config.shouldConnectOnStartup} />
-			Connect on startup
-		</label>
+			<Toggle
+				bind:toggled={config.shouldConnectOnStartup}
+				labelText="Connect on startup"
+				size="sm"
+			/>
+		</div>
 	</div>
 </div>
