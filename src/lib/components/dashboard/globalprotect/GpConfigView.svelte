@@ -4,11 +4,11 @@
 	import { Save, Unplug } from '@lucide/svelte';
 	import { untrack } from 'svelte';
 
+	import Separator from '$lib/components/chassis/forms/Separator.svelte';
 	import GpOutputConsole from '$lib/components/dashboard/globalprotect/GpOutputConsole.svelte';
 	import GpServerForm from '$lib/components/dashboard/globalprotect/GpServerForm.svelte';
 	import GpStatusSection from '$lib/components/dashboard/globalprotect/GpStatusSection.svelte';
 	import ToolViewWrapper from '$lib/components/dashboard/views/ToolViewWrapper.svelte';
-	import Separator from '$lib/components/ui/separator/separator.svelte';
 	import { activeView } from '$lib/stores/dashboard/dashboard-store';
 	import { gpStatus } from '$lib/stores/globalprotect-store';
 	import type { GlobalProtectConfig } from '$lib/types/globalprotect';

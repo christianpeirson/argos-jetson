@@ -1,16 +1,8 @@
 <!-- @constitutional-exemption Article-IV-4.3 issue:#11 — Component state handling (loading/error/empty UI) deferred to UX improvement phase -->
 <script lang="ts">
-	import SelectRoot from '$lib/components/ui/select/select.svelte';
-	import SelectContent from '$lib/components/ui/select/select-content.svelte';
-	import SelectItem from '$lib/components/ui/select/select-item.svelte';
-	import SelectTrigger from '$lib/components/ui/select/select-trigger.svelte';
+	import { SelectItem } from 'carbon-components-svelte';
 
-	const Select = {
-		Root: SelectRoot,
-		Trigger: SelectTrigger,
-		Content: SelectContent,
-		Item: SelectItem
-	};
+	import Select from '$lib/components/chassis/forms/Select.svelte';
 	import { activePanel, activeView } from '$lib/stores/dashboard/dashboard-store';
 	import type { RailPosition, ThemePalette } from '$lib/stores/theme-store.svelte';
 	import { themeStore } from '$lib/stores/theme-store.svelte';
@@ -25,14 +17,14 @@
 		{ value: 'bottom', label: 'Bottom' }
 	];
 
-	function handlePaletteChange(value: string | undefined) {
-		if (value) {
+	function handlePaletteChange(value: string | number | undefined) {
+		if (typeof value === 'string') {
 			themeStore.setPalette(value as ThemePalette);
 		}
 	}
 
-	function handleRailChange(value: string | undefined) {
-		if (value) {
+	function handleRailChange(value: string | number | undefined) {
+		if (typeof value === 'string') {
 			themeStore.setRailPosition(value as RailPosition);
 		}
 	}
@@ -75,39 +67,33 @@
 			<div class="card-body">
 				<div class="setting-row">
 					<span class="setting-label">Color Palette</span>
-					<Select.Root
-						type="single"
+					<Select
+						labelText="Color palette"
+						noLabel
+						size="sm"
 						value={themeStore.palette}
-						onValueChange={handlePaletteChange}
+						onChange={handlePaletteChange}
+						class="palette-select"
 					>
-						<Select.Trigger class="w-[140px] h-8 text-xs">
-							{paletteOptions.find((p) => p.value === themeStore.palette)?.label ??
-								'Blue ★'}
-						</Select.Trigger>
-						<Select.Content>
-							{#each paletteOptions as option (option.value)}
-								<Select.Item value={option.value}>{option.label}</Select.Item>
-							{/each}
-						</Select.Content>
-					</Select.Root>
+						{#each paletteOptions as option (option.value)}
+							<SelectItem value={option.value} text={option.label} />
+						{/each}
+					</Select>
 				</div>
 				<div class="setting-row">
 					<span class="setting-label">Navigation Rail</span>
-					<Select.Root
-						type="single"
+					<Select
+						labelText="Navigation rail"
+						noLabel
+						size="sm"
 						value={themeStore.railPosition}
-						onValueChange={handleRailChange}
+						onChange={handleRailChange}
+						class="rail-select"
 					>
-						<Select.Trigger class="w-[140px] h-8 text-xs">
-							{railOptions.find((r) => r.value === themeStore.railPosition)?.label ??
-								'Left'}
-						</Select.Trigger>
-						<Select.Content>
-							{#each railOptions as option (option.value)}
-								<Select.Item value={option.value}>{option.label}</Select.Item>
-							{/each}
-						</Select.Content>
-					</Select.Root>
+						{#each railOptions as option (option.value)}
+							<SelectItem value={option.value} text={option.label} />
+						{/each}
+					</Select>
 				</div>
 			</div>
 		</div>
