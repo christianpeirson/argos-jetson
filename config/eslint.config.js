@@ -72,7 +72,26 @@ export default [
 				}
 			],
 			'simple-import-sort/imports': 'error',
-			'simple-import-sort/exports': 'error'
+			'simple-import-sort/exports': 'error',
+			// LOC caps — closes the gap that fallow.tools' `health` command does NOT cover
+			// (verified against `fallow config-schema` 2026-05-04: only maxCyclomatic/maxCognitive/maxCrap exposed).
+			// Per .claude/rules/architecture.md "300 LOC/file, 50 LOC/fn" — promoted from
+			// aspirational text to mechanical enforcement in the fallow install PR (2026-05-04).
+			// Severity: 'warn' initially because ESLint has no baseline-grandfather mechanism
+			// (fallow does, but only for complexity/dupes/dead-code). Day-1 violator count: 158.
+			// Promotion to 'error' tracked as Migration Roadmap item 13 (post-cleanup).
+			// Rules live in the GENERAL .js/.ts/.svelte block (not TS-only) so dangerfile.js
+			// and other root .js files get covered — fixes a JS-shape blind spot revealed by
+			// fallow's Pass 0 (dangerfile.js:155 CC=13 was never caught by ESLint complexity
+			// because that rule was TS-only).
+			'max-lines': [
+				'warn',
+				{ max: 300, skipBlankLines: true, skipComments: true }
+			],
+			'max-lines-per-function': [
+				'warn',
+				{ max: 50, skipBlankLines: true, skipComments: true, IIFEs: true }
+			]
 		}
 	},
 	{
@@ -119,6 +138,8 @@ export default [
 			'no-console': ['warn', { allow: ['warn', 'error'] }], // Use proper logging
 			complexity: ['error', 5], // Cyclomatic complexity — hard block, no exceptions
 			'sonarjs/cognitive-complexity': ['error', 5] // Cognitive complexity — hard block, no exceptions
+			// (max-lines + max-lines-per-function moved to the general .js/.ts/.svelte block
+			// at top of config so .js files like dangerfile.js are covered — see comment there.)
 		}
 	},
 	{
