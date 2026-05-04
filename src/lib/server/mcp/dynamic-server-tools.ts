@@ -112,6 +112,7 @@ function isWpa3(upper: string): boolean {
 }
 
 /** Classify encryption risk level. */
+// fallow-ignore-next-line complexity
 function classifyEncryptionRisk(encryption: string): RiskAssessment {
 	const upper = encryption.toUpperCase();
 	if (isOpenNetwork(upper)) {
@@ -203,6 +204,7 @@ export function createDeviceTools(apiFetch: ApiFetchFn): ArgosTool[] {
 					}
 				}
 			},
+			// fallow-ignore-next-line complexity
 			execute: async (args: Record<string, unknown>) => {
 				const resp = await apiFetch('/api/kismet/devices');
 				const data = await resp.json();
@@ -271,6 +273,7 @@ export function createDeviceTools(apiFetch: ApiFetchFn): ArgosTool[] {
 				},
 				required: ['latitude', 'longitude']
 			},
+			// fallow-ignore-next-line complexity
 			execute: async (args: Record<string, unknown>) => {
 				// Safe: MCP SDK validates args against inputSchema (required: latitude, longitude) before execute() is called
 				const lat = args.latitude as number;

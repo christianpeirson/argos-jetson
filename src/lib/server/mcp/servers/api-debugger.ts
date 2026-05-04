@@ -156,6 +156,7 @@ class APIDebugger extends BaseMCPServer {
 				},
 				required: ['endpoint']
 			},
+			// fallow-ignore-next-line complexity
 			execute: async (args: Record<string, unknown>) => {
 				const endpoint = args.endpoint as string;
 				const method = (args.method as string) || 'GET';

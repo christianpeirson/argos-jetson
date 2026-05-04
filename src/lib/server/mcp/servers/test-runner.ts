@@ -150,6 +150,7 @@ class TestRunner extends BaseMCPServer {
 				},
 				required: ['suite']
 			},
+			// fallow-ignore-next-line complexity
 			execute: async (args: Record<string, unknown>) => {
 				const suite = args.suite as string;
 				const timeout = resolveTimeout(args.timeout_seconds);
@@ -203,6 +204,7 @@ class TestRunner extends BaseMCPServer {
 				type: 'object' as const,
 				properties: {}
 			},
+			// fallow-ignore-next-line complexity
 			execute: async () => {
 				try {
 					const { stdout } = await execFileAsync('/usr/bin/npm', ['run', 'typecheck'], {

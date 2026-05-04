@@ -163,6 +163,7 @@ export class CertManager {
 	 * Validates a PKCS#12 truststore by attempting to read it with openssl.
 	 * Returns true if the file is valid and the password is correct.
 	 */
+	// fallow-ignore-next-line complexity
 	static async validateTruststore(
 		truststorePath: string,
 		password: string

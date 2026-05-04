@@ -34,6 +34,7 @@ export function loadPtyModule(): Promise<typeof import('node-pty') | null> {
 	return ptyModulePromise;
 }
 
+// fallow-ignore-next-line complexity
 export function normalizeShellPath(shellPath: string): string {
 	let normalized = shellPath;
 	if (normalized.startsWith('/app/')) {

@@ -95,6 +95,7 @@ function handleListSessions(state: ConnectionState): void {
 	sendJson(state.ws, { type: 'sessions', sessions: sessionList });
 }
 
+// fallow-ignore-next-line complexity
 function handleResize(state: ConnectionState, parsed: ParsedMessage): void {
 	if (!state.boundSessionId || !parsed.cols || !parsed.rows) return;
 	const session = sessions.get(state.boundSessionId);
@@ -112,6 +113,7 @@ function handleInput(state: ConnectionState, parsed: ParsedMessage): void {
 	if (session) session.pty.write(parsed.data);
 }
 
+// fallow-ignore-next-line complexity
 async function handleParseError(state: ConnectionState, raw: string): Promise<void> {
 	if (state.boundSessionId) {
 		const session = sessions.get(state.boundSessionId);

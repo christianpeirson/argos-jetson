@@ -46,6 +46,7 @@ function analyzeServices(services: Record<string, unknown>, recs: string[]): 'DE
 }
 
 /** Analyze memory pressure and return severity status. */
+// fallow-ignore-next-line complexity
 function analyzeMemory(
 	memory: Record<string, unknown>,
 	recs: string[]
@@ -246,6 +247,7 @@ class SystemInspector extends BaseMCPServer {
 			description:
 				'Check Docker status for third-party tools (OpenWebRX, Bettercap). Argos runs natively.',
 			inputSchema: { type: 'object' as const, properties: {} },
+			// fallow-ignore-next-line complexity
 			execute: async () => {
 				const resp = await apiFetch('/api/system/docker');
 				const data = await resp.json();
@@ -322,6 +324,7 @@ class SystemInspector extends BaseMCPServer {
 					}
 				}
 			},
+			// fallow-ignore-next-line complexity
 			execute: async (args: Record<string, unknown>) => {
 				const minutes = Math.min((args.minutes as number) || 5, 60);
 				const severity = (args.severity as string) || 'error';

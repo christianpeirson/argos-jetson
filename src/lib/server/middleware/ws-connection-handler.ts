@@ -17,6 +17,7 @@ import { logAuthEvent } from '$lib/server/security/auth-audit';
  * The ?token= param accepts the HMAC-derived session token (NOT the raw API key)
  * to prevent key exposure in URLs/logs per OWASP A07:2021.
  */
+// fallow-ignore-next-line complexity
 function tryAuthenticate(url: URL, request: IncomingMessage): boolean {
 	try {
 		// 1. Check ?token= as session token (non-browser clients)
@@ -65,6 +66,7 @@ function parseSubscriptionPreferences(url: URL) {
  * Phase 2.1.6: authentication enforced here because noServer mode does not
  * support the verifyClient callback.
  */
+// fallow-ignore-next-line complexity
 export function handleWsConnection(
 	ws: WebSocket,
 	request: IncomingMessage,

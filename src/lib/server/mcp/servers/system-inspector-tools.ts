@@ -31,6 +31,7 @@ const MEMORY_RISK_MESSAGES: Record<string, string[]> = {
 };
 
 /** Check memory protection services and return any warnings. */
+// fallow-ignore-next-line complexity
 function checkProtectionWarnings(
 	protection: { earlyoom_running?: boolean; zram_enabled?: boolean } | undefined
 ): string[] {

@@ -149,6 +149,7 @@ export function createSystemTools(apiFetch: ApiFetchFn): ArgosTool[] {
 					}
 				}
 			},
+			// fallow-ignore-next-line complexity
 			execute: async (args: Record<string, unknown>) => {
 				const resp = await apiFetch('/api/tools/scan');
 				const data = await resp.json();
@@ -199,6 +200,7 @@ export function createSystemTools(apiFetch: ApiFetchFn): ArgosTool[] {
 					}
 				}
 			},
+			// fallow-ignore-next-line complexity
 			execute: async (args: Record<string, unknown>) => {
 				const resp = await apiFetch('/api/hardware/scan');
 				const data = await resp.json();

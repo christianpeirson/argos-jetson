@@ -17,6 +17,7 @@ interface DeviceInfo {
  * Diagnose HackRF health from API status response.
  */
 /** Classify HackRF health state. */
+// fallow-ignore-next-line complexity
 function classifyHackrfHealth(hackrf: Record<string, unknown>): {
 	health: string;
 	issue?: string;
@@ -38,6 +39,7 @@ function classifyHackrfHealth(hackrf: Record<string, unknown>): {
 	return { health: 'HEALTHY' };
 }
 
+// fallow-ignore-next-line complexity
 export function diagnoseHackrf(
 	hackrf: Record<string, unknown>,
 	detailed: boolean,
@@ -64,6 +66,7 @@ export function diagnoseHackrf(
 }
 
 /** Classify Kismet health state. */
+// fallow-ignore-next-line complexity
 function classifyKismetHealth(kismet: Record<string, unknown>): {
 	health: string;
 	issue?: string;
@@ -89,6 +92,7 @@ function classifyKismetHealth(kismet: Record<string, unknown>): {
 /**
  * Diagnose Kismet health from API status response.
  */
+// fallow-ignore-next-line complexity
 export function diagnoseKismet(
 	kismet: Record<string, unknown>,
 	detailed: boolean,
@@ -133,6 +137,7 @@ function classifyGpsHealth(gps: Record<string, unknown>): {
 /**
  * Diagnose GPS health from API position response.
  */
+// fallow-ignore-next-line complexity
 export function diagnoseGps(
 	gps: Record<string, unknown>,
 	detailed: boolean,

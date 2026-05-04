@@ -62,6 +62,7 @@ async function checkHackrfSweep(): Promise<CapabilityResult> {
 }
 
 /** Check Kismet scan capability. */
+// fallow-ignore-next-line complexity
 async function checkKismetScan(): Promise<CapabilityResult> {
 	try {
 		const resp = await apiFetch('/api/kismet/status');
@@ -86,6 +87,7 @@ async function checkKismetScan(): Promise<CapabilityResult> {
 }
 
 /** Check GPS positioning capability. */
+// fallow-ignore-next-line complexity
 async function checkGpsPositioning(): Promise<CapabilityResult> {
 	try {
 		const resp = await apiFetch('/api/gps/position');

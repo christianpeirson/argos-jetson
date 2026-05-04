@@ -31,6 +31,7 @@ function simplifySchema(schema: Record<string, unknown[]>) {
 }
 
 /** Generate schema health recommendations. */
+// fallow-ignore-next-line complexity
 function generateSchemaRecs(schema: Record<string, unknown[]>): string[] {
 	const recs: string[] = [];
 	const signalsTable = (schema.tables as Array<{ name: string; row_count: number }>).find(

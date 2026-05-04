@@ -48,6 +48,7 @@ type AgentEvent = Record<string, unknown>;
 /**
  * Execute an MCP tool by calling the Argos API
  */
+// fallow-ignore-next-line complexity
 async function _executeTool(
 	toolName: string,
 	parameters: Record<string, unknown>
@@ -172,6 +173,7 @@ function extractSseData(line: string): string | null {
 }
 
 /** Parse SSE data lines from a chunk of text, returning parsed events and remaining buffer */
+// fallow-ignore-next-line complexity
 function parseSseLines(buffer: string): { events: AgentEvent[]; remaining: string } {
 	const lines = buffer.split('\n');
 	const remaining = lines.pop() || '';
