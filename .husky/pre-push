@@ -78,6 +78,9 @@ fi
 # (.fallow-{deadcode,health,dupes}-baseline.json) grandfather pre-existing
 # findings so only NEW violations introduced by the branch fail the gate.
 # Gated on presence of .fallowrc.json so repos without fallow skip cleanly.
+#
+# Wrapped in index snapshot/restore — see .husky/pre-commit step 1c for the
+# fallow audit upstream-bug rationale.
 if [ "${SKIP_FALLOW:-0}" = "1" ]; then
 	echo "[pre-push] SKIP_FALLOW=1 — skipping fallow audit"
 elif [ -f .fallowrc.json ]; then
@@ -86,7 +89,15 @@ elif [ -f .fallowrc.json ]; then
 		exit 1
 	fi
 	echo "[pre-push] fallow audit (baseline-aware: NEW complexity/dupes/dead-code only)..."
-	if ! npx --no-install fallow audit --quiet --format compact; then
+	# Use git rev-parse --git-dir so this works in worktrees (.git is a file there).
+	_fallow_gitidx="$(git rev-parse --git-dir)/index"
+	_fallow_idx_bak="$(mktemp /tmp/fallow-idx-bak.XXXXXX)"
+	cp "$_fallow_gitidx" "$_fallow_idx_bak"
+	_fallow_rc=0
+	npx --no-install fallow audit --quiet --format compact || _fallow_rc=$?
+	cp "$_fallow_idx_bak" "$_fallow_gitidx"
+	rm -f "$_fallow_idx_bak"
+	if [ "$_fallow_rc" -ne 0 ]; then
 		echo "[pre-push] ❌ fallow audit found NEW issues vs baseline on this branch" >&2
 		echo "[pre-push]    Inspect: npx --no-install fallow audit --format human --explain" >&2
 		echo "[pre-push]    Bypass:  SKIP_FALLOW=1 git push ..." >&2

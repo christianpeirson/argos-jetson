@@ -414,8 +414,7 @@ plans/                         # Architecture plans and roadmaps
 **Cyclomatic complexity ≤ 5, cognitive complexity ≤ 5, CRAP score ≤ 30.** Enforced in two layers per `docs/ci-cd-pipeline-spec.md` §3.17:
 
 - **ESLint** (`config/eslint.config.js`): `complexity` + `sonarjs/cognitive-complexity` rules — error-blocking, TS/Svelte only. Drops at 2026-05-18 cutover.
-- **Fallow** (`.fallowrc.json` + `.husky/pre-{commit,push}` + `.github/workflows/fallow.yml`): Rust-based, Oxc-parser, baseline-aware. Adds CRAP, semantic dupes, cross-module dead-code (none of which ESLint covers). Day-1 baselines (`.fallow-{deadcode,health,dupes}-baseline.json`) grandfather pre-existing findings (244 complexity, 129 dupe groups, 223 dead exports). New code blocks at 5/5; existing code grandfathered.
-- **Per-developer Claude PreToolUse gate**: auto-installed by `package.json` `prepare` script via `fallow hooks install --target agent --agent claude`. Blocks Claude `git commit`/`git push` when fallow audit verdict is `fail`.
+- **Fallow** (`.fallowrc.json` + `.husky/pre-{commit,push}` + `.github/workflows/fallow.yml`): Rust-based, Oxc-parser, baseline-aware. Adds CRAP, semantic dupes, cross-module dead-code (none of which ESLint covers). Day-1 baselines (`.fallow-{deadcode,health,dupes}-baseline.json`) grandfather pre-existing findings (244 complexity, 129 dupe groups, 223 dead exports). New code blocks at 5/5; existing code grandfathered. **Index snapshot/restore wrap** (`cp .git/index $tmp; fallow audit; cp $tmp .git/index`) applied in both husky hooks per `docs/ci-cd-pipeline-spec.md` §3.17 — works around fallow v2.63.0 upstream bug where `audit --gate new-only` leaks base-snapshot index entries into the parent worktree.
 
 `.svelte` files are excluded from fallow's dead-code detector (ROADMAP false-positive on `export let` props). `static/**` excluded (vendored WebTAK).
 

@@ -114,6 +114,16 @@ fi
 # grandfathered via .fallow-{deadcode,health,dupes}-baseline.json checked
 # into the repo root. Gated on presence of .fallowrc.json so repos without
 # fallow skip cleanly.
+#
+# CRITICAL — UPSTREAM BUG WORKAROUND (fallow.tools v2.63.0, observed 2026-05-04):
+# `fallow audit --gate new-only` (the default) materializes the base branch
+# into a tempdir at /tmp/fallow-audit-base-<pid>-<nonce>/ for "introduced vs
+# inherited" attribution. That materialization uses git plumbing that LEAKS
+# index entries back into the parent worktree's .git/index, staging hundreds
+# of phantom file deletions. We snapshot .git/index before the fallow call
+# and restore it afterwards regardless of exit code, so any leaked staging
+# is reversed before husky returns control to git. Verified clean via the
+# instrumentation pass at /home/jetson2/.claude/plans/proceed-with-creating-the-radiant-nest.md.
 if [ "${SKIP_FALLOW:-0}" = "1" ]; then
 	echo "[pre-commit] SKIP_FALLOW=1 — skipping fallow audit"
 elif [ -f .fallowrc.json ]; then
@@ -123,7 +133,18 @@ elif [ -f .fallowrc.json ]; then
 		exit 1
 	fi
 	echo "[pre-commit] fallow audit (baseline-aware: NEW complexity/dupes/dead-code only)..."
-	if ! npx --no-install fallow audit --quiet --format compact; then
+	# Index snapshot/restore wrap (fallow audit upstream-bug workaround).
+	# Use git rev-parse --git-dir so this works in both main checkout (.git is a dir)
+	# and worktrees (.git is a file pointing to <maindir>/worktrees/<name>/).
+	_fallow_gitidx="$(git rev-parse --git-dir)/index"
+	_fallow_idx_bak="$(mktemp /tmp/fallow-idx-bak.XXXXXX)"
+	cp "$_fallow_gitidx" "$_fallow_idx_bak"
+	_fallow_rc=0
+	npx --no-install fallow audit --quiet --format compact || _fallow_rc=$?
+	# Restore index regardless of fallow exit code so any leaked staging is reversed.
+	cp "$_fallow_idx_bak" "$_fallow_gitidx"
+	rm -f "$_fallow_idx_bak"
+	if [ "$_fallow_rc" -ne 0 ]; then
 		echo "[pre-commit] ❌ fallow audit found NEW issues vs baseline on staged changes" >&2
 		echo "[pre-commit]    Inspect: npx --no-install fallow audit --format human --explain" >&2
 		echo "[pre-commit]    Bypass:  SKIP_FALLOW=1 git commit ..." >&2

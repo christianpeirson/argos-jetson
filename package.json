@@ -25,7 +25,7 @@
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
 		"postinstall": "node -e \"try{require('node-pty')}catch{process.exit(1)}\" 2>/dev/null || npx node-gyp rebuild --directory=node_modules/node-pty 2>/dev/null || true",
-		"prepare": "husky || true; npx --no-install fallow hooks install --target agent --agent claude --quiet 2>/dev/null || true",
+		"prepare": "husky || true",
 		"test": "vitest",
 		"test:unit": "./scripts/ops/mem-guard.sh vitest run src/ tests/unit --passWithNoTests",
 		"test:integration": "./scripts/ops/mem-guard.sh vitest run tests/integration",

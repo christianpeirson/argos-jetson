@@ -253,13 +253,15 @@ Each section: (a) what it is (b) official docs (c) Argos use today (d) industry 
 - **Pre-push** — `.husky/pre-push` step 4 runs the same audit at branch level. Same bypass env var.
 - **CI** — `.github/workflows/fallow.yml` runs `fallow audit --format sarif` on every PR + push, uploads SARIF to GitHub Code Scanning under category `fallow`. **Marked `continue-on-error: true` during 14-day parity period (2026-05-04 → 2026-05-18); cutover PR removes the flag.**
 
-Plus a per-developer agent-level gate: `package.json` `prepare` script runs `fallow hooks install --target agent --agent claude --quiet` on every `npm install`. This writes `.claude/settings.json` + `.claude/hooks/fallow-gate.sh` (gitignored). The installer is **merge-aware** — preserves any existing PreToolUse Bash handlers (verified against main checkout's 4 existing handlers via `--dry-run`).
+Per-developer Claude PreToolUse gate via `fallow hooks install --target agent` is **NOT auto-installed** by the `package.json` `prepare` script. Originally Path 4 (auto-install via prepare) was chosen, but a fallow v2.63.0 upstream bug forced reversal: the auto-installed `.claude/hooks/fallow-gate.sh` calls `fallow audit --gate new-only` which materializes the base branch into a tempdir for "introduced vs inherited" attribution, and that materialization leaks index entries back into the parent worktree's `.git/index` (staging hundreds of phantom file deletions in subsequent `git commit`s). Developers who want the agent gate can install manually: `npx fallow hooks install --target agent --agent claude` then patch the generated `.claude/hooks/fallow-gate.sh` with the same index snapshot/restore wrap used in `.husky/pre-commit`/`.husky/pre-push`.
+
+**Husky-side workaround (shipped):** both `.husky/pre-commit` step 1c and `.husky/pre-push` step 4 wrap the `fallow audit` invocation with `cp $(git rev-parse --git-dir)/index $tmp; fallow audit; cp $tmp $(git rev-parse --git-dir)/index` so any leaked index staging is restored before husky returns control to git. This was verified by instrumentation (test commit landed clean: 1 file changed, NOT 400). Tracking issue: revisit when fallow upstream fixes the leak.
 
 (e) Known gaps and risks:
 
 - **No LOC/file or LOC/fn threshold.** Fallow's `health` does NOT enforce line counts (verified against `fallow config-schema` 2026-05-04). LOC enforcement provided by ESLint's built-in `max-lines` + `max-lines-per-function` rules — added to `config/eslint.config.js` in the same install PR.
 - **`.svelte` dead-code is excluded** via `ignorePatterns` because fallow's ROADMAP acknowledges `export let` props are indistinguishable from utility exports without Svelte compiler semantics.
-- **`static/**` excluded** because Argos serves vendored WebTAK minified JS as a static asset — not first-party source. Without this exclusion, a single anonymous WebTAK function (cyclomatic=330, 291,033 lines) dominates findings.
+- **`static/**` excluded\*\* because Argos serves vendored WebTAK minified JS as a static asset — not first-party source. Without this exclusion, a single anonymous WebTAK function (cyclomatic=330, 291,033 lines) dominates findings.
 - **Boundary-violation detector OFF** because sentrux + `eslint-plugin-boundaries` already cover this (triple-overlap avoided per `feedback_mechanical_enforcement_over_audit.md`).
 - **Test-pattern noise**: arrange-act symmetry in vitest tests fires the semantic-dupes detector. Tune via `duplicates.ignore` if PRs touching tests get noisy.
 
@@ -316,31 +318,31 @@ Mitigation (in place): both addons are in `dependencies` per `CLAUDE.md`. CI's `
 
 Each gate has exactly one canonical owner. Redundant copies are listed for removal.
 
-| Gate                      | Canonical owner               | Local mirror                         | Redundant copies to remove                            |
-| ------------------------- | ----------------------------- | ------------------------------------ | ----------------------------------------------------- |
-| ESLint full-repo          | `lint.yml` (cached)           | `pre-push`                           | `ci.yml` `npm run lint` step (PR-CI-3 already opened) |
-| ESLint staged-only        | `pre-commit` (lint-staged)    | —                                    | —                                                     |
-| svelte-check / typecheck  | `ci.yml`                      | `pre-push`                           | none                                                  |
-| Vitest full suite         | `ci.yml` `test_unit`          | —                                    | `pre-push` vitest stage (PR-CI-5 in flight)           |
-| Prettier check            | `ci.yml` `format:check`       | `pre-commit` (lint-staged)           | trunk's prettier (disable in `.trunk/trunk.yaml`)     |
-| Conventional Commits      | `lint.yml` `commitlint`       | `pre-commit` (commit-msg)            | `commitlint.yml` (PR-CI-2 already opened)             |
-| Secret scan (regex)       | `pre-commit`                  | —                                    | —                                                     |
-| Secret scan (full)        | `lint.yml` `gitleaks`         | —                                    | trunk's gitleaks (disable in `.trunk/trunk.yaml`)     |
-| Production build          | `ci.yml`                      | —                                    | none                                                  |
-| Audit-delta (npm audit)   | `ci.yml`                      | —                                    | none                                                  |
-| PR shape (size, sprawl)   | `danger.yml`                  | —                                    | none                                                  |
-| Multi-linter (yaml/sh/md) | `trunk.yml` + `pre-commit`    | `pre-commit` (`trunk check --index`) | none                                                  |
-| Architecture quality      | sentrux per-PR session        | —                                    | none                                                  |
-| Cyclomatic complexity     | `fallow.yml` (parity → cutover 2026-05-18) | `pre-commit` + `pre-push` (fallow audit) | `eslint complexity` rule (drop on cutover)            |
-| Cognitive complexity      | `fallow.yml` (parity → cutover 2026-05-18) | `pre-commit` + `pre-push` (fallow audit) | `eslint-plugin-sonarjs/cognitive-complexity` (drop on cutover) |
-| LOC/file (≤300)           | `lint.yml` (eslint `max-lines`) | `pre-push`                         | none                                                  |
-| LOC/fn (≤50)              | `lint.yml` (eslint `max-lines-per-function`) | `pre-push`                | none                                                  |
-| Code duplication (semantic)| `fallow.yml`                 | `pre-commit` + `pre-push` (fallow audit) | none (no prior tool)                                |
-| Cross-module dead code    | `fallow.yml`                  | `pre-commit` + `pre-push` (fallow audit) | none (no prior tool — eslint `no-unused-vars` is fn-scope only) |
-| CRAP score (≥30)          | `fallow.yml`                  | `pre-commit` + `pre-push` (fallow audit) | none (no prior tool)                                  |
-| AI code review            | CodeRabbit                    | —                                    | none                                                  |
-| Tag release               | `release.yml` (on `v*.*.*`)   | —                                    | none                                                  |
-| Auto-version + changelog  | `semantic-release.yml` (main) | —                                    | none                                                  |
+| Gate                        | Canonical owner                              | Local mirror                             | Redundant copies to remove                                      |
+| --------------------------- | -------------------------------------------- | ---------------------------------------- | --------------------------------------------------------------- |
+| ESLint full-repo            | `lint.yml` (cached)                          | `pre-push`                               | `ci.yml` `npm run lint` step (PR-CI-3 already opened)           |
+| ESLint staged-only          | `pre-commit` (lint-staged)                   | —                                        | —                                                               |
+| svelte-check / typecheck    | `ci.yml`                                     | `pre-push`                               | none                                                            |
+| Vitest full suite           | `ci.yml` `test_unit`                         | —                                        | `pre-push` vitest stage (PR-CI-5 in flight)                     |
+| Prettier check              | `ci.yml` `format:check`                      | `pre-commit` (lint-staged)               | trunk's prettier (disable in `.trunk/trunk.yaml`)               |
+| Conventional Commits        | `lint.yml` `commitlint`                      | `pre-commit` (commit-msg)                | `commitlint.yml` (PR-CI-2 already opened)                       |
+| Secret scan (regex)         | `pre-commit`                                 | —                                        | —                                                               |
+| Secret scan (full)          | `lint.yml` `gitleaks`                        | —                                        | trunk's gitleaks (disable in `.trunk/trunk.yaml`)               |
+| Production build            | `ci.yml`                                     | —                                        | none                                                            |
+| Audit-delta (npm audit)     | `ci.yml`                                     | —                                        | none                                                            |
+| PR shape (size, sprawl)     | `danger.yml`                                 | —                                        | none                                                            |
+| Multi-linter (yaml/sh/md)   | `trunk.yml` + `pre-commit`                   | `pre-commit` (`trunk check --index`)     | none                                                            |
+| Architecture quality        | sentrux per-PR session                       | —                                        | none                                                            |
+| Cyclomatic complexity       | `fallow.yml` (parity → cutover 2026-05-18)   | `pre-commit` + `pre-push` (fallow audit) | `eslint complexity` rule (drop on cutover)                      |
+| Cognitive complexity        | `fallow.yml` (parity → cutover 2026-05-18)   | `pre-commit` + `pre-push` (fallow audit) | `eslint-plugin-sonarjs/cognitive-complexity` (drop on cutover)  |
+| LOC/file (≤300)             | `lint.yml` (eslint `max-lines`)              | `pre-push`                               | none                                                            |
+| LOC/fn (≤50)                | `lint.yml` (eslint `max-lines-per-function`) | `pre-push`                               | none                                                            |
+| Code duplication (semantic) | `fallow.yml`                                 | `pre-commit` + `pre-push` (fallow audit) | none (no prior tool)                                            |
+| Cross-module dead code      | `fallow.yml`                                 | `pre-commit` + `pre-push` (fallow audit) | none (no prior tool — eslint `no-unused-vars` is fn-scope only) |
+| CRAP score (≥30)            | `fallow.yml`                                 | `pre-commit` + `pre-push` (fallow audit) | none (no prior tool)                                            |
+| AI code review              | CodeRabbit                                   | —                                        | none                                                            |
+| Tag release                 | `release.yml` (on `v*.*.*`)                  | —                                        | none                                                            |
+| Auto-version + changelog    | `semantic-release.yml` (main)                | —                                        | none                                                            |
 
 ---
 
