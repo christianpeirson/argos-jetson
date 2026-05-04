@@ -5,7 +5,7 @@
 #   0c. Secret scan — AWS/GH/Slack/PEM/Anthropic/OpenAI/Stripe/JWT/GCP-SA in staged diff
 #   1.  lint-staged (eslint --fix + prettier --write on staged files)
 #   1b. trunk check --index (hold-the-line — blocks on NEW lint issues only)
-#   1c. fallow audit (baseline-aware — blocks on NEW dead-code/dupes/complexity findings only)
+# (fallow audit moved to pre-push only as of 2026-05-04 — see step 1c stub below)
 #
 # CodeRabbit pre-commit was removed 2026-04-24 — it was adding 30-60 s per
 # commit, failing most invocations, and duplicated the server-side CodeRabbit
@@ -18,7 +18,6 @@
 # Skip the bash size gate with: SKIP_SIZE_GATE=1 git commit ...
 # Skip the secret scan with:    SKIP_SECRET_SCAN=1 git commit ...  (rotate the credential instead!)
 # Skip the trunk gate with:     SKIP_TRUNK=1 git commit ...
-# Skip the fallow gate with:    SKIP_FALLOW=1 git commit ...
 # Skip everything with:         git commit --no-verify ...
 
 set -e
@@ -108,48 +107,27 @@ elif [ -f .trunk/trunk.yaml ]; then
 	fi
 fi
 
-# 1c) Fallow audit gate (blocking — baseline-aware, only NEW findings fire)
-# Scoped to changed files vs auto-detected base branch. Existing baseline
-# findings (244 complexity, 129 dupes, 223 dead exports as of day-1) are
-# grandfathered via .fallow-{deadcode,health,dupes}-baseline.json checked
-# into the repo root. Gated on presence of .fallowrc.json so repos without
-# fallow skip cleanly.
+# 1c) Fallow audit gate REMOVED from pre-commit 2026-05-04.
 #
-# CRITICAL — UPSTREAM BUG WORKAROUND (fallow.tools v2.63.0, observed 2026-05-04):
-# `fallow audit --gate new-only` (the default) materializes the base branch
-# into a tempdir at /tmp/fallow-audit-base-<pid>-<nonce>/ for "introduced vs
-# inherited" attribution. That materialization uses git plumbing that LEAKS
-# index entries back into the parent worktree's .git/index, staging hundreds
-# of phantom file deletions. We snapshot .git/index before the fallow call
-# and restore it afterwards regardless of exit code, so any leaked staging
-# is reversed before husky returns control to git. Verified clean via the
-# instrumentation pass at /home/jetson2/.claude/plans/proceed-with-creating-the-radiant-nest.md.
-if [ "${SKIP_FALLOW:-0}" = "1" ]; then
-	echo "[pre-commit] SKIP_FALLOW=1 — skipping fallow audit"
-elif [ -f .fallowrc.json ]; then
-	if ! command -v npx >/dev/null 2>&1; then
-		echo "[pre-commit] ❌ .fallowrc.json present but \`npx\` not on PATH" >&2
-		echo "[pre-commit]    Install Node/npm or bypass with: SKIP_FALLOW=1 git commit ..." >&2
-		exit 1
-	fi
-	echo "[pre-commit] fallow audit (baseline-aware: NEW complexity/dupes/dead-code only)..."
-	# Index snapshot/restore wrap (fallow audit upstream-bug workaround).
-	# Use git rev-parse --git-dir so this works in both main checkout (.git is a dir)
-	# and worktrees (.git is a file pointing to <maindir>/worktrees/<name>/).
-	_fallow_gitidx="$(git rev-parse --git-dir)/index"
-	_fallow_idx_bak="$(mktemp /tmp/fallow-idx-bak.XXXXXX)"
-	cp "$_fallow_gitidx" "$_fallow_idx_bak"
-	_fallow_rc=0
-	npx --no-install fallow audit --quiet --format compact || _fallow_rc=$?
-	# Restore index regardless of fallow exit code so any leaked staging is reversed.
-	cp "$_fallow_idx_bak" "$_fallow_gitidx"
-	rm -f "$_fallow_idx_bak"
-	if [ "$_fallow_rc" -ne 0 ]; then
-		echo "[pre-commit] ❌ fallow audit found NEW issues vs baseline on staged changes" >&2
-		echo "[pre-commit]    Inspect: npx --no-install fallow audit --format human --explain" >&2
-		echo "[pre-commit]    Bypass:  SKIP_FALLOW=1 git commit ..." >&2
-		exit 1
-	fi
-fi
+# Rationale: fallow audit's base-snapshot semantic doesn't fit pre-commit.
+# All viable invocations either (a) trigger "could not create a temporary
+# worktree for base ref 'HEAD'" when scoping to staged changes, or
+# (b) flood with the entire branch backlog when committing on dev/main
+# directly (auto-detect compares vs main; dev has weeks of unmerged work).
+# Per-detector commands (`fallow health/dupes/dead-code`) avoid the temp-
+# worktree dance but scan the whole project (~10-30 s × 3 detectors per
+# commit — too slow for the lean pre-commit gate).
+#
+# Coverage is preserved by the other two fallow firings:
+#   - .husky/pre-push step 4: `fallow audit --changed-since @{u} --gate all`
+#     scopes to commits being pushed (@{u} is a different ref than HEAD,
+#     so the temp-worktree creation works). Catches violations introduced
+#     by ANY commit before they leave the laptop.
+#   - .github/workflows/fallow.yml: full audit on every PR with SARIF
+#     upload to GitHub Code Scanning. Authoritative server-side gate.
+#
+# Pre-commit retains: lint-staged (ESLint + Prettier on staged), secret
+# scan, ruff (Python), bash size cap, trunk hold-the-line. Fast local
+# feedback for trivially-fixable mistakes.
 
 exit 0

@@ -257,6 +257,14 @@ Per-developer Claude PreToolUse gate via `fallow hooks install --target agent` i
 
 **Husky-side workaround (shipped):** both `.husky/pre-commit` step 1c and `.husky/pre-push` step 4 wrap the `fallow audit` invocation with `cp $(git rev-parse --git-dir)/index $tmp; fallow audit; cp $tmp $(git rev-parse --git-dir)/index` so any leaked index staging is restored before husky returns control to git. This was verified by instrumentation (test commit landed clean: 1 file changed, NOT 400). Tracking issue: revisit when fallow upstream fixes the leak.
 
+**Gate-semantic refinement (shipped 2026-05-04, revised same day):** initial fix tried `--changed-since HEAD` for pre-commit, but fallow's audit creates a temp-worktree at the base ref and HEAD == current branch tip, triggering "could not create a temporary worktree for base ref 'HEAD'". Final design:
+
+- **`.husky/pre-commit` step 1c REMOVED.** Fallow audit's base-snapshot semantic doesn't fit pre-commit (every viable invocation either hits the HEAD-temp-worktree error or floods with the full branch backlog). Per-detector commands (`fallow health/dupes/dead-code`) avoid the temp-worktree dance but scan the whole project (~10-30 s × 3 detectors per commit — too slow for the lean pre-commit gate). Pre-commit retains its other gates (lint-staged, secret scan, ruff, bash size, trunk).
+- **`.husky/pre-push` step 4** uses `fallow audit --changed-since @{u} --gate all`. `@{u}` (upstream tracking ref, e.g. `origin/dev`) is a different ref than HEAD so the temp-worktree creation works; it scopes the file set to commits being pushed. `--gate all` skips the attribution pass (also avoiding the leak on the source side, complementing the snapshot/restore wrap on the destination side). Per-detector baselines in `.fallowrc.json` `audit` section still grandfather pre-existing findings, so only NEW violations vs baseline fail. Fallback for first-push of a brand-new branch (no `@{u}`): omit `--changed-since` and let fallow auto-detect base.
+- **`.github/workflows/fallow.yml`** keeps default `fallow audit --format sarif` — CI runs each PR in an ephemeral runner so leak isn't a concern; SARIF flows to GitHub Code Scanning.
+
+Net coverage: 2 fallow firings (pre-push + CI) instead of 3. Defense remains layered; pre-commit becomes faster.
+
 (e) Known gaps and risks:
 
 - **No LOC/file or LOC/fn threshold.** Fallow's `health` does NOT enforce line counts (verified against `fallow config-schema` 2026-05-04). LOC enforcement provided by ESLint's built-in `max-lines` + `max-lines-per-function` rules — added to `config/eslint.config.js` in the same install PR.

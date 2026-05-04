@@ -89,12 +89,34 @@ elif [ -f .fallowrc.json ]; then
 		exit 1
 	fi
 	echo "[pre-push] fallow audit (baseline-aware: NEW complexity/dupes/dead-code only)..."
+	# Scope to commits being pushed — `--changed-since @{u}` tells fallow to look
+	# at files changed since the upstream tracking ref (= the commits THIS push
+	# delivers). Without this flag, fallow auto-detects base = typically `main`,
+	# and any direct push of `dev` would flag the entire dev backlog as new
+	# findings (dev has weeks of commits ahead of main).
+	#
+	# Pair with `--gate all` to skip fallow's base-snapshot attribution pass —
+	# that pass tries to materialize the base ref into a tempdir worktree and
+	# leaks index entries into .git/index (upstream bug, see snapshot/restore
+	# wrap below). With `--gate all`, fallow fails on every finding in the
+	# changed file set; per-detector baselines configured in .fallowrc.json
+	# `audit` section still grandfather pre-existing findings, so only NEW
+	# violations vs baseline fail.
+	#
+	# Fallback: if @{u} doesn't resolve (brand-new branch with no upstream),
+	# omit --changed-since and let fallow auto-detect. First-push of a feature
+	# branch hits this path; the diff vs auto-detected base is correct.
+	_fallow_changed_since=""
+	if git rev-parse --abbrev-ref --symbolic-full-name '@{u}' >/dev/null 2>&1; then
+		_fallow_changed_since="--changed-since @{u}"
+	fi
 	# Use git rev-parse --git-dir so this works in worktrees (.git is a file there).
 	_fallow_gitidx="$(git rev-parse --git-dir)/index"
 	_fallow_idx_bak="$(mktemp /tmp/fallow-idx-bak.XXXXXX)"
 	cp "$_fallow_gitidx" "$_fallow_idx_bak"
 	_fallow_rc=0
-	npx --no-install fallow audit --quiet --format compact || _fallow_rc=$?
+	# shellcheck disable=SC2086
+	npx --no-install fallow audit $_fallow_changed_since --gate all --quiet --format compact || _fallow_rc=$?
 	cp "$_fallow_idx_bak" "$_fallow_gitidx"
 	rm -f "$_fallow_idx_bak"
 	if [ "$_fallow_rc" -ne 0 ]; then
