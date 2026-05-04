@@ -11,9 +11,13 @@ Loaded into every session (no `paths:` — these constraints apply to every inte
 
 ## Git workflow
 
-- Branch: `feature/NNN-feature-name` or `NNN-feature-name`.
-- Commit format: `type(scope): TXXX — description`. One commit per task. Subject lowercase (commitlint enforced).
-- Forbidden: WIP commits, mega commits, generic messages, force-push.
+**Worktree-per-session model** (cognitively simple, default for daily work):
+
+- 1-10 stable sibling worktrees at `/home/jetson2/code/Argos-session-N` (N = 1…10), each permanently tracking its own branch `session-N` off `dev`. Created once via `scripts/ops/spin-worktree.sh session-N` and then reused indefinitely. Never `git checkout` a different branch inside a session worktree — it defeats the per-session isolation.
+- Daily flow: ssh in → `cd Argos-session-N` → work → commit on `session-N` → PR `session-N` → `dev` → merge. After merge, refresh the worktree branch with `git fetch origin && git reset --hard origin/dev` (or `git pull --ff-only` if the merge was non-squash) so the next day's work starts from current `dev`.
+- Topic branches (`feature/<slug>`, `chore/<slug>`, `fix/<slug>`) are the EXCEPTION — only use one when the work is genuinely orthogonal to all session worktrees (e.g., a long-lived spec migration that needs its own worktree). Spin via `scripts/ops/spin-worktree.sh <slug>` — that creates `Argos-<slug>` + branch `<slug>` (or `feature/<slug>` if no prefix is given).
+- Commit format: `type(scope): description` (Conventional Commits). Subject lowercase (commitlint enforced). Atomic commits — one logical change per commit.
+- Forbidden: WIP commits, mega commits, generic messages, force-push to `dev`/`main`. Force-push to your own session-N branch is fine if upstream isn't shared.
 - Spec-kit: `spec.md` → `plan.md` → `tasks.md` in `specs/NNN-*/`. CLAUDE.md auto-update is BLOCKED by the SKIP AUTO-UPDATE marker in CLAUDE.md.
 
 ## Dependencies

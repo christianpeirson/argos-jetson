@@ -218,6 +218,7 @@ CLAUDE.local.md
 # of a fully excluded parent.
 .claude/*
 !.claude/rules/
+!.claude/settings.json
 
 # ── SpecifyKit ───────────────────────────────────────────────
 # Dev specs/plans generated locally, not shipped with product.

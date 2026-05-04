@@ -9,7 +9,8 @@ Verify with `claude mcp list`. Authoritative config: `~/.claude.json` + each plu
 | Namespace                                  | When to use                                                                       |
 | ------------------------------------------ | --------------------------------------------------------------------------------- |
 | `mcp__serena__*`                           | Known symbol → prefer over Grep/Glob                                              |
-| `mcp__octocode__*`                         | Any `github.com` lookup (workflow Rule 4)                                         |
+| `mcp__github__*`                           | **Any GitHub API operation** (workflow Rule 4 — hard-locked)                      |
+| `mcp__octocode__lsp*` + `local*`           | LSP (findReferences/hover/gotoDefinition) + local code search ONLY                |
 | `mcp__plugin_svelte_svelte__*` + `LSP`     | Every `.svelte` edit (workflow Rule 3). Needs `npm i -g svelte-language-server`.  |
 | `mcp__chrome-devtools__*`                  | Frontend debug (workflow Rule 1). Headless chromium pre-launched on :9222.        |
 | `mcp__plugin_claude-mem_mcp-search__*`     | Prior-work check (workflow Rule 2): `smart_search`, `timeline`, `knowledge-agent` |

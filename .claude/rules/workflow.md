@@ -25,11 +25,38 @@ Plugin source: `sveltejs/ai-tools` marketplace, plugin name `svelte`, v1.0.4+. O
 5. **`LSP hover`** (POST-edit) — Confirm TypeScript narrowed correctly on a sample of the migrated consumer sites. One LSP call per site beats running `svelte-check` (~650 MB RAM, 30+ s).
 6. **`mcp__plugin_svelte_svelte__playground-link`** — Ask user if they want one ONLY when no project file was modified. NEVER generate when code was written to project files (the tool description forbids it).
 
-## Rule 4 — GitHub Access via Octocode Only
+## Rule 4 — GitHub Access via github-mcp-server Only (HARD-LOCKED)
 
-For ANY GitHub interaction (repo structure, file content, search, PR history): use `mcp__octocode__*` tools ONLY. Do **not** use `gh` CLI. Do **not** use `WebFetch` on `github.com/*` URLs. Octocode respects token scopes, handles pagination cleanly, and avoids auth prompts that break in hooks.
+For ANY GitHub API operation: use `mcp__github__*` tools (github-mcp-server, remote at `https://api.githubcopilot.com/mcp`) ONLY. Mechanically enforced — `mcp__octocode__github*` is in `.claude/settings.json` `permissions.deny` AND blocked by PreToolUse hook `scripts/claude-hooks/block-octocode-github.sh`. `gh` CLI is gated by hook `scripts/claude-hooks/gh-cli-restrict.sh` to a narrow allow-list. `WebFetch` on `github.com/*` is blocked by global hook `~/.claude/hooks/github-url-block.sh`.
 
-**Exception — PR lifecycle operations**: `gh pr create|view|checks|comment|merge|edit|list|diff` + `gh api repos/Graveside2022/argos-jetson/*` + `gh auth status` are allowed because octocode exposes only read-side GitHub tools. PR creation, comments, and merge require `gh` CLI. Exception list is scoped by exact subcommand in `.claude/settings.local.json` (`permissions.allow`). Do NOT expand to `gh repo *`, `gh workflow *`, `gh release *`, or `gh api` paths outside this repo without adding a new allow rule first.
+**Routing matrix:**
+
+| Operation | Tool |
+| --- | --- |
+| Read repo file/structure/history | `mcp__github__get_file_contents` / `list_commits` / `list_branches` |
+| Search code/PRs/issues | `mcp__github__search_code` / `search_pull_requests` / `search_issues` |
+| PR create/read/update/merge | `mcp__github__create_pull_request` / `pull_request_read` / `update_pull_request` / `merge_pull_request` / `list_pull_requests` |
+| PR review | `mcp__github__pull_request_review_write` / `add_comment_to_pending_review` / `add_reply_to_pull_request_comment` |
+| Issues | `mcp__github__issue_write` / `issue_read` / `add_issue_comment` / `list_issues` |
+| Branches (remote) | `mcp__github__create_branch` / `list_branches` |
+| Releases / tags | `mcp__github__list_releases` / `get_latest_release` / `get_release_by_tag` / `list_tags` / `get_tag` |
+| CI / runs | `mcp__github__` actions toolset |
+
+**`gh` CLI allow-list** (gaps github-mcp-server doesn't cover):
+
+- `gh workflow run|list|view` — workflow dispatch (github MCP `actions` toolset is read-only re: dispatch)
+- `gh secret set|list|delete` — secret management (no MCP surface)
+- `gh auth status|login|logout` — auth probe
+
+Anything else (`gh pr`, `gh issue`, `gh api`, `gh release`, `gh repo`, `gh run`) is denied by the hook.
+
+**`git` CLI** is fully allowed for local working-tree ops (commit, push, fetch, pull, branch, rebase, checkout, tag) — github MCP cannot replace local git.
+
+**Bash hooks** (`scripts/claude-hooks/*.sh`) MAY use any `gh` subcommand internally because hooks run in bash and have no access to MCP tools. They bypass `gh-cli-restrict.sh` by setting `CLAUDE_HOOK_INTERNAL=1` before invoking `gh` (see `scripts/claude-hooks/post-push-pr-flow.sh`).
+
+**octocode** is kept ONLY for `lsp*` (LSP findReferences/hover/gotoDefinition/callHierarchy) and `local*` (localFindFiles/localSearchCode/localGetFileContent/localViewStructure) namespaces — these are NOT GitHub operations and are out of scope.
+
+Source-of-truth: official `github/github-mcp-server` README + `docs/` (16 toolsets, 50+ tools, `--toolsets` / `--read-only` flags, OAuth + PAT auth, gaps documented for workflow-dispatch + secret-write).
 
 ## Rule 5 — Docs via Context7 before WebFetch
 
@@ -39,8 +66,8 @@ For ANY question about a third-party library, framework, SDK, or CLI tool (React
 
 Every PR is bracketed by sentrux. Bracketing is **per-branch**, not per-phase or per-commit. Under the batched-commit cadence (Rule 10), `session_start` fires ONCE at branch creation and `session_end` + `rescan` + `check_rules` fire ONCE pre-merge — even when the branch contains multiple phases worth of commits. Mid-session optional rescan is allowed after structurally-risky phases (chassis additions, deletions of >5 files) but is not required.
 
-1. **Branch creation**: after `git checkout -b feature/...`, call `mcp__plugin_sentrux_sentrux__session_start` (captures pre-change graph baseline).
-2. **Pre-merge**: before `gh pr merge --squash`, call in order:
+1. **Worktree entry / branch refresh**: when starting work in `Argos-session-N` (or after a fresh `scripts/ops/spin-worktree.sh <slug>`), call `mcp__plugin_sentrux_sentrux__session_start` (captures pre-change graph baseline).
+2. **Pre-merge**: before `mcp__github__merge_pull_request` (mergeMethod: "squash"), call in order:
     - `mcp__plugin_sentrux_sentrux__rescan` (re-walk after final commit)
     - `mcp__plugin_sentrux_sentrux__session_end` (delta report)
     - `mcp__plugin_sentrux_sentrux__check_rules` (must pass `.sentrux/rules.toml`)
@@ -70,14 +97,14 @@ When ANY of these bg-trigger patterns fires in a turn, the SAME turn MUST includ
 
 **Trigger patterns** (auto-fire the rule):
 
-- `run_in_background: true` on `npm run build|test:*|typecheck`, `git commit` (quality-gate ≈ 2-3 min), `gh pr create`, `gh pr merge --auto`, any `Agent` dispatch
+- `run_in_background: true` on `npm run build|test:*|typecheck`, `git commit` (quality-gate ≈ 2-3 min), `mcp__github__create_pull_request`, `mcp__github__merge_pull_request`, any `Agent` dispatch
 - `ScheduleWakeup({ delaySeconds > 60 })`
-- `gh pr view` showing PR awaiting CR / CI checks
+- `mcp__github__pull_request_read` / `list_pull_requests` showing PR awaiting CR / CI checks
 - `mcp__plugin_sentrux_sentrux__rescan` on a >50K-line repo
 
 **Same-turn obligation** (do all three):
 
-1. **One-shot status check** — execute `tail -3 /tmp/<log>` + `pgrep -af <proc>` + (if applicable) `gh pr view <N> --json statusCheckRollup` together as ONE bash invocation (chain with `&&` / `;` / `echo ---`). NOT split across turns. NOT a wait loop. NOT `until ... sleep ... done`. The hook at `scripts/claude-hooks/post-push-pr-flow.sh:44` uses a different `--json number,state,baseRefName` shape — that's a PR-identity probe, NOT a status check; both fields are valid for `gh pr view`.
+1. **One-shot status check** — execute `tail -3 /tmp/<log>` + `pgrep -af <proc>` + (if applicable) `mcp__github__pull_request_read({ method: "get", pullNumber: N })` for status-check rollup. Combine bash probes as ONE invocation (chain with `&&` / `;` / `echo ---`). NOT split across turns. NOT a wait loop. NOT `until ... sleep ... done`. The hook at `scripts/claude-hooks/post-push-pr-flow.sh:46` uses a bash-internal `gh pr view --json number,state,baseRefName` because hooks have no MCP access (workflow Rule 4 carve-out, hook sets `CLAUDE_HOOK_INTERNAL=1`).
 
 2. **Dispatch ≥1 parallel-safe action** from the Lightweight Parallel-Safe Ops list. Always-available examples:
     - **Memory + plan + commit-message + PR-body writes** to `~/.claude/projects/.../memory/*.md`, `plans/*.md`, `/tmp/*.md`
@@ -85,7 +112,7 @@ When ANY of these bg-trigger patterns fires in a turn, the SAME turn MUST includ
     - **Doc fetches** via `mcp__plugin_context7-plugin_context7__*`, `mcp__octocode__*`, `WebFetch` to vendor docs
     - **Hardware/service probes** — `lsusb`, `systemctl status`, `ss -tnlp`, `curl -sf http://localhost:5173/api/health`
     - **Worktree + symlink setup** — `git worktree add -b ...`, `ln -s node_modules .env`, `npx svelte-kit sync`
-    - **GitHub status checks** — `gh pr view`, `gh run list`, `gh api`
+    - **GitHub status checks** — `mcp__github__pull_request_read`, `mcp__github__list_pull_requests`, `mcp__github__` actions toolset
     - **Next-PR migrations** if file-disjoint from in-flight work (use the conflict matrix in the memory)
 
 3. **State which next-phase work is being prepared** — give the user visibility into what's in flight.
@@ -114,7 +141,7 @@ The `tail -3` cost is ~50 tokens; the cost of NOT parallelizing is 1-3 minutes o
 
 Full 6-incident catalogue (escalating remediation across 2026-04-27 → 2026-04-29) + lightweight-vs-heavy ops table + conflict-matrix for parallel PRs in user memory `feedback_parallel_work_during_waits.md`.
 
-**Cadence-coupling note** (added with Rule 10): under batched-commit cadence the `gh pr create` + CR-loop bg dispatches happen ONCE at end-of-day, not per-phase. The per-phase parallel-work obligation is therefore reduced — between phases, the assistant runs local quality gates (eslint + selective svelte-check) and waits at the `keep going / commit` checkpoint prompt for user input. The Rule 9 obligation continues to apply at end-of-day when `npm run build` + `git push` + `gh pr create` + CR poll fire.
+**Cadence-coupling note** (added with Rule 10): under batched-commit cadence the `mcp__github__create_pull_request` + CR-loop bg dispatches happen ONCE at end-of-day, not per-phase. The per-phase parallel-work obligation is therefore reduced — between phases, the assistant runs local quality gates (eslint + selective svelte-check) and waits at the `keep going / commit` checkpoint prompt for user input. The Rule 9 obligation continues to apply at end-of-day when `npm run build` + `git push` + `mcp__github__create_pull_request` + CR poll fire.
 
 ## Rule 10 — Batched-commit cadence (default for multi-phase work)
 
@@ -153,8 +180,8 @@ Assistant MUST NOT auto-proceed to the next phase. Prompt is non-skippable.
 4. Sentrux pre-push gate: `rescan` → `scan` → `check_rules` (quality_signal must not regress).
 5. `npm run build` in background (per `feedback_argos_commit_always_bg.md`). Do parallel work per Rule 9 while build runs.
 6. `git push -u origin <branch>` (pre-push hook fires once for the whole bundle ~13-25s).
-7. `gh pr create` with body listing all bundled phases + per-phase commit SHAs + sentrux delta.
-8. CR loop per `feedback_pr_wait_pattern.md` — `ScheduleWakeup ~270s` then dual-check `gh pr view --json statusCheckRollup` AND CR reviewThreads.
+7. `mcp__github__create_pull_request` with body listing all bundled phases + per-phase commit SHAs + sentrux delta.
+8. CR loop per `feedback_pr_wait_pattern.md` — `ScheduleWakeup ~270s` then dual-check `mcp__github__pull_request_read` (status-check rollup) AND CR reviewThreads.
 9. Merge with `--admin` if Danger 2000-LOC cap warns OR if PR is doc-only / CR has nothing actionable (per `project_review_workflow.md`).
 10. Tag end-of-day: `git tag eod-YYYY-MM-DD <sha> && git push origin <tag>`.
 11. Cleanup worktree + post-merge sentrux scan from main checkout.
@@ -173,6 +200,6 @@ Is the diff > 1500 LOC OR touches src/lib/state/ OR src/app.css OR > 6 files in 
 
 **Per-PR cadence (one PR per phase) is RESERVED for**: (a) urgent hotfixes, (b) PR that needs isolated rollback granularity, (c) cross-subsystem changes that exceed Danger 2000-LOC cap, (d) explicit user override.
 
-**Worktree naming under batched cadence**: per-day directory at `/home/jetson2/code/Argos-batch-YYYY-MM-DD` instead of per-phase. Symlink `node_modules` and `.env` once per `project_argos_worktree_pattern.md`.
+**Worktree model**: 1-10 stable sibling worktrees at `/home/jetson2/code/Argos-session-N`, each permanently tracking branch `session-N` off `dev`. Daily atomic commits land on `session-N`; PR `session-N` → `dev` → merge → `git fetch origin && git reset --hard origin/dev` to refresh the worktree branch for the next cycle. `node_modules` and `.env` symlinked once per `project_argos_worktree_pattern.md`. Topic branches (`feature/`, `chore/`, etc.) are the EXCEPTION — only spin a fresh worktree when the work is orthogonal to every session-N.
 
 Catalogue: `feedback_batched_commit_cadence.md`.
