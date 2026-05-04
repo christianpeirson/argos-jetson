@@ -409,7 +409,15 @@ plans/                         # Architecture plans and roadmaps
 
 **No catch-all utils files** (`utils.ts`, `helpers.ts`). Place utility functions in domain-specific modules.
 
-**File limits**: Max 300 lines/file, max 50 lines/function. Single responsibility per file.
+**File limits**: Max 300 lines/file, max 50 lines/function. Single responsibility per file. **Mechanically enforced** as of 2026-05-04 by ESLint `max-lines` + `max-lines-per-function` (warn-only initially while 158 day-1 violators are baselined; promote to error per `docs/ci-cd-pipeline-spec.md` Migration Roadmap item 13).
+
+**Cyclomatic complexity ≤ 5, cognitive complexity ≤ 5, CRAP score ≤ 30.** Enforced in two layers per `docs/ci-cd-pipeline-spec.md` §3.17:
+
+- **ESLint** (`config/eslint.config.js`): `complexity` + `sonarjs/cognitive-complexity` rules — error-blocking, TS/Svelte only. Drops at 2026-05-18 cutover.
+- **Fallow** (`.fallowrc.json` + `.husky/pre-{commit,push}` + `.github/workflows/fallow.yml`): Rust-based, Oxc-parser, baseline-aware. Adds CRAP, semantic dupes, cross-module dead-code (none of which ESLint covers). Day-1 baselines (`.fallow-{deadcode,health,dupes}-baseline.json`) grandfather pre-existing findings (244 complexity, 129 dupe groups, 223 dead exports). New code blocks at 5/5; existing code grandfathered.
+- **Per-developer Claude PreToolUse gate**: auto-installed by `package.json` `prepare` script via `fallow hooks install --target agent --agent claude`. Blocks Claude `git commit`/`git push` when fallow audit verdict is `fail`.
+
+`.svelte` files are excluded from fallow's dead-code detector (ROADMAP false-positive on `export let` props). `static/**` excluded (vendored WebTAK).
 
 **Error handling**: Explicit handling for all external operations. Typed error classes. No swallowed errors. User-visible errors must suggest corrective action.
 

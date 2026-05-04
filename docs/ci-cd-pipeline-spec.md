@@ -1,6 +1,6 @@
 ---
-last_validated: 2026-04-29
-gate_matrix_version: 1
+last_validated: 2026-05-04
+gate_matrix_version: 2
 canonical_authorities:
     - https://typicode.github.io/husky/
     - https://www.conventionalcommits.org/
@@ -8,6 +8,7 @@ canonical_authorities:
     - https://trunkbaseddevelopment.com/
     - https://eslint.org/docs/latest/use/configure/configuration-files
     - https://prettier.io/
+    - https://docs.fallow.tools/
     - https://www.npmjs.com/package/svelte-check
     - https://vitest.dev/
     - https://danger.systems/js/
@@ -241,6 +242,32 @@ Each section: (a) what it is (b) official docs (c) Argos use today (d) industry 
   (e) None.
   (f) **STAY ON HUSKY**. lefthook would shave ~50 ms; simple-git-hooks would force config-in-package.json which conflicts with mem-guard wrapping; pre-commit is the wrong runtime model.
 
+### 3.17 Fallow (code-intelligence — cyclomatic + cognitive + dupes + dead-code + CRAP)
+
+(a) Rust-based code-intelligence CLI (Oxc parser, syntactic-only). Runs five detector families in one binary: `health` (cyclomatic + cognitive + CRAP), `dupes` (semantic clone detection), `dead-code` (cross-module unused exports/files/types/class-members/deps + circular deps), and `audit` (combined diff-aware runner). Aarch64 prebuilt confirmed working on Jetson AGX Orin.
+(b) https://docs.fallow.tools/ ; https://github.com/fallow-rs/fallow (MIT, v2.63.0 as of install).
+(c) Installed via `npm install --save-dev --save-exact fallow` (no caret, exact pin enforced by `audit-pipeline-config.sh` check 7). Config lives in `.fallowrc.json` at repo root with `health.maxCyclomatic=5`, `health.maxCognitive=5`, `health.maxCrap=30`, `duplicates.mode=semantic`. Day-1 baseline files (`.fallow-{deadcode,health,dupes}-baseline.json`) committed to repo root grandfather pre-existing findings (244 complexity, 129 dupe groups, 223 dead exports as of 2026-05-04).
+(d) Three fire-points:
+
+- **Pre-commit** — `.husky/pre-commit` step 1c runs `fallow audit --quiet --format compact`. Diff-aware (auto-detected base branch). `SKIP_FALLOW=1` bypass.
+- **Pre-push** — `.husky/pre-push` step 4 runs the same audit at branch level. Same bypass env var.
+- **CI** — `.github/workflows/fallow.yml` runs `fallow audit --format sarif` on every PR + push, uploads SARIF to GitHub Code Scanning under category `fallow`. **Marked `continue-on-error: true` during 14-day parity period (2026-05-04 → 2026-05-18); cutover PR removes the flag.**
+
+Plus a per-developer agent-level gate: `package.json` `prepare` script runs `fallow hooks install --target agent --agent claude --quiet` on every `npm install`. This writes `.claude/settings.json` + `.claude/hooks/fallow-gate.sh` (gitignored). The installer is **merge-aware** — preserves any existing PreToolUse Bash handlers (verified against main checkout's 4 existing handlers via `--dry-run`).
+
+(e) Known gaps and risks:
+
+- **No LOC/file or LOC/fn threshold.** Fallow's `health` does NOT enforce line counts (verified against `fallow config-schema` 2026-05-04). LOC enforcement provided by ESLint's built-in `max-lines` + `max-lines-per-function` rules — added to `config/eslint.config.js` in the same install PR.
+- **`.svelte` dead-code is excluded** via `ignorePatterns` because fallow's ROADMAP acknowledges `export let` props are indistinguishable from utility exports without Svelte compiler semantics.
+- **`static/**` excluded** because Argos serves vendored WebTAK minified JS as a static asset — not first-party source. Without this exclusion, a single anonymous WebTAK function (cyclomatic=330, 291,033 lines) dominates findings.
+- **Boundary-violation detector OFF** because sentrux + `eslint-plugin-boundaries` already cover this (triple-overlap avoided per `feedback_mechanical_enforcement_over_audit.md`).
+- **Test-pattern noise**: arrange-act symmetry in vitest tests fires the semantic-dupes detector. Tune via `duplicates.ignore` if PRs touching tests get noisy.
+
+(f) **PARITY** through 2026-05-18, then **CUTOVER** in a separate PR:
+
+1. **Phase 2 (days 2-14)** — fallow runs report-only; ESLint `complexity` + `eslint-plugin-sonarjs/cognitive-complexity` continue to enforce. PR description tracks any divergence between the two engines.
+2. **Phase 3 cutover (day 15)** — drop ESLint `complexity` rule + remove `eslint-plugin-sonarjs` from `package.json`. Remove `continue-on-error` from `fallow.yml`. Promote fallow gate to required check on `main` branch protection. Cutover PR notes the parity-period results in its description.
+
 ---
 
 ## 4. Edge Case Handling
@@ -304,6 +331,13 @@ Each gate has exactly one canonical owner. Redundant copies are listed for remov
 | PR shape (size, sprawl)   | `danger.yml`                  | —                                    | none                                                  |
 | Multi-linter (yaml/sh/md) | `trunk.yml` + `pre-commit`    | `pre-commit` (`trunk check --index`) | none                                                  |
 | Architecture quality      | sentrux per-PR session        | —                                    | none                                                  |
+| Cyclomatic complexity     | `fallow.yml` (parity → cutover 2026-05-18) | `pre-commit` + `pre-push` (fallow audit) | `eslint complexity` rule (drop on cutover)            |
+| Cognitive complexity      | `fallow.yml` (parity → cutover 2026-05-18) | `pre-commit` + `pre-push` (fallow audit) | `eslint-plugin-sonarjs/cognitive-complexity` (drop on cutover) |
+| LOC/file (≤300)           | `lint.yml` (eslint `max-lines`) | `pre-push`                         | none                                                  |
+| LOC/fn (≤50)              | `lint.yml` (eslint `max-lines-per-function`) | `pre-push`                | none                                                  |
+| Code duplication (semantic)| `fallow.yml`                 | `pre-commit` + `pre-push` (fallow audit) | none (no prior tool)                                |
+| Cross-module dead code    | `fallow.yml`                  | `pre-commit` + `pre-push` (fallow audit) | none (no prior tool — eslint `no-unused-vars` is fn-scope only) |
+| CRAP score (≥30)          | `fallow.yml`                  | `pre-commit` + `pre-push` (fallow audit) | none (no prior tool)                                  |
 | AI code review            | CodeRabbit                    | —                                    | none                                                  |
 | Tag release               | `release.yml` (on `v*.*.*`)   | —                                    | none                                                  |
 | Auto-version + changelog  | `semantic-release.yml` (main) | —                                    | none                                                  |
@@ -324,6 +358,9 @@ Ordered by leverage. PRs already in flight noted.
 8. **NEW** — Bump `actions/setup-node@v4` → `@v5` via Renovate.
 9. **NEW** — Add `scripts/dev/warm-caches.sh` for fresh-worktree onboarding.
 10. **OPTIONAL** — Add `sentrux.yml` once sentrux ships a stable CI mode.
+11. **DONE 2026-05-04** — Install fallow.tools (`fallow.yml` + husky steps + `.fallowrc.json` + 3 baseline files + `prepare` script auto-installs Claude PreToolUse gate). 14-day parity period through 2026-05-18.
+12. **PHASE 3 CUTOVER 2026-05-18** — Drop ESLint `complexity` rule + `eslint-plugin-sonarjs`; remove `continue-on-error` from `fallow.yml`; promote fallow gate to required check on `main`.
+13. **POST-CLEANUP** — Promote ESLint `max-lines` + `max-lines-per-function` from `warn` to `error`. Day-1 violator count: 158 (no ESLint baseline-grandfather mechanism, unlike fallow). Cleanup PRs over time will retire violators; promote when count reaches zero.
 
 ---
 

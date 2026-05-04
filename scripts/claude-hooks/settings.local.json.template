@@ -1,6 +1,19 @@
 {
   "permissions": {
-    "allow": []
+    "allow": [
+      "Bash(npx fallow:*)",
+      "Bash(npx --no-install fallow:*)",
+      "Bash(./node_modules/.bin/fallow:*)",
+      "Bash(fallow audit:*)",
+      "Bash(fallow health:*)",
+      "Bash(fallow dupes:*)",
+      "Bash(fallow dead-code:*)",
+      "Bash(fallow init:*)",
+      "Bash(fallow config:*)",
+      "Bash(fallow hooks:*)",
+      "Bash(fallow setup-hooks:*)",
+      "Bash(fallow fix --dry-run:*)"
+    ]
   },
   "hooks": {
     "SessionStart": [
