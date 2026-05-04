@@ -56,23 +56,37 @@ const GENERATED_GLOBS = [
 	'.fallow-*-baseline.json',
 	'**/.fallow-*-baseline.json'
 ];
+/**
+ * Human-authored LOC = total LOC minus everything matched by GENERATED_GLOBS.
+ * Used by both the size-cap gate and the micro-PR carve-out.
+ */
+async function computeHumanAuthoredLOC() {
+	const total = await danger.git.linesOfCode();
+	let generated = 0;
+	for (const pat of GENERATED_GLOBS) {
+		generated += await danger.git.linesOfCode(pat);
+	}
+	return { lineCount: Math.max(0, total - generated), generated };
+}
+
+function reportPrSize(lineCount, generated) {
+	if (lineCount > PR_SIZE_HARD) {
+		fail(
+			`PR is ${lineCount} human-authored lines (> ${PR_SIZE_HARD}). Split into smaller PRs — reviewers cannot meaningfully review at this scale. Generated files excluded: ${generated} lines.`
+		);
+		return;
+	}
+	if (lineCount > PR_SIZE_SOFT) {
+		warn(
+			`PR is ${lineCount} human-authored lines (> ${PR_SIZE_SOFT}). Consider splitting for easier review.`
+		);
+	}
+}
+
 schedule(async () => {
 	try {
-		const total = await danger.git.linesOfCode();
-		let generated = 0;
-		for (const pat of GENERATED_GLOBS) {
-			generated += await danger.git.linesOfCode(pat);
-		}
-		const lineCount = Math.max(0, total - generated);
-		if (lineCount > PR_SIZE_HARD) {
-			fail(
-				`PR is ${lineCount} human-authored lines (> ${PR_SIZE_HARD}). Split into smaller PRs — reviewers cannot meaningfully review at this scale. Generated files excluded: ${generated} lines.`
-			);
-		} else if (lineCount > PR_SIZE_SOFT) {
-			warn(
-				`PR is ${lineCount} human-authored lines (> ${PR_SIZE_SOFT}). Consider splitting for easier review.`
-			);
-		}
+		const { lineCount, generated } = await computeHumanAuthoredLOC();
+		reportPrSize(lineCount, generated);
 	} catch (err) {
 		// Git metadata occasionally missing in CI (e.g. shallow clone edge cases).
 		// Fail loud with the error so the operator can retry or widen fetch-depth
@@ -140,15 +154,17 @@ const TYPE_ONLY_LINE_PATTERNS = [
 	/^[+-]\s*\*/
 ];
 
-const serverCodeChanged = changed.some(
-	(f) =>
-		f.startsWith('src/lib/server/') &&
-		(f.endsWith('.ts') || f.endsWith('.js')) &&
-		!f.endsWith('.test.ts') &&
-		!f.endsWith('.test.js') &&
-		!f.endsWith('.spec.ts') &&
-		!f.endsWith('.spec.js')
-);
+/**
+ * True for non-test source files under src/lib/server/.
+ * Test files under src/lib/server/** are matched by the testChanged predicate
+ * below, not by this one.
+ */
+function isServerSourceFile(path) {
+	if (!path.startsWith('src/lib/server/')) return false;
+	if (!/\.(ts|js)$/.test(path)) return false;
+	return !/\.(test|spec)\.(ts|js)$/.test(path);
+}
+const serverCodeChanged = changed.some(isServerSourceFile);
 // Only match server-related test locations. Prior regex accepted any src/
 // test (e.g. src/lib/components/**/*.test.ts), letting a UI-only test satisfy
 // a server-code-changed gate. Narrow to server inline tests (src/lib/server)
@@ -158,65 +174,87 @@ const testChanged = changed.some((f) =>
 	/^(src\/lib\/server|tests)\/.*\.(test|spec)\.(ts|js)$/.test(f)
 );
 
-schedule(async () => {
-	if (!serverCodeChanged || testChanged) {
-		return; // gate doesn't fire OR is already satisfied
+/**
+ * True if no new .ts/.js source files were created (test/spec/.d files
+ * are allowed). Part of the micro-PR type-only carve-out: even a 10-line
+ * PR that introduces a brand-new server module needs its own test, no
+ * matter what the diff content looks like.
+ */
+function noNewSourceFilesCreated() {
+	return (danger.git.created_files || []).every(
+		(f) => !/\.(ts|js)$/.test(f) || /\.(test|spec|d)\./.test(f)
+	);
+}
+
+/**
+ * True if every meaningful added/removed line in a TextDiff matches one of
+ * TYPE_ONLY_LINE_PATTERNS (blank, type import/export, comment).
+ */
+function isDiffTypeOnly(textDiff) {
+	const meaningful = textDiff.diff
+		.split('\n')
+		.filter((l) => /^[+-]/.test(l) && !/^[+-]{3}/.test(l));
+	return meaningful.every((l) => TYPE_ONLY_LINE_PATTERNS.some((re) => re.test(l)));
+}
+
+/** Single-file wrapper around isDiffTypeOnly that fetches the TextDiff. */
+async function fileDiffIsTypeOnly(file) {
+	const td = await danger.git.diffForFile(file);
+	return Boolean(td) && isDiffTypeOnly(td);
+}
+
+/**
+ * True if every changed file under src/lib/server/ has a type-only diff.
+ * Returns false on the first non-type-only file or unavailable diff.
+ */
+async function allServerFilesTypeOnly(serverFiles) {
+	if (serverFiles.length === 0) return false;
+	for (const f of serverFiles) {
+		if (!(await fileDiffIsTypeOnly(f))) return false;
 	}
+	return true;
+}
 
-	// Try the carve-out before the fail(). All gates are conservative —
-	// any failure to evaluate falls through to the original fail().
+/**
+ * Evaluates the micro-PR type-only carve-out. Returns true if the gate
+ * should be skipped (and emits the warn() audit trail), false otherwise.
+ * Conservative — any error or non-match returns false so the caller
+ * falls through to fail().
+ */
+async function shouldSkipTestsGate() {
+	const { lineCount } = await computeHumanAuthoredLOC();
+	if (lineCount > MICRO_LOC_CAP) return false;
+	if (!noNewSourceFilesCreated()) return false;
+	const serverFiles = changed.filter((f) => f.startsWith('src/lib/server/'));
+	if (!(await allServerFilesTypeOnly(serverFiles))) return false;
+	warn(
+		`Tests-required gate skipped: PR is ${lineCount} human-authored line(s) and contains only type-import/export edits across ${serverFiles.length} server file(s). Auditable via diff. (Carve-out rule: dangerfile.js, see TYPE_ONLY_LINE_PATTERNS.)`
+	);
+	return true;
+}
+
+function testsGateInactive() {
+	// Gate doesn't fire (no server code) OR is already satisfied (test delta present).
+	return !serverCodeChanged || testChanged;
+}
+
+async function tryCarveOutOrFallthrough() {
 	try {
-		const total = await danger.git.linesOfCode();
-		let generated = 0;
-		for (const pat of GENERATED_GLOBS) {
-			generated += await danger.git.linesOfCode(pat);
-		}
-		const lineCount = Math.max(0, total - generated);
-
-		if (lineCount <= MICRO_LOC_CAP) {
-			const noNewSourceFiles = (danger.git.created_files || []).every(
-				(f) => !/\.(ts|js)$/.test(f) || /\.(test|spec|d)\./.test(f)
-			);
-
-			if (noNewSourceFiles) {
-				const serverFiles = changed.filter((f) => f.startsWith('src/lib/server/'));
-				let allTypeOnly = serverFiles.length > 0;
-
-				for (const f of serverFiles) {
-					const td = await danger.git.diffForFile(f);
-					if (!td) {
-						allTypeOnly = false;
-						break;
-					}
-					const meaningful = td.diff
-						.split('\n')
-						.filter((l) => /^[+-]/.test(l) && !/^[+-]{3}/.test(l));
-					const fileTypeOnly = meaningful.every((l) =>
-						TYPE_ONLY_LINE_PATTERNS.some((re) => re.test(l))
-					);
-					if (!fileTypeOnly) {
-						allTypeOnly = false;
-						break;
-					}
-				}
-
-				if (allTypeOnly) {
-					warn(
-						`Tests-required gate skipped: PR is ${lineCount} human-authored line(s) and contains only type-import/export edits across ${serverFiles.length} server file(s). Auditable via diff. (Carve-out rule: dangerfile.js, see TYPE_ONLY_LINE_PATTERNS.)`
-					);
-					return;
-				}
-			}
-		}
+		return await shouldSkipTestsGate();
 	} catch (err) {
 		// Couldn't evaluate carve-out (e.g. shallow clone, missing git
-		// metadata). Fall through to fail() below — fail-closed bias.
+		// metadata). Fall through to fail() — fail-closed bias.
 		const msg = err instanceof Error ? err.message : String(err);
 		warn(
 			`Tests-required carve-out skipped due to git error: ${msg}. Falling back to strict gate.`
 		);
+		return false;
 	}
+}
 
+schedule(async () => {
+	if (testsGateInactive()) return;
+	if (await tryCarveOutOrFallthrough()) return;
 	fail(
 		'Server code under src/lib/server/ changed but no test files were added or modified. Add unit or integration tests.'
 	);

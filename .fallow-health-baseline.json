@@ -1,36 +1,8 @@
 {
 	"finding_counts": {
-		"dangerfile.js": {
-			"complexity_critical": {
-				"count": 1
-			},
-			"complexity_high": {
-				"count": 1
-			},
-			"complexity_moderate": {
-				"count": 1
-			},
-			"crap_critical": {
-				"count": 1
-			},
-			"crap_high": {
-				"count": 1
-			},
-			"crap_moderate": {
-				"count": 1
-			}
-		},
 		"scripts/ops/mcp-config.ts": {
 			"crap_moderate": {
 				"count": 1
-			}
-		},
-		"scripts/reports/generate-ftirwin-sitrep.ts": {
-			"complexity_moderate": {
-				"count": 2
-			},
-			"crap_moderate": {
-				"count": 5
 			}
 		},
 		"src/lib/components/chassis/MissionStrip.svelte": {
@@ -123,17 +95,7 @@
 				"count": 2
 			}
 		},
-		"src/lib/components/dashboard/panels/DeviceDrillPanel.svelte": {
-			"crap_moderate": {
-				"count": 1
-			}
-		},
 		"src/lib/components/dashboard/panels/DevicesPanel.svelte": {
-			"crap_moderate": {
-				"count": 1
-			}
-		},
-		"src/lib/components/dashboard/panels/MissionHeader.svelte": {
 			"crap_moderate": {
 				"count": 1
 			}
@@ -243,16 +205,6 @@
 				"count": 1
 			}
 		},
-		"src/lib/kismet/stores.ts": {
-			"crap_moderate": {
-				"count": 2
-			}
-		},
-		"src/lib/kismet/websocket-handlers.ts": {
-			"crap_moderate": {
-				"count": 1
-			}
-		},
 		"src/lib/server/agent/runtime.ts": {
 			"complexity_moderate": {
 				"count": 1
@@ -264,24 +216,6 @@
 		"src/lib/server/agent/tools.ts": {
 			"crap_moderate": {
 				"count": 4
-			}
-		},
-		"src/lib/server/gsm/l3-decoder.ts": {
-			"crap_moderate": {
-				"count": 1
-			}
-		},
-		"src/lib/server/gsm/l3-message-decoders.ts": {
-			"crap_moderate": {
-				"count": 2
-			}
-		},
-		"src/lib/server/kismet/service-manager.ts": {
-			"complexity_moderate": {
-				"count": 1
-			},
-			"crap_moderate": {
-				"count": 3
 			}
 		},
 		"src/lib/server/mcp/dynamic-server-tools-system.ts": {
@@ -447,16 +381,6 @@
 				"count": 1
 			}
 		},
-		"src/lib/server/websocket-handlers.ts": {
-			"crap_moderate": {
-				"count": 3
-			}
-		},
-		"src/lib/server/websocket-server.ts": {
-			"crap_moderate": {
-				"count": 3
-			}
-		},
 		"src/lib/state/chassis.svelte.ts": {
 			"crap_moderate": {
 				"count": 1
@@ -488,11 +412,6 @@
 			}
 		},
 		"src/lib/stores/bluedragon/bluetooth-store.ts": {
-			"crap_moderate": {
-				"count": 1
-			}
-		},
-		"src/lib/stores/connection.ts": {
 			"crap_moderate": {
 				"count": 1
 			}
@@ -540,16 +459,6 @@
 		"src/lib/tactical-map/kismet-service.ts": {
 			"crap_moderate": {
 				"count": 5
-			}
-		},
-		"src/lib/tactical-map/map-service.ts": {
-			"crap_moderate": {
-				"count": 1
-			}
-		},
-		"src/lib/tactical-map/utils/signal-aggregator.ts": {
-			"crap_moderate": {
-				"count": 2
 			}
 		},
 		"src/lib/utils/airports.ts": {
@@ -783,38 +692,15 @@
 	},
 	"runtime_coverage_findings": [],
 	"target_keys": [
-		"src/lib/utils/bearing-rays.ts:dead code",
-		"src/lib/schemas/spectrum.ts:dead code",
-		"src/lib/stores/dashboard/tools-store.ts:dead code",
-		"src/lib/server/websocket-server.ts:dead code",
 		"src/lib/websocket/base.ts:dead code",
 		"src/lib/stores/dashboard/agent-context-store.ts:dead code",
-		"src/lib/kismet/websocket-handlers.ts:dead code",
-		"src/lib/stores/tactical-map/hackrf-store.ts:dead code",
-		"src/lib/stores/dashboard/recon-store.ts:high impact",
-		"src/lib/stores/tactical-map/map-store.ts:dead code",
-		"src/lib/server/gsm/l3-message-decoders.ts:dead code",
 		"src/lib/server/services/gps/gps-data-parser.ts:dead code",
-		"src/lib/server/kismet/kismet-proxy-transform.ts:dead code",
-		"src/lib/server/hardware/detection/hardware-detector.ts:dead code",
-		"src/lib/stores/connection.ts:dead code",
-		"src/lib/components/dashboard/map/map-gps-derived.svelte.ts:dead code",
-		"src/lib/server/hardware/resource-refresh.ts:dead code",
-		"src/lib/utils/css-loader.ts:dead code",
 		"src/lib/server/terminal/session.ts:dead code",
-		"src/lib/server/mcp/config-generator.ts:dead code",
-		"src/lib/stores/tactical-map/kismet-store.ts:dead code",
-		"src/lib/stores/rf-visualization.svelte.ts:dead code",
-		"src/lib/hackrf/sweep-manager/buffer-parser.ts:dead code",
-		"src/lib/server/hardware/resource-ownership.ts:dead code",
-		"src/lib/server/kismet/kismet-device-transform.ts:dead code",
-		"src/lib/utils/validation-error.ts:dead code",
+		"src/lib/stores/tactical-map/hackrf-store.ts:dead code",
 		"src/lib/components/dashboard/panels/devices/device-filters.ts:untested risk",
 		"src/lib/server/services/reports/peak-hold-font.ts:dead code",
 		"src/lib/server/services/bluedragon/pcap-stream-parser.ts:high impact",
-		"src/lib/utils/airports.ts:dead code",
 		"src/lib/components/dashboard/panels/devices/device-formatters.ts:high impact",
-		"src/lib/schemas/api.ts:dead code",
 		"src/lib/state/kismet.svelte.ts:untested risk"
 	]
 }
