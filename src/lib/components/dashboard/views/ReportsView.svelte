@@ -17,6 +17,8 @@
 	import Modal from '$lib/components/chassis/forms/Modal.svelte';
 	import Search from '$lib/components/chassis/forms/Search.svelte';
 	import Select from '$lib/components/chassis/forms/Select.svelte';
+	import SkeletonText from '$lib/components/chassis/forms/SkeletonText.svelte';
+	import PanelStatus from '$lib/components/chassis/PanelStatus.svelte';
 	import PanelEmptyState from '$lib/components/ui/PanelEmptyState.svelte';
 	import { persistedWritable } from '$lib/stores/persisted-writable';
 
@@ -148,9 +150,10 @@
 	}
 
 	async function fetchReports(): Promise<void> {
+		loading = true;
+		error = null;
 		try {
 			reports = await loadReportsFromApi();
-			error = null;
 		} catch (e) {
 			error = toMessage(e);
 		} finally {
@@ -361,19 +364,17 @@
 	<div class="grid-wrap" class:collapsed={fullScreen && selectedReportId}>
 		{#if loading}
 			<div class="grid-skeleton" aria-busy="true" aria-label="Loading reports">
-				<div class="skeleton-row"></div>
-				<div class="skeleton-row"></div>
-				<div class="skeleton-row"></div>
+				<SkeletonText paragraph lines={3} />
 			</div>
 		{:else if error}
-			<div class="state-card error-card" role="alert">
-				<p class="state-title">ERROR LOADING REPORTS</p>
-				<p class="state-detail">{error}</p>
-				<button class="btn" type="button" onclick={() => void fetchReports()}>
-					<RefreshCw size={12} />
-					<span>RETRY</span>
-				</button>
-			</div>
+			<PanelStatus state="error" title="ERROR LOADING REPORTS" detail={error}>
+				{#snippet action()}
+					<button class="btn" type="button" onclick={() => void fetchReports()}>
+						<RefreshCw size={12} />
+						<span>RETRY</span>
+					</button>
+				{/snippet}
+			</PanelStatus>
 		{:else if filteredReports.length === 0}
 			<PanelEmptyState
 				title="No reports"
@@ -843,61 +844,6 @@
 		display: flex;
 		flex-direction: column;
 		gap: 8px;
-	}
-
-	.skeleton-row {
-		height: 28px;
-		background: var(--card);
-		border: 1px solid var(--border);
-		animation: pulse 1.6s ease-in-out infinite;
-	}
-
-	@keyframes pulse {
-		0%,
-		100% {
-			opacity: 0.4;
-		}
-		50% {
-			opacity: 0.8;
-		}
-	}
-
-	.state-card {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		gap: 8px;
-		padding: 32px;
-		margin: 24px;
-		border: 1px solid var(--border);
-		background: var(--card);
-	}
-
-	.error-card {
-		border-color: #ff5c33;
-	}
-
-	.state-title {
-		font-family: 'Fira Code', monospace;
-		font-size: 9px;
-		font-weight: 600;
-		letter-spacing: 1.2px;
-		text-transform: uppercase;
-		color: var(--foreground);
-		margin: 0;
-	}
-
-	.error-card .state-title {
-		color: #ff5c33;
-	}
-
-	.state-detail {
-		font-family: 'Fira Code', monospace;
-		font-size: 10px;
-		color: var(--muted-foreground);
-		margin: 0;
-		text-align: center;
 	}
 
 	/* Preview */

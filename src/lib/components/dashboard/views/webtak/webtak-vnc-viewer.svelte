@@ -10,6 +10,8 @@
 
 	import { onDestroy } from 'svelte';
 
+	import PanelStatus from '$lib/components/chassis/PanelStatus.svelte';
+
 	interface Props {
 		/** Fully-qualified WebSocket URL, e.g. `ws://host:6080/websockify`. */
 		wsUrl: string;
@@ -136,25 +138,27 @@
 
 	{#if status === 'connecting'}
 		<div class="overlay">
-			<div class="overlay-card">
-				<div class="spinner" aria-hidden="true"></div>
-				<p class="overlay-title">STARTING BROWSER SESSION</p>
-				<p class="overlay-desc">Connecting to remote Chromium via noVNC…</p>
-			</div>
+			<PanelStatus
+				state="loading"
+				title="STARTING BROWSER SESSION"
+				detail="Connecting to remote Chromium via noVNC…"
+			/>
 		</div>
 	{:else if status === 'error'}
 		<div class="overlay">
-			<div class="overlay-card error">
-				<p class="overlay-title">CONNECTION FAILED</p>
-				<p class="overlay-desc">{errorMsg || 'Unknown VNC error'}</p>
-			</div>
+			<PanelStatus
+				state="error"
+				title="CONNECTION FAILED"
+				detail={errorMsg || 'Unknown VNC error'}
+			/>
 		</div>
 	{:else if status === 'disconnected'}
 		<div class="overlay">
-			<div class="overlay-card">
-				<p class="overlay-title">DISCONNECTED</p>
-				<p class="overlay-desc">The remote browser session ended.</p>
-			</div>
+			<PanelStatus
+				state="disconnected"
+				title="DISCONNECTED"
+				detail="The remote browser session ended."
+			/>
 		</div>
 	{/if}
 
@@ -188,55 +192,6 @@
 		justify-content: center;
 		background: rgba(0, 0, 0, 0.7);
 		backdrop-filter: blur(4px);
-	}
-
-	.overlay-card {
-		background: var(--card);
-		border: 1px solid var(--border);
-		padding: 24px 32px;
-		max-width: 420px;
-		text-align: center;
-		font-family: 'Fira Code', monospace;
-	}
-
-	.overlay-card.error {
-		border-color: var(--destructive);
-	}
-
-	.overlay-title {
-		font-size: 11px;
-		font-weight: 600;
-		letter-spacing: 1.2px;
-		color: var(--primary);
-		margin: 0 0 8px;
-		text-transform: uppercase;
-	}
-
-	.overlay-card.error .overlay-title {
-		color: var(--destructive);
-	}
-
-	.overlay-desc {
-		font-size: 10px;
-		color: var(--text-secondary);
-		margin: 0;
-		line-height: 1.5;
-	}
-
-	.spinner {
-		width: 28px;
-		height: 28px;
-		margin: 0 auto 16px;
-		border: 2px solid var(--border);
-		border-top-color: var(--primary);
-		border-radius: 50%;
-		animation: spin 0.9s linear infinite;
-	}
-
-	@keyframes spin {
-		to {
-			transform: rotate(360deg);
-		}
 	}
 
 	.status-pill {

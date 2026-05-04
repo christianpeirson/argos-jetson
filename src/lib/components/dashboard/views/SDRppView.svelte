@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 
+	import PanelStatus from '$lib/components/chassis/PanelStatus.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { activeView } from '$lib/stores/dashboard/dashboard-store';
 
@@ -111,80 +112,23 @@
 
 <ToolViewWrapper title="SDR++ Spectrum Analyzer" onBack={goBack} actions={stopAction}>
 	{#if serviceStatus === 'checking'}
-		<div class="sdrpp-status">
-			<div class="spinner" aria-hidden="true"></div>
-			<p class="status-label">CONNECTING...</p>
-		</div>
+		<PanelStatus state="loading" title="CONNECTING..." />
 	{:else if serviceStatus === 'stopped'}
-		<div class="sdrpp-status">
-			<p class="status-label">SDR++ UNAVAILABLE</p>
-			<p class="status-detail">Start SDR++ from the tool card first.</p>
-		</div>
+		<PanelStatus
+			state="disabled"
+			title="SDR++ UNAVAILABLE"
+			detail="Start SDR++ from the tool card first."
+		/>
 	{:else if serviceStatus === 'error'}
-		<div class="sdrpp-status">
-			<p class="status-label error">CONNECTION FAILED</p>
-			<p class="status-detail">{errorMsg || 'Unknown error'}</p>
-			<button class="retry-btn" onclick={reconnect}>RETRY</button>
-		</div>
+		<PanelStatus
+			state="error"
+			title="CONNECTION FAILED"
+			detail={errorMsg || 'Unknown error'}
+			onRetry={reconnect}
+		/>
 	{:else}
 		{#key vncKey}
 			<WebtakVncViewer {wsUrl} onDisconnect={handleDisconnect} resizeSession={true} />
 		{/key}
 	{/if}
 </ToolViewWrapper>
-
-<style>
-	.sdrpp-status {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		height: 100%;
-		gap: 0.5rem;
-	}
-	.status-label {
-		font-family: 'Fira Code', monospace;
-		font-size: 12px;
-		color: var(--muted-foreground, #d4a054);
-		text-transform: uppercase;
-		letter-spacing: 1.2px;
-	}
-	.status-label.error {
-		color: var(--destructive, #ff5c33);
-	}
-	.status-detail {
-		font-family: 'Fira Code', monospace;
-		font-size: 11px;
-		color: var(--muted-foreground, #888);
-	}
-	.retry-btn {
-		margin-top: 0.5rem;
-		padding: 0.35rem 1rem;
-		font-family: 'Fira Code', monospace;
-		font-size: 11px;
-		text-transform: uppercase;
-		letter-spacing: 1px;
-		color: var(--primary, #a8b8e0);
-		border: 1px solid var(--border, #2e2e2e);
-		border-radius: 4px;
-		background: var(--card, #1a1a1a);
-		cursor: pointer;
-		transition: border-color 0.15s;
-	}
-	.retry-btn:hover {
-		border-color: var(--primary, #a8b8e0);
-	}
-	.spinner {
-		width: 24px;
-		height: 24px;
-		border: 2px solid var(--border, #2e2e2e);
-		border-top-color: var(--primary, #a8b8e0);
-		border-radius: 50%;
-		animation: spin 0.8s linear infinite;
-	}
-	@keyframes spin {
-		to {
-			transform: rotate(360deg);
-		}
-	}
-</style>

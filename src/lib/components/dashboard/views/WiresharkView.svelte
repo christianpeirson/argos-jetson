@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 
+	import PanelStatus from '$lib/components/chassis/PanelStatus.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { activeView } from '$lib/stores/dashboard/dashboard-store';
 
@@ -159,31 +160,33 @@
 			<p class="status-detail">Initializing capture session…</p>
 		</div>
 	{:else if serviceStatus === 'checking' || serviceStatus === 'starting'}
-		<div class="wireshark-status">
-			<div class="spinner" aria-hidden="true"></div>
-			<p class="status-label">
-				{serviceStatus === 'starting' ? 'LAUNCHING WIRESHARK…' : 'CONNECTING…'}
-			</p>
-			<p class="status-detail">Spawning Xtigervnc + Wireshark Qt frontend + websockify</p>
-		</div>
+		<PanelStatus
+			state="loading"
+			title={serviceStatus === 'starting' ? 'LAUNCHING WIRESHARK…' : 'CONNECTING…'}
+			detail="Spawning Xtigervnc + Wireshark Qt frontend + websockify"
+		/>
 	{:else if serviceStatus === 'stopped'}
-		<div class="wireshark-status">
-			<p class="status-label">WIRESHARK UNAVAILABLE</p>
-			<p class="status-detail">{errorMsg || 'Service not running'}</p>
-			<button class="retry-btn" onclick={reconnect}>START CAPTURE</button>
-		</div>
+		<PanelStatus
+			state="disconnected"
+			title="WIRESHARK UNAVAILABLE"
+			detail={errorMsg || 'Service not running'}
+			onRetry={reconnect}
+			retryLabel="START CAPTURE"
+		/>
 	{:else if serviceStatus === 'disabled'}
-		<div class="wireshark-status">
-			<p class="status-label error">WIRESHARK DISABLED</p>
-			<p class="status-detail">{errorMsg || 'Preflight failed'}</p>
-			<p class="status-hint">Resolve the issue above, then return to this view.</p>
-		</div>
+		<PanelStatus
+			state="disabled"
+			title="WIRESHARK DISABLED"
+			detail={errorMsg || 'Preflight failed'}
+		/>
+		<p class="status-hint">Resolve the issue above, then return to this view.</p>
 	{:else if serviceStatus === 'error'}
-		<div class="wireshark-status">
-			<p class="status-label error">CONNECTION FAILED</p>
-			<p class="status-detail">{errorMsg || 'Unknown error'}</p>
-			<button class="retry-btn" onclick={reconnect}>RETRY</button>
-		</div>
+		<PanelStatus
+			state="error"
+			title="CONNECTION FAILED"
+			detail={errorMsg || 'Unknown error'}
+			onRetry={reconnect}
+		/>
 	{:else}
 		{#key vncKey}
 			<WebtakVncViewer {wsUrl} onDisconnect={handleDisconnect} resizeSession={true} />
@@ -213,9 +216,6 @@
 		text-transform: uppercase;
 		letter-spacing: 1.2px;
 	}
-	.status-label.error {
-		color: var(--destructive);
-	}
 	.status-detail {
 		font-family: 'Fira Code', monospace;
 		font-size: 11px;
@@ -244,35 +244,5 @@
 	}
 	.capture-ribbon code {
 		color: var(--primary);
-	}
-	.retry-btn {
-		margin-top: 0.5rem;
-		padding: 0.35rem 1rem;
-		font-family: 'Fira Code', monospace;
-		font-size: 11px;
-		text-transform: uppercase;
-		letter-spacing: 1px;
-		color: var(--primary);
-		border: 1px solid var(--border);
-		border-radius: 4px;
-		background: var(--card);
-		cursor: pointer;
-		transition: border-color 0.15s;
-	}
-	.retry-btn:hover {
-		border-color: var(--primary);
-	}
-	.spinner {
-		width: 24px;
-		height: 24px;
-		border: 2px solid var(--border);
-		border-top-color: var(--primary);
-		border-radius: 50%;
-		animation: spin 0.8s linear infinite;
-	}
-	@keyframes spin {
-		to {
-			transform: rotate(360deg);
-		}
 	}
 </style>
