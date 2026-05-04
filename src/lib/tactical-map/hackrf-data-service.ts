@@ -70,6 +70,7 @@ export class HackRFDataService {
 		});
 	}
 
+	// fallow-ignore-next-line complexity
 	private applyStatusUpdate(status: SweepStatusEvent): void {
 		if (typeof status.currentFrequency === 'number' && status.currentFrequency > 0) {
 			// SSE sends frequency in Hz; hackrfStore.targetFrequency is in MHz

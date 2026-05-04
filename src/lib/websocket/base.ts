@@ -86,6 +86,7 @@ export abstract class BaseWebSocket {
 		this.reconnectState.currentReconnectInterval = this.config.reconnectInterval;
 	}
 
+	// fallow-ignore-next-line complexity
 	send(data: unknown): boolean {
 		if (this.ws?.readyState !== WebSocket.OPEN) {
 			logger.warn('Cannot send message, WebSocket is not connected', {
@@ -196,6 +197,7 @@ export abstract class BaseWebSocket {
 		}
 	}
 
+	// fallow-ignore-next-line complexity
 	protected handleMessage(data: unknown): void {
 		if (data && typeof data === 'object' && 'type' in data) {
 			// @constitutional-exemption Article-II-2.1 issue:#14 — WebSocket message data type narrowing — browser API returns union type

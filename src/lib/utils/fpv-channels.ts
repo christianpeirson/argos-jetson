@@ -26,6 +26,7 @@ function findBandChannel(mhz: number): { band: string; channel: number } | null 
 	return null;
 }
 
+// fallow-ignore-next-line complexity
 export function hzToChannel(hz: number | null): FpvChannelInfo {
 	if (hz === null || !Number.isFinite(hz) || hz <= 0) {
 		return { mhz: 0, band: null, channel: null, label: '—' };

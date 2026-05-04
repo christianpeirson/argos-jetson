@@ -51,6 +51,7 @@ function extractEventAndPoint(xml: string): { event: Element; point: Element } |
  * Parses a CoT XML string into a GeoJSON Feature with SIDC and properties.
  * Browser-only (uses DOMParser).
  */
+// fallow-ignore-next-line complexity
 export function parseCotToFeature(xml: string): Feature | null {
 	if (typeof DOMParser === 'undefined') return null;
 	try {

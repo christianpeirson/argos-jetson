@@ -1,61 +1,4 @@
 {
-	"finding_counts": {
-		"scripts/ops/mcp-config.ts": {
-			"crap_moderate": {
-				"count": 1
-			}
-		},
-		"src/lib/tactical-map/hackrf-data-service.ts": {
-			"crap_moderate": {
-				"count": 1
-			}
-		},
-		"src/lib/tactical-map/kismet-service.ts": {
-			"crap_moderate": {
-				"count": 5
-			}
-		},
-		"src/lib/utils/airports.ts": {
-			"crap_moderate": {
-				"count": 2
-			}
-		},
-		"src/lib/utils/bearing-rays.ts": {
-			"crap_moderate": {
-				"count": 1
-			}
-		},
-		"src/lib/utils/cot-parser.ts": {
-			"crap_moderate": {
-				"count": 1
-			}
-		},
-		"src/lib/utils/fpv-channels.ts": {
-			"crap_moderate": {
-				"count": 1
-			}
-		},
-		"src/lib/utils/gsm-tower-lookup.ts": {
-			"crap_moderate": {
-				"count": 1
-			}
-		},
-		"src/lib/validators/gsm.ts": {
-			"crap_moderate": {
-				"count": 1
-			}
-		},
-		"src/lib/websocket/base.ts": {
-			"crap_moderate": {
-				"count": 2
-			}
-		},
-		"src/lib/websocket/websocket-types.ts": {
-			"crap_moderate": {
-				"count": 1
-			}
-		}
-	},
 	"runtime_coverage_findings": [],
 	"target_keys": [
 		"src/lib/stores/dashboard/agent-context-store.ts:dead code",
@@ -63,8 +6,8 @@
 		"src/lib/server/services/gps/gps-data-parser.ts:dead code",
 		"src/lib/server/terminal/session.ts:dead code",
 		"src/lib/stores/tactical-map/hackrf-store.ts:dead code",
-		"src/lib/server/services/reports/peak-hold-font.ts:dead code",
 		"src/lib/components/dashboard/panels/devices/device-filters.ts:untested risk",
+		"src/lib/server/services/reports/peak-hold-font.ts:dead code",
 		"src/lib/server/services/bluedragon/pcap-stream-parser.ts:high impact",
 		"src/lib/components/dashboard/panels/devices/device-formatters.ts:high impact",
 		"src/lib/state/kismet.svelte.ts:untested risk"

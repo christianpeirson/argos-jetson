@@ -39,6 +39,7 @@ export function resolveConfig(config: BaseWebSocketConfig): ResolvedConfig {
 }
 
 /** Create a WebSocket instance, handling browser vs Node.js environments. */
+// fallow-ignore-next-line complexity
 export function createWebSocket(url: string, protocols?: string | string[]): WebSocket {
 	if (typeof window !== 'undefined' && window.WebSocket) {
 		return new WebSocket(url, protocols);

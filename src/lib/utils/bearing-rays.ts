@@ -26,6 +26,7 @@ function rayFeatureFor(obsLat: number, obsLon: number, d: Detection): Feature<Li
 	};
 }
 
+// fallow-ignore-next-line complexity
 export function buildBearingFC(
 	obsLat: number | null,
 	obsLon: number | null,

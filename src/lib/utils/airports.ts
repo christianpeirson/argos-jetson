@@ -43,6 +43,7 @@ function hasNumericCoords(a: Record<string, unknown>): boolean {
 	return typeof a.lat === 'number' && typeof a.lon === 'number';
 }
 
+// fallow-ignore-next-line complexity
 function isAirport(v: unknown): v is Airport {
 	if (!v || typeof v !== 'object') return false;
 	const a = v as Record<string, unknown>;
@@ -76,6 +77,7 @@ export function findNearest(
 // No default — relative URLs without a base fail in Node and silently 404 in
 // SSR. Throws AirportsFetchError on transport failure or
 // AirportsValidationError when the payload doesn't match the Airport shape.
+// fallow-ignore-next-line complexity
 export async function loadAirports(fetchFn: typeof fetch): Promise<Airport[]> {
 	const res = await fetchFn('/airports.json');
 	if (!res.ok) throw new AirportsFetchError(`airports.json HTTP ${res.status}`);

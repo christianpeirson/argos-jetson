@@ -21,6 +21,7 @@ function towerCellPayload(row: ImsiRow): Record<string, number> {
 	};
 }
 
+// fallow-ignore-next-line complexity
 function towerLocationFromBody(body: TowerResponse): CellLocation | null {
 	if (!body.found || !body.location) return null;
 	return {

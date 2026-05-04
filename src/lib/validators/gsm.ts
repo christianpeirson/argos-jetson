@@ -18,6 +18,7 @@ class ValidationError extends Error {
  * @returns Validated gain as number in dB
  * @throws ValidationError if invalid
  */
+// fallow-ignore-next-line complexity
 export function validateGain(gain: string | number): number {
 	const gainNum = typeof gain === 'string' ? parseInt(gain, 10) : gain;
 

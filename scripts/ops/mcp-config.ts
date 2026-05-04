@@ -9,6 +9,7 @@ import { generateMCPConfigContent } from '../src/lib/server/mcp/config-generator
 const args = process.argv.slice(2);
 const command = args[0];
 
+// fallow-ignore-next-line complexity
 async function main() {
 	try {
 		if (command === 'b' || command === 'host' || !command) {
