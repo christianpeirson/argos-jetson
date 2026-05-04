@@ -1,5 +1,6 @@
 <!-- @constitutional-exemption Article-IV-4.3 issue:#11 — Component state handling (loading/error/empty UI) deferred to UX improvement phase -->
 <!-- @constitutional-exemption Article-IV-4.2 issue:#12 — Button pattern extraction deferred to component library refactor -->
+<!-- @audit-svelte-no-at-html-tags 2026-05-05 — `icon` prop is a hard-coded SVG string from $lib/data/tool-icons.ts upstream; rule disabled for this file via config/eslint.config.js files-pattern override; no user input vector. -->
 <script lang="ts">
 	import Button from '$lib/components/ui/button/button.svelte';
 

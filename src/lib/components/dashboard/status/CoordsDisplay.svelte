@@ -1,4 +1,5 @@
 <!-- @constitutional-exemption Article-IX-9.4 issue:#13 — getWeatherIcon() returns hardcoded SVG strings, no user input -->
+<!-- @audit-svelte-no-at-html-tags 2026-05-05 — getWeatherIcon() returns hard-coded SVG strings keyed off weather code; rule disabled for this file via config/eslint.config.js files-pattern override; no user input vector (matches the constitutional exemption above). -->
 <script lang="ts">
 	import { getWeatherIcon, type WeatherData } from './weather-helpers';
 	import WeatherDropdown from './WeatherDropdown.svelte';

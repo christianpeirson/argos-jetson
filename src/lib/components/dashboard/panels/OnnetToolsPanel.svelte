@@ -1,3 +1,4 @@
+<!-- @audit-svelte-no-at-html-tags 2026-05-05 — uiIcons.* are hard-coded SVG string literals from $lib/data/tool-icons.ts; rule disabled for this file via config/eslint.config.js files-pattern override; no user input vector. -->
 <script lang="ts">
 	import { onnetCategory } from '$lib/data/onnet';
 	import { countTools } from '$lib/data/tool-hierarchy';
