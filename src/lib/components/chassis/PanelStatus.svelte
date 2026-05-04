@@ -71,11 +71,7 @@
 		padding: 24px 16px;
 		min-height: 120px;
 		text-align: center;
-		font-family:
-			'Geist',
-			system-ui,
-			-apple-system,
-			sans-serif;
+		font-family: 'Fira Code', monospace;
 	}
 
 	.panel-status__icon {
@@ -112,7 +108,7 @@
 
 	.panel-status--error .panel-status__title,
 	.panel-status--disconnected .panel-status__title {
-		color: var(--destructive, #ff5c33);
+		color: var(--destructive);
 	}
 
 	.panel-status--disabled .panel-status__title {
@@ -137,11 +133,7 @@
 		background: transparent;
 		border: 1px solid var(--border);
 		color: var(--foreground);
-		font-family:
-			'Geist',
-			system-ui,
-			-apple-system,
-			sans-serif;
+		font-family: 'Fira Code', monospace;
 		font-size: 11px;
 		font-weight: 500;
 		letter-spacing: 0.08em;
@@ -155,8 +147,8 @@
 	}
 
 	.panel-status__retry:focus-visible {
-		outline: 1px solid var(--ring, var(--foreground));
-		outline-offset: 1px;
+		outline: 2px solid var(--ring, var(--foreground));
+		outline-offset: 2px;
 	}
 
 	@media (prefers-reduced-motion: reduce) {

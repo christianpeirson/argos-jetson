@@ -8,7 +8,7 @@ PanelStatus is a **status-region container** that uses ARIA live-region semantic
 |---|---|---|
 | **1.4.3** (AA) | Contrast (Minimum) | Title color tokens chosen for ≥4.5:1 contrast on Lunaris dark backgrounds: `var(--foreground-muted)` (loading/empty), `var(--destructive)` (error/disconnected), `var(--muted-foreground)` (disabled). Detail text always uses `var(--muted-foreground)` (≥4.5:1) |
 | **1.4.13** (AA) | Content on Hover or Focus | N/A — PanelStatus has no hover-revealed content |
-| **2.1.1** (A) | Keyboard | Retry button is real `<button type="button">`; ENTER/SPACE activates `onClick`. `action` snippet is consumer's responsibility |
+| **2.1.1** (A) | Keyboard | Retry button is real `<button type="button">`; ENTER/SPACE activates `onRetry`. `action` snippet is consumer's responsibility |
 | **2.3.3** (AAA) | Animation from Interactions | `@media (prefers-reduced-motion: reduce)` stops the loading spinner. Static circle when motion-reduction is requested |
 | **2.4.3** (A) | Focus Order | Retry button is in TAB order by default (button is natively focusable) |
 | **2.5.5** (AAA) | Target Size | Retry button: 6+11+6 = 23px height × min 64px width. Meets AA (24×24) at most browser zoom levels; below AAA (44×44) for compact toolbar contexts. For touch surfaces, consumers should pass `class` prop to override sizing |
@@ -82,7 +82,7 @@ The chassis adds NO custom keyboard handlers beyond what the retry button native
 |---|---|
 | NVDA | Announces "title detail" (live region polite). Re-announces on state change |
 | JAWS | Same pattern; some versions silently honor live regions on rapid transitions |
-| VoiceOver (Mac) | Announces "title detail" + "RETRY button" if action present |
+| VoiceOver (Mac) | Announces "title detail" + "RETRY button" if `onRetry` provided and no `action` snippet |
 | TalkBack | Announces title + detail; retry button focusable via swipe |
 
 **Caveat**: rapid state transitions (>1 per second) may cause AT to skip announcements (live region debouncing). For UX with frequent transitions (e.g. real-time status indicators), consider `aria-live="off"` + manual announcement via a separate `<div role="status">` that updates less frequently.

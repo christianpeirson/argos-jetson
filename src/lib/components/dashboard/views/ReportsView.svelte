@@ -150,9 +150,10 @@
 	}
 
 	async function fetchReports(): Promise<void> {
+		loading = true;
+		error = null;
 		try {
 			reports = await loadReportsFromApi();
-			error = null;
 		} catch (e) {
 			error = toMessage(e);
 		} finally {

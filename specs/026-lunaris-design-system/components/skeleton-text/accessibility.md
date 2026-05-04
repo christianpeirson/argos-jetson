@@ -6,7 +6,7 @@ Carbon SkeletonText is a **purely visual placeholder** — it has no inherent ac
 
 | SC | Criterion | How the wrapper + consumer satisfy it |
 |---|---|---|
-| **1.4.3** (AA) | Contrast (Minimum) | Skeleton bar token mapping: `$skeleton-background` (`var(--bg-2)`) on parent surface (≥3:1 for non-text decorative elements) |
+| **1.4.11** (AA) | Non-text Contrast | Skeleton bar token mapping: `$skeleton-background` (`var(--bg-2)`) on parent surface (≥3:1 against adjacent color — non-text UI component contrast) |
 | **2.3.3** (AAA) | Animation from Interactions | Carbon SCSS includes `@media (prefers-reduced-motion: reduce) { animation: none; }` — pulse stops, static bars shown |
 | **4.1.3** (AA) | Status Messages | `aria-busy="true"` on the wrapper announces "loading" to AT without focus shift |
 
