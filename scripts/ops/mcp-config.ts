@@ -4,7 +4,7 @@
  * Shows MCP configuration for the host Claude CLI
  */
 
-import { generateMCPConfigContent } from '../src/lib/server/mcp/config-generator';
+import { generateMCPConfigContent } from '../../src/lib/server/mcp/config-generator';
 
 const args = process.argv.slice(2);
 const command = args[0];

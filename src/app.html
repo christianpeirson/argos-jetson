@@ -1,4 +1,13 @@
 <!doctype html>
+<!-- fallow-ignore-file unresolved-import -->
+<!--
+  fallow's HTML parser flags <link href="/fonts/..."> as module imports,
+  but they are runtime URL refs to static/fonts/* (served by SvelteKit's
+  static adapter). The static/** dir is already in ignorePatterns, but
+  fallow still walks app.html link tags and reports them as unresolved.
+  File-wide suppression keeps app.html green without losing real coverage
+  elsewhere.
+-->
 <html lang="en" class="dark">
 	<head>
 		<meta charset="utf-8" />

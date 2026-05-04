@@ -58,6 +58,17 @@
 		"docs/argos-v2-mockup/**",
 		"docs/export_pen_files/**"
 	],
+	"entry": ["dangerfile.js", "scripts/ops/prod-server.ts"],
+	"dynamicallyLoaded": [
+		"src/lib/server/db/migrations/**/*.ts",
+		"src/lib/server/db/migrations/**/*.sql"
+	],
+	"ignoreDependencies": [
+		"@novnc/novnc",
+		"@internationalized/date",
+		"@sveltejs/adapter-node",
+		"pixelmatch"
+	],
 	"audit": {
 		"deadCodeBaseline": ".fallow-deadcode-baseline.json",
 		"healthBaseline": ".fallow-health-baseline.json",

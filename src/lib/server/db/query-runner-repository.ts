@@ -1,3 +1,12 @@
+// fallow-ignore-file unused-file
+//
+// runReadOnlyQuery is imported by src/routes/api/database/query/+server.ts
+// (the dev-only ad-hoc SELECT runner). Fallow's parser drops that route file
+// — `npx fallow dead-code --trace` reports it as "export 'POST' not found"
+// despite the export being on line 80 — so the chain doesn't connect and
+// this file falsely appears unreachable. The route IS reachable at runtime;
+// suppressing the unused-files finding here until fallow's parser handles
+// the route shape (likely a `$app/environment` resolution gap).
 /**
  * Ad-hoc read-only query runner for the `/api/database/query` dev-tools route.
  *

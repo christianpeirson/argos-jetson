@@ -1,14 +1,5 @@
 {
-	"unused_files": [
-		"config/svelte.config.js",
-		"dangerfile.js",
-		"scripts/ops/prod-server.ts",
-		"src/lib/server/db/migrations/20260217_create_tak_configs.ts",
-		"src/lib/server/db/migrations/20260218_extend_tak_configs.ts",
-		"src/lib/server/db/migrations/20260411_create_globalprotect_configs.ts",
-		"src/lib/server/db/migrations/20260417_create_trunk_recorder_presets.ts",
-		"src/lib/server/db/query-runner-repository.ts"
-	],
+	"unused_files": [],
 	"unused_exports": [
 		"src/lib/components/dashboard/dashboard-map-logic.svelte.ts:towerClickHandler",
 		"src/lib/components/dashboard/status/status-bar-data.ts:fetchSatelliteData",
@@ -145,6 +136,7 @@
 		"src/lib/types/map.ts:LeafletLibrary",
 		"src/lib/types/signals.ts:SignalStats",
 		"src/lib/utils/css-loader.ts:CSSLoadOptions",
+		"src/lib/utils.ts:WithoutChildrenOrChild",
 		"src/lib/websocket/base.ts:HeartbeatState",
 		"src/lib/websocket/base.ts:ReconnectState",
 		"src/lib/websocket/base.ts:BaseWebSocketConfig",
@@ -154,8 +146,8 @@
 		"src/lib/websocket/websocket-types.ts:WebSocketEventListener"
 	],
 	"private_type_leaks": [],
-	"unused_dependencies": ["package.json:@novnc/novnc"],
-	"unused_dev_dependencies": ["package.json:pixelmatch"],
+	"unused_dependencies": [],
+	"unused_dev_dependencies": [],
 	"circular_dependencies": [],
 	"unused_optional_dependencies": [],
 	"unused_enum_members": [],
@@ -251,13 +243,8 @@
 		"src/lib/websocket/base.ts:BaseWebSocket.getState",
 		"src/lib/websocket/base.ts:BaseWebSocket.destroy"
 	],
-	"unresolved_imports": [
-		"scripts/ops/mcp-config.ts:../src/lib/server/mcp/config-generator",
-		"scripts/ops/prod-server.ts:../../build/handler.js",
-		"src/app.html:/fonts/firacode-nerd-font.css",
-		"src/app.html:/fonts/geist.css"
-	],
-	"unlisted_dependencies": ["geojson"],
+	"unresolved_imports": [],
+	"unlisted_dependencies": [],
 	"duplicate_exports": [
 		"Affiliation|src/lib/map/symbols/symbol-factory.ts|src/lib/stores/tactical-map/kismet-store.ts",
 		"GPSPosition|src/lib/gps/types.ts|src/lib/server/services/kismet-service-types.ts|src/lib/stores/tactical-map/gps-store.ts",
