@@ -571,16 +571,6 @@
 				"count": 1
 			}
 		},
-		"src/routes/api/rf-propagation/compute/+server.ts": {
-			"crap_moderate": {
-				"count": 1
-			}
-		},
-		"src/routes/api/rf-propagation/p2p/+server.ts": {
-			"crap_moderate": {
-				"count": 1
-			}
-		},
 		"src/routes/api/rf/data-stream/+server.ts": {
 			"crap_moderate": {
 				"count": 1
@@ -626,14 +616,9 @@
 				"count": 1
 			}
 		},
-		"src/routes/api/tak/certs/+server.ts": {
-			"crap_moderate": {
-				"count": 1
-			}
-		},
 		"src/routes/api/tak/truststore/+server.ts": {
 			"crap_moderate": {
-				"count": 2
+				"count": 1
 			}
 		},
 		"src/routes/api/terminal/shells/+server.ts": {
@@ -642,11 +627,6 @@
 			}
 		},
 		"src/routes/api/trunk-recorder/control/+server.ts": {
-			"crap_moderate": {
-				"count": 1
-			}
-		},
-		"src/routes/api/weather/current/+server.ts": {
 			"crap_moderate": {
 				"count": 1
 			}

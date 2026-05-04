@@ -12,21 +12,29 @@ import { createHandler } from '$lib/server/api/create-handler';
 import { CloudRFError, computeArea } from '$lib/server/services/cloudrf/cloudrf-client';
 import { safeParseWithHandling } from '$lib/utils/validation-error';
 
+async function parseCoverageBody(request: Request) {
+	let rawBody: unknown;
+	try {
+		rawBody = await request.json();
+	} catch {
+		return { error: json({ success: false, error: 'Invalid JSON body' }, { status: 400 }) };
+	}
+	const validated = safeParseWithHandling(CoverageRequestSchema, rawBody, 'api');
+	if (!validated) {
+		return {
+			error: json({ success: false, error: 'Invalid coverage request' }, { status: 400 })
+		};
+	}
+	return { validated };
+}
+
 export const POST = createHandler(
 	async ({ request }) => {
-		let rawBody: unknown;
-		try {
-			rawBody = await request.json();
-		} catch {
-			return json({ success: false, error: 'Invalid JSON body' }, { status: 400 });
-		}
-		const validated = safeParseWithHandling(CoverageRequestSchema, rawBody, 'api');
-		if (!validated) {
-			return json({ success: false, error: 'Invalid coverage request' }, { status: 400 });
-		}
+		const parsed = await parseCoverageBody(request);
+		if (parsed.error) return parsed.error;
 
 		try {
-			const result = await computeArea(validated);
+			const result = await computeArea(parsed.validated);
 			return {
 				success: true,
 				imageDataUri: result.imageDataUri,

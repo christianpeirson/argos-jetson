@@ -14,6 +14,14 @@ function isInputValidationError(err: unknown): err is Error {
 	return err instanceof Error && err.name === 'InputValidationError';
 }
 
+function readTruststoreFields(formData: FormData) {
+	return {
+		file: formData.get('p12File') as File | null,
+		password: (formData.get('password') as string) || 'atakatak',
+		configId: (formData.get('id') as string) || crypto.randomUUID()
+	};
+}
+
 /** Validate form data and return the file, password, and configId, or an error Response. */
 function validateFormData(formData: FormData):
 	| {
@@ -22,18 +30,13 @@ function validateFormData(formData: FormData):
 			configId: string;
 	  }
 	| Response {
-	const file = formData.get('p12File') as File | null;
-	const password = (formData.get('password') as string) || 'atakatak';
-	const configId = (formData.get('id') as string) || crypto.randomUUID();
-
+	const { file, password, configId } = readTruststoreFields(formData);
 	if (!file) {
 		return json({ success: false, error: 'No file provided' }, { status: 400 });
 	}
-
 	if (file.size > MAX_TRUSTSTORE_SIZE) {
 		return json({ success: false, error: 'File too large (max 1 MB)' }, { status: 413 });
 	}
-
 	return { file, password, configId };
 }
 

@@ -40,13 +40,17 @@ async function fetchWeather(lat: string, lon: string): Promise<Response> {
 	});
 }
 
-export const GET = createHandler(async ({ url }) => {
+function readLatLon(url: URL): { lat: string; lon: string } | null {
 	const lat = url.searchParams.get('lat');
 	const lon = url.searchParams.get('lon');
-	if (!lat || !lon) return jsonError('Missing lat/lon parameters', 400);
+	return lat && lon ? { lat, lon } : null;
+}
 
+export const GET = createHandler(async ({ url }) => {
+	const params = readLatLon(url);
+	if (!params) return jsonError('Missing lat/lon parameters', 400);
 	try {
-		return await fetchWeather(lat, lon);
+		return await fetchWeather(params.lat, params.lon);
 	} catch (error: unknown) {
 		return jsonError(error instanceof Error ? error.message : 'Unknown error', 502);
 	}

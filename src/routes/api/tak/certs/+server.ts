@@ -10,6 +10,10 @@ function isInputValidationError(err: unknown): err is Error {
 	return err instanceof Error && err.name === 'InputValidationError';
 }
 
+function missingFileOrPassword(file: File | null, password: string | null): boolean {
+	return !file || !password;
+}
+
 /** Validate the uploaded form data and return the file, password, and configId. */
 function validateFormData(formData: FormData):
 	| {
@@ -20,15 +24,12 @@ function validateFormData(formData: FormData):
 	| Response {
 	const file = formData.get('p12File') as File;
 	const password = formData.get('password') as string;
-
-	if (!file || !password) {
+	if (missingFileOrPassword(file, password)) {
 		return json({ error: 'Missing file or password' }, { status: 400 });
 	}
-
 	if (file.size > MAX_P12_SIZE) {
 		return json({ error: 'File too large (max 1 MB)' }, { status: 413 });
 	}
-
 	const configId = (formData.get('id') as string) || crypto.randomUUID();
 	return { file, password, configId };
 }
