@@ -267,6 +267,8 @@ Net coverage: 2 fallow firings (pre-push + CI) instead of 3. Defense remains lay
 
 (e) Known gaps and risks:
 
+
+
 - **No LOC/file or LOC/fn threshold.** Fallow's `health` does NOT enforce line counts (verified against `fallow config-schema` 2026-05-04). LOC enforcement provided by ESLint's built-in `max-lines` + `max-lines-per-function` rules — added to `config/eslint.config.js` in the same install PR.
 - **`.svelte` dead-code is excluded** via `ignorePatterns` because fallow's ROADMAP acknowledges `export let` props are indistinguishable from utility exports without Svelte compiler semantics.
 - **`static/**` excluded\*\* because Argos serves vendored WebTAK minified JS as a static asset — not first-party source. Without this exclusion, a single anonymous WebTAK function (cyclomatic=330, 291,033 lines) dominates findings.
@@ -277,6 +279,31 @@ Net coverage: 2 fallow firings (pre-push + CI) instead of 3. Defense remains lay
 
 1. **Phase 2 (days 2-14)** — fallow runs report-only; ESLint `complexity` + `eslint-plugin-sonarjs/cognitive-complexity` continue to enforce. PR description tracks any divergence between the two engines.
 2. **Phase 3 cutover (day 15)** — drop ESLint `complexity` rule + remove `eslint-plugin-sonarjs` from `package.json`. Remove `continue-on-error` from `fallow.yml`. Promote fallow gate to required check on `main` branch protection. Cutover PR notes the parity-period results in its description.
+
+### 3.18 Claude Code GitHub Interface (github-mcp-server hard-lock)
+
+(a) Single canonical interface for ALL Claude-Code GitHub API operations: `mcp__github__*` (github-mcp-server, remote at `https://api.githubcopilot.com/mcp`). Hard-locked by `.claude/rules/workflow.md` Rule 4 + `.claude/settings.local.json` permissions + two PreToolUse hooks.
+(b) https://github.com/github/github-mcp-server (README + `docs/`) — official upstream. v1.0.3+ exposes 16 toolsets / 50+ tools (context, repos, issues, pull_requests, branches, releases, code_search, actions, code_security, secret_protection, security_advisories, discussions, labels, notifications, dependabot, copilot). Supports `--toolsets` and `--read-only` flags; OAuth + PAT auth.
+(c) Enforcement (belt + suspenders):
+
+- **Layer 1 — `.claude/settings.json` `permissions.deny`** lists `mcp__octocode__githubGetFileContent|ViewRepoStructure|SearchCode|SearchRepositories|SearchPullRequests`. Denied tools never reach the model.
+- **Layer 2 — PreToolUse hook `scripts/claude-hooks/block-octocode-github.sh`** matches `mcp__octocode__github*` and emits `permissionDecision:"deny"` with the routing matrix. Catches anything that slips a glob match.
+- **Layer 3 — PreToolUse hook `scripts/claude-hooks/gh-cli-restrict.sh`** matches `Bash`, anchors to `^[[:space:]]*gh[[:space:]]+`, allows only `workflow|secret|auth` subcommands. Bash hooks bypass via `CLAUDE_HOOK_INTERNAL=1` env-var seal (hooks have no MCP access — `scripts/claude-hooks/post-push-pr-flow.sh:46` uses this seal for its `gh pr view` PR-identity probe).
+- **Layer 4 — global hook `~/.claude/hooks/github-url-block.sh`** denies `WebFetch` + raw curl on `github.com/*`, allows release-asset CDN + `cli.github.com`.
+
+(d) Allow-list for `gh` CLI (gaps github-mcp-server doesn't cover):
+
+- `gh workflow run|list|view` — workflow dispatch (github MCP `actions` toolset is read-only re: dispatch).
+- `gh secret set|list|delete` — secret management (no MCP write surface).
+- `gh auth status|login|logout` — auth probe.
+
+(e) octocode MCP retained ONLY for `lsp*` (LSP findReferences/hover/gotoDefinition/callHierarchy) + `local*` (localFindFiles/localSearchCode/localGetFileContent/localViewStructure) + `packageSearch` namespaces. octocode `github*` namespace is dead in this project.
+
+(f) **`git` CLI** is fully allowed (commit, push, fetch, pull, branch, rebase, checkout, tag) — github-mcp-server has no working-tree access. `Bash(git *)` lives in `permissions.allow`.
+
+(g) Out-of-scope: `.github/workflows/audit-weekly.yml` uses `gh issue create` server-side (GitHub Actions runner, not Claude tool universe — unaffected by this spec).
+
+(h) Memory pointer: `~/.claude/projects/-home-jetson2-code-Argos/memory/feedback_github_octocode.md` carries the routing matrix in compressed form for cross-session continuity.
 
 ---
 

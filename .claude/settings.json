@@ -1,5 +1,5 @@
 {
-  "$comment": "Template for .claude/settings.local.json — copy to .claude/settings.local.json in fresh worktree clones. Mirrors workflow.md Rule 4 (GitHub MCP hard-lock).",
+  "$comment": "Argos project-scope settings (shared, committed). Hard-locks GitHub MCP per workflow.md Rule 4. Belt+suspenders: permissions.deny blocks at the harness layer; PreToolUse hooks catch anything that slips a glob match. Personal overrides go in .claude/settings.local.json (gitignored).",
   "permissions": {
     "deny": [
       "mcp__octocode__githubGetFileContent",

@@ -24,20 +24,25 @@
 #   ./scripts/ops/spin-worktree.sh <slug> [base-branch]
 #
 # Examples:
+#   ./scripts/ops/spin-worktree.sh session-3
+#       → ../Argos-session-3 on branch session-3 off dev   (stable per-session worktree)
+#
 #   ./scripts/ops/spin-worktree.sh css-import-fix
 #       → ../Argos-css-import-fix on branch feature/css-import-fix off dev
-#
-#   ./scripts/ops/spin-worktree.sh session-3
-#       → ../Argos-session-3 on branch feature/session-3 off dev
 #
 #   ./scripts/ops/spin-worktree.sh chore/audit-cleanup main
 #       → ../Argos-audit-cleanup on branch chore/audit-cleanup off main
 #
 # Slug rules
 # ----------
+# * If slug matches `session-<N>` (the per-session worktree pattern), the
+#   branch is `session-<N>` verbatim — these are stable long-lived branches
+#   permanently bound to their worktree (PR session-N → dev → merge → reset
+#   the worktree branch to dev → repeat).
 # * If slug starts with a recognized prefix (feature/, fix/, chore/, spike/,
 #   docs/, test/, refactor/) it becomes the branch name verbatim and the
-#   worktree path uses the part after the slash.
+#   worktree path uses the part after the slash. Use these only for work
+#   genuinely orthogonal to the session-N worktrees.
 # * Otherwise the branch becomes feature/<slug> and the worktree path uses
 #   the slug as-is.
 #
@@ -77,7 +82,12 @@ parent="$(dirname "$main_root")"
 
 # Strip any leading prefix to derive the dir name; keep slash-form for branch.
 known_prefix_re='^(feature|fix|chore|spike|docs|test|refactor)/'
-if [[ "$slug" =~ $known_prefix_re ]]; then
+session_re='^session-[0-9]+$'
+if [[ "$slug" =~ $session_re ]]; then
+    # Per-session stable worktree — branch name is the slug verbatim.
+    branch="$slug"
+    short_slug="$slug"
+elif [[ "$slug" =~ $known_prefix_re ]]; then
     branch="$slug"
     short_slug="${slug#*/}"
 else
