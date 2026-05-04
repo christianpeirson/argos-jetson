@@ -1,13 +1,12 @@
 /**
  * SQLite Database Service for RF Signal Storage — thin facade that
- * delegates to signalRepository, spatialRepository, and networkRepository.
+ * delegates to signalRepository and spatialRepository.
  */
 
 import Database from 'better-sqlite3';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-import type { NetworkEdge, NetworkNode } from '$lib/types/network';
 import type { SignalMarker } from '$lib/types/signals';
 import { logger } from '$lib/utils/logger';
 
@@ -17,7 +16,6 @@ import { DatabaseCleanupService } from './cleanup-service';
 import { DatabaseOptimizer } from './db-optimizer';
 import { generateDeviceId } from './geo';
 import { runMigrations } from './migrations/run-migrations';
-import * as networkRepo from './network-repository';
 import * as signalRepo from './signal-repository';
 import * as spatialRepo from './spatial-repository';
 import { wrapStatement } from './statement-timer';
@@ -30,7 +28,7 @@ const TEN_MINUTES = 10 * 60 * 1000;
 
 // NOTE: type re-exports removed — consumers import directly from './types'
 
-import type { DbDevice, DbRelationship, DbSignal, SpatialQuery, TimeQuery } from './types';
+import type { DbSignal, SpatialQuery, TimeQuery } from './types';
 
 export class RFDatabase {
 	private db: Database.Database;
@@ -252,27 +250,11 @@ export class RFDatabase {
 
 	// ── Spatial operations (delegated to spatialRepository) ────────────
 
-	findDevicesNearby(
-		query: SpatialQuery & TimeQuery
-	): Array<DbDevice & { avg_lat: number; avg_lon: number; signal_count: number }> {
-		return spatialRepo.findDevicesNearby(this.db, this.statements, query);
-	}
-
 	getAreaStatistics(
 		bounds: { minLat: number; maxLat: number; minLon: number; maxLon: number },
 		timeWindow: number = ONE_HOUR
 	) {
 		return spatialRepo.getAreaStatistics(this.db, this.statements, bounds, timeWindow);
-	}
-
-	// ── Network operations (delegated to networkRepository) ────────────
-
-	storeNetworkGraph(nodes: Map<string, NetworkNode>, edges: Map<string, NetworkEdge>) {
-		return networkRepo.storeNetworkGraph(this.db, nodes, edges);
-	}
-
-	getNetworkRelationships(deviceIds?: string[]): DbRelationship[] {
-		return networkRepo.getNetworkRelationships(this.db, deviceIds);
 	}
 
 	// ── Lifecycle & utilities ──────────────────────────────────────────
@@ -305,10 +287,6 @@ export class RFDatabase {
 
 	getCleanupService(): DatabaseCleanupService | null {
 		return this.cleanupService;
-	}
-
-	getOptimizer(): DatabaseOptimizer {
-		return this.optimizer;
 	}
 
 	get rawDb(): Database.Database {

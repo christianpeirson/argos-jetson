@@ -6,7 +6,6 @@
 import type { Database as DatabaseType } from 'better-sqlite3';
 
 import { errMsg } from '$lib/server/api/error-utils';
-import { validateSqlIdentifier } from '$lib/server/security/input-sanitizer';
 
 import { getHealthReport } from './db-health-report';
 import { getIndexAnalysis } from './db-index-analysis';
@@ -166,30 +165,6 @@ export class DatabaseOptimizer {
 	/** Get index statistics and suggestions -- delegates to db-index-analysis */
 	getIndexAnalysis() {
 		return getIndexAnalysis(this.db);
-	}
-
-	/** Optimize specific table */
-	optimizeTable(tableName: string) {
-		const safeName = validateSqlIdentifier(tableName, 'tableName');
-		this.db.exec(`VACUUM ${safeName}`);
-		this.db.exec(`ANALYZE ${safeName}`);
-
-		const indexes = this.db
-			.prepare(
-				`
-      SELECT name FROM sqlite_master
-      WHERE type = 'index'
-        AND tbl_name = ?
-        AND name NOT LIKE 'sqlite_%'
-    `
-			)
-			// Safe: sqlite_master WHERE type='index' guarantees name column exists
-			.all(tableName) as Array<{ name: string }>;
-
-		for (const index of indexes) {
-			const safeIndexName = validateSqlIdentifier(index.name, 'indexName');
-			this.db.exec(`REINDEX ${safeIndexName}`);
-		}
 	}
 
 	/** Get query execution plan */

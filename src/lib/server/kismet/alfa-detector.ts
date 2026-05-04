@@ -159,12 +159,4 @@ export class AlfaDetector {
 		logger.warn('Alfa adapter detected but no interface found');
 		return null;
 	}
-
-	/**
-	 * Check if a specific interface is an Alfa adapter
-	 */
-	static async isAlfaInterface(iface: string): Promise<boolean> {
-		const adapters = await this.detectAlfaAdapters();
-		return adapters.some((adapter) => adapter.interface === iface);
-	}
 }

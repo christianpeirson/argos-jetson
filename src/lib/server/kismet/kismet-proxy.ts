@@ -4,14 +4,10 @@ import { logger } from '$lib/utils/logger';
 
 import type { KismetDeviceResponse } from './kismet-proxy-transform';
 import { transformDevice } from './kismet-proxy-transform';
-import type { DeviceFilter, DeviceStats, KismetDevice } from './types';
+import type { DeviceFilter, KismetDevice } from './types';
 
 /** Milliseconds per minute (time-window conversion for device-recency filters). */
 const MS_PER_MINUTE = 60 * 1000;
-/** Active-device window: seen within the last 5 minutes. */
-const ACTIVE_5MIN_WINDOW_MS = 5 * MS_PER_MINUTE;
-/** Active-device window: seen within the last 15 minutes. */
-const ACTIVE_15MIN_WINDOW_MS = 15 * MS_PER_MINUTE;
 
 interface KismetQueryRequest {
 	fields: string[];
@@ -19,10 +15,6 @@ interface KismetQueryRequest {
 }
 
 interface KismetSystemStatus {
-	[key: string]: unknown;
-}
-
-interface KismetDatasourceResponse {
 	[key: string]: unknown;
 }
 
@@ -166,112 +158,14 @@ export class KismetProxy {
 		return devices.filter((device) => this.matchesFilter(device, filter));
 	}
 
-	/** Tally encryption and manufacturer breakdowns for a single device */
-	private static tallyBreakdowns(device: KismetDevice, stats: DeviceStats): void {
-		if (device.encryptionType) {
-			device.encryptionType.forEach((enc) => {
-				stats.byEncryption[enc] = (stats.byEncryption[enc] || 0) + 1;
-			});
-		}
-		if (device.manufacturer) {
-			stats.byManufacturer[device.manufacturer] =
-				(stats.byManufacturer[device.manufacturer] || 0) + 1;
-		}
-	}
-
-	/** Accumulate a single device into the stats counters */
-	private static accumulateDeviceStats(
-		device: KismetDevice,
-		stats: DeviceStats,
-		fiveMinAgo: number,
-		fifteenMinAgo: number
-	): void {
-		stats.byType[device.type]++;
-		this.tallyBreakdowns(device, stats);
-		const lastSeenTime = new Date(device.lastSeen).getTime();
-		if (lastSeenTime > fiveMinAgo) stats.activeInLast5Min++;
-		if (lastSeenTime > fifteenMinAgo) stats.activeInLast15Min++;
-	}
-
-	/** Get device statistics */
-	static async getDeviceStats(): Promise<DeviceStats> {
-		try {
-			const devices = await this.getDevices();
-			const now = Date.now();
-			const fiveMinAgo = now - ACTIVE_5MIN_WINDOW_MS;
-			const fifteenMinAgo = now - ACTIVE_15MIN_WINDOW_MS;
-
-			const stats: DeviceStats = {
-				total: devices.length,
-				byType: { AP: 0, Client: 0, Bridge: 0, Unknown: 0 },
-				byEncryption: {},
-				byManufacturer: {},
-				activeInLast5Min: 0,
-				activeInLast15Min: 0,
-				totalDevices: devices.length,
-				accessPoints: 0,
-				clients: 0,
-				unknownDevices: 0,
-				newDevicesLastHour: 0,
-				activeDevicesLast5Min: 0,
-				securityThreats: 0,
-				rogueAPs: 0,
-				encryptionTypes: new Map<string, number>(),
-				manufacturers: new Map<string, number>(),
-				channelUsage: new Map<number, number>(),
-				signalStrengthDistribution: new Map<string, number>(),
-				lastUpdate: new Date()
-			};
-
-			devices.forEach((device) =>
-				this.accumulateDeviceStats(device, stats, fiveMinAgo, fifteenMinAgo)
-			);
-
-			return stats;
-		} catch (error) {
-			logger.error('[kismet-proxy] Error calculating device stats', { error: String(error) });
-			throw error;
-		}
-	}
-
 	/** Generic proxy method for GET requests */
 	static async proxyGet(path: string): Promise<unknown> {
 		return this.request(path, { method: 'GET' });
 	}
 
-	/** Generic proxy method for POST requests */
-	static async proxyPost(path: string, body?: unknown): Promise<unknown> {
-		return this.request(path, {
-			method: 'POST',
-			body: body ? JSON.stringify(body) : undefined
-		});
-	}
-
-	/** Methods that accept a request body */
-	private static readonly BODY_METHODS = new Set(['POST', 'PUT', 'PATCH']);
-
-	/** Generic proxy method that handles any HTTP method */
-	static async proxy(
-		path: string,
-		method: string,
-		body?: unknown,
-		headers?: Record<string, string>
-	): Promise<unknown> {
-		const options: globalThis.RequestInit = { method, headers };
-		if (body && this.BODY_METHODS.has(method)) {
-			options.body = typeof body === 'string' ? body : JSON.stringify(body);
-		}
-		return this.request(path, options);
-	}
-
 	/** Get Kismet system status */
 	static async getSystemStatus(): Promise<KismetSystemStatus> {
 		return this.request<KismetSystemStatus>('/system/status.json');
-	}
-
-	/** Get Kismet datasources */
-	static async getDatasources(): Promise<KismetDatasourceResponse> {
-		return this.request<KismetDatasourceResponse>('/datasource/all_sources.json');
 	}
 
 	/** Check if API key is configured */
