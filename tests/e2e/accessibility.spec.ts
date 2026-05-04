@@ -74,6 +74,42 @@ test.describe('Accessibility - WCAG 2.1 AA Compliance', () => {
 
 		expect(accessibilityScanResults.violations).toEqual([]);
 	});
+
+	test('EditorTabBar (Terminal sessions) — APG Toolbar contract & axe scan', async ({ page }) => {
+		// Open 3 terminal sessions, then assert (a) WCAG 2.1 AA via axe, (b) roving-tabindex
+		// invariant (exactly one tabindex=0 inside the toolbar), (c) no nested interactive
+		// inside role="tab" (regression guard for the original APG violation that motivated
+		// the EditorTabBar chassis in spec-026 Phase 8.6).
+		const toolbar = page.locator('[role="toolbar"][aria-label="Terminal sessions"]');
+		if (!(await toolbar.isVisible({ timeout: 2000 }).catch(() => false))) {
+			test.skip(true, 'Terminal panel not present in this layout');
+		}
+
+		const newTerminal = toolbar.locator('button[aria-label="New terminal"]');
+		for (let i = 0; i < 3; i++) {
+			await newTerminal.click();
+			await page.waitForTimeout(150);
+			// click outside to close any open shell-dropdown
+			await page.locator('body').click({ position: { x: 0, y: 0 } });
+			await page.waitForTimeout(50);
+		}
+
+		await expect(toolbar.locator('[role="tab"]')).toHaveCount(3);
+
+		const tabsWithNestedInteractive = await toolbar
+			.locator('[role="tab"] button, [role="tab"] a, [role="tab"] input')
+			.count();
+		expect(tabsWithNestedInteractive).toBe(0);
+
+		const rovingZeroes = await toolbar.locator('[tabindex="0"]').count();
+		expect(rovingZeroes).toBe(1);
+
+		const axeResults = await axe(page)
+			.include('[role="toolbar"][aria-label="Terminal sessions"]')
+			.withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+			.analyze();
+		expect(axeResults.violations).toEqual([]);
+	});
 });
 
 type FocusStyles = {
