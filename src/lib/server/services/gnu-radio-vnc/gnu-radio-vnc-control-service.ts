@@ -17,6 +17,7 @@ import {
 	killAllProcesses,
 	spawnGnuRadioCompanion,
 	spawnWebsockify,
+	spawnWindowManager,
 	spawnXtigervnc
 } from './gnu-radio-vnc-processes';
 import {
@@ -73,6 +74,12 @@ function resolveFlowgraphOrError(
 async function performStartup(resolvedFlowgraph: string | undefined): Promise<Error | null> {
 	try {
 		spawnXtigervnc();
+		await new Promise((r) => setTimeout(r, 250));
+		// Window manager spawned BEFORE the GUI app so client decorations
+		// (titlebar/resize handles) are negotiated correctly via _NET_FRAME_EXTENTS
+		// at the first map. Order matters: openbox must claim the root window
+		// before gnuradio-companion creates its top-level.
+		spawnWindowManager();
 		await new Promise((r) => setTimeout(r, 250));
 		spawnWebsockify();
 		spawnGnuRadioCompanion(resolvedFlowgraph);

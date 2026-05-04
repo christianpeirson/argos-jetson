@@ -72,6 +72,7 @@ function ensureState() {
 			xvncProcess: null,
 			grcProcess: null,
 			websockifyProcess: null,
+			wmProcess: null,
 			currentFlowgraph: null,
 			spawnError: null
 		};
@@ -144,9 +145,36 @@ export function spawnWebsockify(): ChildProcess {
 	return proc;
 }
 
+// openbox gives the GRC window a titlebar + interactive resize/move + EWMH
+// support (so wmctrl/xdotool work). Matchbox-window-manager was rejected
+// because it lacks _NET_WM_MOVERESIZE — users couldn't drag-resize the GRC
+// window. xfwm4 (preinstalled) works but pulls in xfconf/wnck/xfce4-panel.
+// Openbox (~400 KB) is the standard pick for Xvnc single-app sessions:
+// COMPLIANCE file lists every required EWMH atom as "+ full".
+//
+// --sm-disable skips the X session manager (headless Xvnc has none).
+// $DISPLAY env replaces the missing --display flag.
+export function spawnWindowManager(): ChildProcess {
+	const proc = spawnImpl(
+		'/usr/bin/openbox',
+		['--sm-disable', '--config-file', '/etc/xdg/openbox/rc.xml'],
+		{
+			stdio: 'pipe',
+			env: { ...process.env, DISPLAY: GNU_RADIO_VNC_DISPLAY }
+		}
+	);
+	const state = ensureState();
+	state.wmProcess = proc;
+	proc.on('error', (err) => {
+		state.spawnError = err;
+		logger.error('openbox spawn error', { error: err.message });
+	});
+	return proc;
+}
+
 export function isAnyProcessAlive(): boolean {
 	const state = ensureState();
-	const procs = [state.xvncProcess, state.grcProcess, state.websockifyProcess];
+	const procs = [state.xvncProcess, state.grcProcess, state.websockifyProcess, state.wmProcess];
 	return procs.some((p) => p && p.pid !== undefined && p.exitCode === null);
 }
 
@@ -163,13 +191,19 @@ function clearGnuRadioState(): void {
 	state.xvncProcess = null;
 	state.grcProcess = null;
 	state.websockifyProcess = null;
+	state.wmProcess = null;
 	state.currentFlowgraph = null;
 	state.spawnError = null;
 }
 
 export async function killAllProcesses(): Promise<void> {
 	const state = ensureState();
-	const procs = [state.grcProcess, state.websockifyProcess, state.xvncProcess].filter(
+	const procs = [
+		state.grcProcess,
+		state.wmProcess,
+		state.websockifyProcess,
+		state.xvncProcess
+	].filter(
 		(p): p is ChildProcess => Boolean(p)
 	);
 	for (const p of procs) gracefulSignal(p, 'SIGTERM');
