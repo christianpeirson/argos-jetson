@@ -168,7 +168,9 @@ export default [
 			// 'warn' with violator counts captured 2026-05-04. Each entry is
 			// the punch list for a future cleanup PR; re-escalate to 'error'
 			// once the count reaches zero.
-			'svelte/require-each-key': 'warn', // 18 sites — most are short transient lists (status drops, console rows, hardware adapters); follow-up PR adds keys.
+			// svelte/require-each-key: re-escalated to ERROR (default) after the
+			// 18-site cleanup landed in the follow-up PR — all `{#each}` blocks
+			// now carry stable keys.
 			'svelte/no-at-html-tags': 'warn' // 9 sites — terminal output, status icons, tool category titles render trusted server-side strings; audit each before re-escalating.
 		}
 	},
