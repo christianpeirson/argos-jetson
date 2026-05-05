@@ -57,12 +57,12 @@ export async function detectHackRF(): Promise<boolean> {
 }
 
 /** Returns running native and Python processes (hackrf_sweep, grgsm_livemon, etc.) that hold the HackRF device. */
-export async function getBlockingProcesses(): Promise<{ pid: string; name: string }[]> {
+export async function getHackrfBlockingProcesses(): Promise<{ pid: string; name: string }[]> {
 	return findBlockingProcesses(HACKRF_PROCESS_CONFIGS);
 }
 
 /** SIGKILL-s all native and Python processes holding the HackRF, then waits for USB device release. */
-export async function killBlockingProcesses(): Promise<void> {
+export async function killHackrfBlockingProcesses(): Promise<void> {
 	return killMatchingProcesses(HACKRF_PROCESS_CONFIGS);
 }
 

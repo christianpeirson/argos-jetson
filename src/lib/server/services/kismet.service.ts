@@ -1,3 +1,4 @@
+import type { GPSPosition } from '$lib/gps/types';
 import { RawKismetDeviceSchema, SimplifiedKismetDeviceSchema } from '$lib/schemas/kismet';
 import { errMsg } from '$lib/server/api/error-utils';
 import { validateGpsCoords } from '$lib/server/db/geo';
@@ -8,10 +9,11 @@ import { safeParseWithHandling } from '$lib/utils/validation-error';
 
 import { hashMAC, offsetGps, signalToDistance } from './kismet/kismet-geo-helpers';
 import { buildRawDevice, buildSimplifiedDevice } from './kismet-service-transform';
-import type { DevicesResponse, GPSPosition, KismetDevice } from './kismet-service-types';
+import type { DevicesResponse, KismetDevice } from './kismet-service-types';
 
 // Re-export types for backward compatibility
-export type { DevicesResponse, GPSPosition, KismetDevice } from './kismet-service-types';
+export type { DevicesResponse, KismetDevice } from './kismet-service-types';
+export type { GPSPosition } from '$lib/gps/types';
 
 /**
  * Service layer for Kismet device operations

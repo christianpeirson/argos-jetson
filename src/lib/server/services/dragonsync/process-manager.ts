@@ -34,12 +34,7 @@ import {
 	startC2Subscriber,
 	stopC2Subscriber
 } from './c2-subscriber';
-import {
-	clearAllCaches,
-	getCachedDrones,
-	getCachedFpv,
-	getLastPollError as readLastPollError
-} from './state';
+import { clearAllCaches, getCachedDrones, getCachedFpv, readLastPollError } from './state';
 import { isServiceActive, startService, stopService } from './systemd-control';
 
 // Re-exports — routes import these from this module.

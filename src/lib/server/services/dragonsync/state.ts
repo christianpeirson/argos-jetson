@@ -40,7 +40,7 @@ export function setCachedFpv(next: DragonSyncFpvSignal[]): void {
 	cachedFpv = next;
 }
 
-export function getLastPollError(): string | null {
+export function readLastPollError(): string | null {
 	return lastPollError;
 }
 

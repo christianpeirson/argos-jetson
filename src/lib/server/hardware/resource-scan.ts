@@ -32,7 +32,7 @@ function updateDetection(
 }
 
 async function scanHackrfProcesses(state: Map<HardwareDevice, ResourceState>): Promise<void> {
-	const processes = await hackrfMgr.getBlockingProcesses();
+	const processes = await hackrfMgr.getHackrfBlockingProcesses();
 	if (processes.length > 0) {
 		const owner = processes[0].name;
 		logger.info('[ResourceManager] Orphan scan: HackRF process found', { owner });
@@ -56,7 +56,7 @@ async function scanHackrfContainers(state: Map<HardwareDevice, ResourceState>): 
 
 async function scanAlfa(state: Map<HardwareDevice, ResourceState>): Promise<void> {
 	const alfaIface = await alfaMgr.detectAdapter();
-	const processes = await alfaMgr.getBlockingProcesses();
+	const processes = await alfaMgr.getAlfaBlockingProcesses();
 	if (processes.length > 0) {
 		logger.info('[ResourceManager] Orphan scan: ALFA process found', {
 			process: processes[0].name

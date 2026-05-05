@@ -4,7 +4,7 @@
  */
 import maplibregl from 'maplibre-gl';
 
-import type { Affiliation } from '$lib/stores/tactical-map/kismet-store';
+import type { DeviceClassification } from '$lib/stores/tactical-map/kismet-store';
 
 import { resolveMapColor, SIGNAL_COLORS } from './map-colors';
 import type { RangeBand } from './map-geojson';
@@ -42,7 +42,7 @@ function propNum(props: Record<string, unknown>, key: string, fallback: number):
 
 export function buildDevicePopupContent(
 	props: Record<string, unknown>,
-	affiliations: Map<string, Affiliation>
+	affiliations: Map<string, DeviceClassification>
 ): PopupState {
 	const mac = propStr(props, 'mac', '');
 	return {

@@ -29,14 +29,6 @@ export interface KismetDevice {
 }
 
 /**
- * GPS coordinates for device location
- */
-export interface GPSPosition {
-	latitude: number;
-	longitude: number;
-}
-
-/**
  * Response from the Kismet device service
  */
 export interface DevicesResponse {

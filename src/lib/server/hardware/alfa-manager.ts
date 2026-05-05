@@ -33,11 +33,11 @@ export async function getMode(iface: string): Promise<'monitor' | 'managed' | 'u
 }
 
 /** Returns a list of running processes (kismet, wifite, bettercap, etc.) that may block ALFA adapter access. */
-export async function getBlockingProcesses(): Promise<{ pid: string; name: string }[]> {
+export async function getAlfaBlockingProcesses(): Promise<{ pid: string; name: string }[]> {
 	return findBlockingProcesses(ALFA_PROCESS_CONFIGS);
 }
 
 /** Forcefully kills all processes that may block ALFA adapter access, then waits for cleanup. */
-export async function killBlockingProcesses(): Promise<void> {
+export async function killAlfaBlockingProcesses(): Promise<void> {
 	return killMatchingProcesses(ALFA_PROCESS_CONFIGS);
 }

@@ -36,11 +36,11 @@ export async function detectB205(): Promise<boolean> {
 	}
 }
 
-export async function getBlockingProcesses(): Promise<{ pid: string; name: string }[]> {
+export async function getB205BlockingProcesses(): Promise<{ pid: string; name: string }[]> {
 	return findBlockingProcesses(B205_PROCESS_CONFIGS);
 }
 
-export async function killBlockingProcesses(): Promise<void> {
+export async function killB205BlockingProcesses(): Promise<void> {
 	return killMatchingProcesses(B205_PROCESS_CONFIGS);
 }
 
