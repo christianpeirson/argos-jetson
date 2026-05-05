@@ -9,7 +9,11 @@
 			"**/generated/**",
 			"**/.svelte-kit/**",
 			"**/build/**",
-			"**/dist/**"
+			"**/dist/**",
+			"**/*.test.ts",
+			"**/*.spec.ts",
+			"tests/**",
+			"src/lib/data/*-catalog.ts"
 		]
 	},
 	"health": {
