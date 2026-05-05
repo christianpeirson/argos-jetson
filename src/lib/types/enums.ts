@@ -27,7 +27,7 @@ export const enum SignalSource {
 	Other = 'other'
 }
 
-export const enum WebSocketEvent {
+export const enum WebSocketEventName {
 	Open = 'open',
 	Close = 'close',
 	Error = 'error',

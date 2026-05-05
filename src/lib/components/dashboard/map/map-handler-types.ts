@@ -3,7 +3,7 @@
  * Extracted to break the circular dependency between map-handlers.ts and map-handlers-helpers.ts.
  */
 
-import type { Affiliation } from '$lib/stores/tactical-map/kismet-store';
+import type { DeviceClassification } from '$lib/stores/tactical-map/kismet-store';
 
 export interface PopupState {
 	ssid: string;
@@ -17,7 +17,7 @@ export interface PopupState {
 	last_seen: number;
 	clientCount: number;
 	parentAP: string;
-	affiliation: Affiliation;
+	affiliation: DeviceClassification;
 }
 
 export interface TowerPopupState {

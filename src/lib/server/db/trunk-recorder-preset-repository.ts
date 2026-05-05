@@ -13,6 +13,8 @@ import type Database from 'better-sqlite3';
 
 import type { Preset, PresetInput } from '$lib/server/services/trunk-recorder/types';
 
+import { createStmtsCache } from './repo-helpers';
+
 /**
  * Row shape as stored in SQLite. JSON columns are TEXT; the repository
  * serializes/deserializes them at the boundary so callers only see domain
@@ -38,8 +40,6 @@ type Stmts = {
 	update: Database.Statement;
 	delete: Database.Statement;
 };
-
-const stmtsCache = new WeakMap<Database.Database, Stmts>();
 
 function prepareStatements(db: Database.Database): Stmts {
 	return {
@@ -67,14 +67,7 @@ function prepareStatements(db: Database.Database): Stmts {
 	};
 }
 
-function stmts(db: Database.Database): Stmts {
-	let s = stmtsCache.get(db);
-	if (!s) {
-		s = prepareStatements(db);
-		stmtsCache.set(db, s);
-	}
-	return s;
-}
+const stmts = createStmtsCache(prepareStatements);
 
 function rowToPreset(row: PresetRow): Preset {
 	return {

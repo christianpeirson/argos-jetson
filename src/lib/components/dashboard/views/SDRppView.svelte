@@ -6,21 +6,14 @@
 	import { activeView } from '$lib/stores/dashboard/dashboard-store';
 
 	import ToolViewWrapper from './ToolViewWrapper.svelte';
+	import { buildWsUrl, type ServiceStatus } from './vnc-tool-view-helpers';
 	import WebtakVncViewer from './webtak/webtak-vnc-viewer.svelte';
-
-	type ServiceStatus = 'checking' | 'running' | 'stopped' | 'error';
 
 	let serviceStatus = $state<ServiceStatus>('checking');
 	let errorMsg = $state('');
 	let wsUrl = $state('');
 	let vncKey = $state(0);
 	let stopping = $state(false);
-
-	function buildWsUrl(wsPort: number, wsPath: string): string {
-		const host = window.location.hostname;
-		const proto = window.location.protocol === 'https:' ? 'wss' : 'ws';
-		return `${proto}://${host}:${wsPort}${wsPath}`;
-	}
 
 	// fallow-ignore-next-line complexity
 	function applyStatusData(data: Record<string, unknown>): void {

@@ -1,4 +1,4 @@
-import { WebSocketEvent as WebSocketEventEnum } from '$lib/types/enums';
+import { WebSocketEventName as WebSocketEventEnum } from '$lib/types/enums';
 import { logger } from '$lib/utils/logger';
 
 import type { HeartbeatState } from './websocket-heartbeat';

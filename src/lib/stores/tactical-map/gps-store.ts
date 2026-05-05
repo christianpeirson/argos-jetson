@@ -4,7 +4,7 @@ import { GPSPositionSchema, GPSStatusSchema } from '$lib/schemas/stores';
 import { logger } from '$lib/utils/logger';
 import { safeParseWithHandling } from '$lib/utils/validation-error';
 
-export interface GPSPosition {
+interface GPSPosition {
 	lat: number;
 	lon: number;
 }

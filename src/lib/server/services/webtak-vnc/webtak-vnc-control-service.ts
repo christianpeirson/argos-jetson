@@ -16,6 +16,7 @@ import { errMsg } from '$lib/server/api/error-utils';
 import { delay } from '$lib/utils/delay';
 import { logger } from '$lib/utils/logger';
 
+import { createVncShutdownHandler, throwIfSpawnError } from '../vnc-common/spawn-helpers';
 import {
 	clearSpawnError,
 	getCurrentUrl,
@@ -40,19 +41,11 @@ const WS_PATH = '/websockify';
 
 // ───────────────────── shutdown handler (idempotent) ─────────────────────
 
-let shutdownHandlerRegistered = false;
-
-function registerShutdownHandler(): void {
-	if (shutdownHandlerRegistered) return;
-	shutdownHandlerRegistered = true;
-	const handler = () => {
-		logger.info('[webtak-vnc] received shutdown signal, tearing down stack');
-		void killAllProcesses();
-	};
-	process.once('SIGTERM', handler);
-	process.once('SIGINT', handler);
-	process.once('exit', handler);
-}
+const registerShutdownHandler = createVncShutdownHandler('webtak-vnc', killAllProcesses, [
+	'SIGTERM',
+	'SIGINT',
+	'exit'
+]);
 
 // ─────────────────────────────── start ──────────────────────────────────
 
@@ -96,8 +89,7 @@ async function spawnStackProcesses(url: string): Promise<void> {
 }
 
 function assertNoSpawnError(): void {
-	const err = getSpawnError();
-	if (err) throw err;
+	throwIfSpawnError(getSpawnError);
 }
 
 async function cleanupFailedStart(): Promise<WebtakVncControlResult> {

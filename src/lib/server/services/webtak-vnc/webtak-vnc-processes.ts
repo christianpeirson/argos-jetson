@@ -15,14 +15,22 @@
  */
 
 import { type ChildProcess, spawn } from 'child_process';
-import { connect as netConnect } from 'net';
 
 import { env } from '$lib/server/env';
 import { execFileAsync } from '$lib/server/exec';
-import { delay } from '$lib/utils/delay';
 import { logger } from '$lib/utils/logger';
 
 import { resolveBin } from '../vnc-common/resolve-bin';
+import {
+	createSpawnErrorTracker,
+	isPortOpen,
+	isWebsockifyResponding as isWebsockifyRespondingShared,
+	killOrphansByPort as killOrphansByPortShared,
+	killVncProcess,
+	spawnWebsockify as spawnWebsockifyShared,
+	spawnXtigervnc as spawnXtigervncShared,
+	waitForStackReady as waitForStackReadyShared
+} from '../vnc-common/spawn-helpers';
 import {
 	CHROMIUM_USER_DATA_DIR,
 	WEBTAK_DEPTH,
@@ -31,6 +39,8 @@ import {
 	WEBTAK_VNC_PORT,
 	WEBTAK_WS_PORT
 } from './webtak-vnc-types';
+
+const SCOPE = 'webtak-vnc';
 
 const resolveChromiumBin = () =>
 	resolveBin(
@@ -44,72 +54,48 @@ const resolveChromiumBin = () =>
 		'ARGOS_WEBTAK_CHROMIUM_BIN'
 	);
 
-const resolveXtigervncBin = () =>
-	resolveBin(
-		[env.ARGOS_VNC_XTIGERVNC_BIN, '/usr/bin/Xtigervnc', '/usr/local/bin/Xtigervnc'],
-		'Xtigervnc',
-		'ARGOS_VNC_XTIGERVNC_BIN'
-	);
-
-const resolveWebsockifyBin = () =>
-	resolveBin(
-		[env.ARGOS_VNC_WEBSOCKIFY_BIN, '/usr/bin/websockify', '/usr/local/bin/websockify'],
-		'websockify',
-		'ARGOS_VNC_WEBSOCKIFY_BIN'
-	);
-
 // ───────────────────────────── module state ──────────────────────────────
 
 let xvncProcess: ChildProcess | null = null;
 let chromiumProcess: ChildProcess | null = null;
 let websockifyProcess: ChildProcess | null = null;
 let currentUrl: string | null = null;
-// Latched error from any child's async 'error' event. Cleared at stack start.
-let spawnError: Error | null = null;
+const errorTracker = createSpawnErrorTracker(SCOPE);
 
 function recordSpawnError(label: string, err: Error): void {
-	logger.error(`[webtak-vnc] ${label} error`, { error: err.message });
-	if (!spawnError) spawnError = new Error(`${label}: ${err.message}`);
+	errorTracker.record(label, err);
 }
 
 export function clearSpawnError(): void {
-	spawnError = null;
+	errorTracker.clear();
 }
 
 export function getSpawnError(): Error | null {
-	return spawnError;
+	return errorTracker.get();
 }
 
 // ─────────────────────────────── spawn ──────────────────────────────────
 
 /** Spawn Xtigervnc as a combined X server + VNC server on `:99`. */
 export function spawnXtigervnc(): void {
-	xvncProcess = spawn(
-		resolveXtigervncBin(),
-		[
-			WEBTAK_VNC_DISPLAY,
-			'-geometry',
-			WEBTAK_GEOMETRY,
-			'-depth',
-			String(WEBTAK_DEPTH),
-			'-SecurityTypes',
-			'None',
-			'-localhost',
-			'-rfbport',
-			String(WEBTAK_VNC_PORT),
-			'-AlwaysShared'
-		],
-		{ stdio: 'ignore', detached: true }
+	xvncProcess = spawnXtigervncShared(
+		{
+			display: WEBTAK_VNC_DISPLAY,
+			geometry: WEBTAK_GEOMETRY,
+			depth: WEBTAK_DEPTH,
+			port: WEBTAK_VNC_PORT
+		},
+		{
+			scope: SCOPE,
+			onExit: () => {
+				xvncProcess = null;
+			},
+			onError: (err) => {
+				recordSpawnError('Xtigervnc', err);
+				xvncProcess = null;
+			}
+		}
 	);
-	xvncProcess.unref();
-	xvncProcess.on('exit', (code, signal) => {
-		logger.info('[webtak-vnc] Xtigervnc exited', { code, signal });
-		xvncProcess = null;
-	});
-	xvncProcess.on('error', (err) => {
-		recordSpawnError('Xtigervnc', err);
-		xvncProcess = null;
-	});
 }
 
 /** Spawn a Chromium instance rendering into the Xtigervnc display. */
@@ -147,100 +133,48 @@ export function spawnChromium(url: string): void {
 
 /** Spawn websockify to bridge the VNC port to a WebSocket. */
 export function spawnWebsockify(): void {
-	websockifyProcess = spawn(
-		resolveWebsockifyBin(),
-		[String(WEBTAK_WS_PORT), `localhost:${WEBTAK_VNC_PORT}`],
-		{ stdio: 'ignore', detached: true }
+	websockifyProcess = spawnWebsockifyShared(
+		{ wsPort: WEBTAK_WS_PORT, vncPort: WEBTAK_VNC_PORT },
+		{
+			scope: SCOPE,
+			onExit: () => {
+				websockifyProcess = null;
+			},
+			onError: (err) => {
+				recordSpawnError('websockify', err);
+				websockifyProcess = null;
+			}
+		}
 	);
-	websockifyProcess.unref();
-	websockifyProcess.on('exit', (code, signal) => {
-		logger.info('[webtak-vnc] websockify exited', { code, signal });
-		websockifyProcess = null;
-	});
-	websockifyProcess.on('error', (err) => {
-		recordSpawnError('websockify', err);
-		websockifyProcess = null;
-	});
 }
 
 // ─────────────────────────────── health ─────────────────────────────────
 
 /** Probe whether the VNC TCP port is accepting connections. */
 export function isVncPortOpen(): Promise<boolean> {
-	return new Promise((resolve) => {
-		const socket = netConnect({ host: 'localhost', port: WEBTAK_VNC_PORT });
-		const done = (ok: boolean) => {
-			socket.destroy();
-			resolve(ok);
-		};
-		socket.setTimeout(1000);
-		socket.once('connect', () => done(true));
-		socket.once('error', () => done(false));
-		socket.once('timeout', () => done(false));
-	});
+	return isPortOpen(WEBTAK_VNC_PORT);
 }
 
 /** Probe whether websockify is responding (any HTTP response is proof of life). */
 export async function isWebsockifyResponding(): Promise<boolean> {
-	try {
-		const res = await fetch(`http://localhost:${WEBTAK_WS_PORT}/`, {
-			method: 'HEAD',
-			signal: AbortSignal.timeout(1000)
-		});
-		// websockify returns 405 for a HEAD request — any response means alive.
-		return res.status > 0;
-	} catch {
-		return false;
-	}
+	return isWebsockifyRespondingShared(WEBTAK_WS_PORT);
 }
 
 /** Poll every 200ms for up to maxAttempts × 200ms until both services are alive. */
 export async function waitForStackReady(maxAttempts = 20): Promise<boolean> {
-	for (let i = 0; i < maxAttempts; i++) {
-		const [vncOk, wsOk] = await Promise.all([isVncPortOpen(), isWebsockifyResponding()]);
-		if (vncOk && wsOk) return true;
-		await delay(200);
-	}
-	return false;
+	return waitForStackReadyShared(WEBTAK_VNC_PORT, WEBTAK_WS_PORT, maxAttempts);
 }
 
 // ─────────────────────────────── cleanup ────────────────────────────────
 
-/** Send a signal to the whole process group, falling back to the direct child. */
-function sendSignal(ref: ChildProcess, signal: NodeJS.Signals): void {
-	const pid = ref.pid;
-	if (pid == null) return;
-	try {
-		process.kill(-pid, signal);
-	} catch {
-		try {
-			ref.kill(signal);
-		} catch {
-			/* already dead */
-		}
-	}
-}
-
 /** Send SIGTERM, wait 500ms, then SIGKILL any surviving process. */
 export async function killProcess(ref: ChildProcess | null, name: string): Promise<void> {
-	if (!ref || ref.pid == null || ref.killed) return;
-	sendSignal(ref, 'SIGTERM');
-	await delay(500);
-	if (!ref.killed) sendSignal(ref, 'SIGKILL');
-	logger.info('[webtak-vnc] killed process', { name });
+	return killVncProcess(ref, name, SCOPE);
 }
 
 /** Non-fatal fuser-kill of anything bound to the VNC or WebSocket ports. */
 export async function killOrphansByPort(): Promise<void> {
-	try {
-		await execFileAsync('/usr/bin/fuser', [
-			'-k',
-			`${WEBTAK_VNC_PORT}/tcp`,
-			`${WEBTAK_WS_PORT}/tcp`
-		]);
-	} catch {
-		/* fuser exits non-zero when nothing to kill — that's fine */
-	}
+	return killOrphansByPortShared(WEBTAK_VNC_PORT, WEBTAK_WS_PORT);
 }
 
 /** Remove the scratch Chromium profile to avoid "profile already in use" errors. */

@@ -3,9 +3,10 @@
 // Converts validated Kismet device data (simplified and raw formats)
 // into the unified KismetDevice interface used by the service layer.
 
+import type { GPSPosition } from '$lib/gps/types';
 import type { RawKismetDevice, SimplifiedKismetDevice } from '$lib/schemas/kismet';
 
-import type { GPSPosition, KismetDevice } from './kismet-service-types';
+import type { KismetDevice } from './kismet-service-types';
 
 const DEFAULT_SIGNAL = -100;
 

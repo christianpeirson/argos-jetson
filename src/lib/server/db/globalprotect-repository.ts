@@ -13,6 +13,8 @@ import type Database from 'better-sqlite3';
 
 import type { GlobalProtectConfig } from '$lib/types/globalprotect';
 
+import { createStmtsCache } from './repo-helpers';
+
 interface GpConfigRow {
 	id: string;
 	portal: string;
@@ -24,8 +26,6 @@ type Stmts = {
 	selectFirst: Database.Statement;
 	upsert: Database.Statement;
 };
-
-const stmtsCache = new WeakMap<Database.Database, Stmts>();
 
 function prepareStatements(db: Database.Database): Stmts {
 	return {
@@ -41,14 +41,7 @@ function prepareStatements(db: Database.Database): Stmts {
 	};
 }
 
-function stmts(db: Database.Database): Stmts {
-	let s = stmtsCache.get(db);
-	if (!s) {
-		s = prepareStatements(db);
-		stmtsCache.set(db, s);
-	}
-	return s;
-}
+const stmts = createStmtsCache(prepareStatements);
 
 function rowToConfig(row: GpConfigRow): GlobalProtectConfig {
 	return {

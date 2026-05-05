@@ -4,7 +4,7 @@
 
 	import Select from '$lib/components/chassis/forms/Select.svelte';
 	import { isolateDevice } from '$lib/stores/dashboard/dashboard-store';
-	import type { Affiliation } from '$lib/stores/tactical-map/kismet-store';
+	import type { DeviceClassification } from '$lib/stores/tactical-map/kismet-store';
 	import { setDeviceAffiliation } from '$lib/stores/tactical-map/kismet-store';
 
 	import { formatFrequency, formatTimeAgo } from './map-helpers';
@@ -22,7 +22,7 @@
 			last_seen: number;
 			clientCount: number;
 			parentAP: string;
-			affiliation: Affiliation;
+			affiliation: DeviceClassification;
 		};
 		onclose: () => void;
 	}
@@ -71,7 +71,7 @@
 				value={content.affiliation}
 				onChange={(v) => {
 					if (v === undefined) return;
-					const val = String(v) as Affiliation;
+					const val = String(v) as DeviceClassification;
 					setDeviceAffiliation(content.mac, val);
 					content = { ...content, affiliation: val };
 				}}

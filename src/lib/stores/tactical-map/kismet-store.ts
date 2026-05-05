@@ -3,7 +3,7 @@ import { type Writable, writable } from 'svelte/store';
 import type { KismetDevice } from '$lib/kismet/types';
 import type { LeafletMarker } from '$lib/types/map';
 
-export type Affiliation = 'friendly' | 'hostile' | 'unknown';
+export type DeviceClassification = 'friendly' | 'hostile' | 'unknown';
 
 export interface KismetState {
 	status: 'stopped' | 'starting' | 'running' | 'stopping';
@@ -11,7 +11,7 @@ export interface KismetState {
 	deviceMarkers: Map<string, LeafletMarker>;
 	deviceCount: number;
 	whitelistMAC: string;
-	deviceAffiliations: Map<string, Affiliation>;
+	deviceAffiliations: Map<string, DeviceClassification>;
 	message?: string; // Status message for agent context
 	distributions: {
 		byType: Map<string, number>;
@@ -45,7 +45,7 @@ export const setWhitelistMAC = (mac: string) => {
 	kismetStore.update((state) => ({ ...state, whitelistMAC: mac }));
 };
 
-export const setDeviceAffiliation = (mac: string, affiliation: Affiliation) => {
+export const setDeviceAffiliation = (mac: string, affiliation: DeviceClassification) => {
 	kismetStore.update((state) => {
 		const newAffiliations = new Map(state.deviceAffiliations);
 		if (affiliation === 'unknown') {

@@ -6,7 +6,7 @@
 	import { buildTerminalTheme } from '$lib/components/dashboard/terminal/terminal-theme';
 	import { updateSessionConnection } from '$lib/stores/dashboard/terminal-store';
 	import { themeStore } from '$lib/stores/theme-store.svelte';
-	import { WebSocketEvent } from '$lib/types/enums';
+	import { WebSocketEventName } from '$lib/types/enums';
 	import { logger } from '$lib/utils/logger';
 	import { BaseWebSocket } from '$lib/websocket/base';
 
@@ -35,13 +35,13 @@
 	 */
 	class TerminalWebSocket extends BaseWebSocket {
 		protected onConnected(): void {
-			/* wired via WebSocketEvent.Open listener below */
+			/* wired via WebSocketEventName.Open listener below */
 		}
 		protected onDisconnected(): void {
-			/* wired via WebSocketEvent.Close listener below */
+			/* wired via WebSocketEventName.Close listener below */
 		}
 		protected onError(_error: Error): void {
-			/* wired via WebSocketEvent.Error listener below */
+			/* wired via WebSocketEventName.Error listener below */
 		}
 		protected sendHeartbeat(): void {
 			/* no-op: terminal wire protocol has no heartbeat */
@@ -144,14 +144,14 @@
 		sock.onMessage('reattached', (data) => handleSessionReady(data, true));
 		sock.onMessage('exit', () => handleSessionExit());
 
-		sock.on(WebSocketEvent.Open, () => {
+		sock.on(WebSocketEventName.Open, () => {
 			connectionError = false;
 			consecutiveCloses = 0;
 			logger.info('Terminal WebSocket connected, sending init', { sessionId });
 			sock.send({ type: 'init', shell, sessionId });
 		});
 
-		sock.on(WebSocketEvent.Close, () => {
+		sock.on(WebSocketEventName.Close, () => {
 			updateSessionConnection(sessionId, false);
 			consecutiveCloses++;
 			if (!destroyed && consecutiveCloses > WS_MAX_RETRIES) {
@@ -164,7 +164,7 @@
 			}
 		});
 
-		sock.on(WebSocketEvent.Error, () => {
+		sock.on(WebSocketEventName.Error, () => {
 			updateSessionConnection(sessionId, false);
 		});
 

@@ -14,6 +14,7 @@ import { HardwareDevice } from '$lib/server/hardware/types';
 import { delay } from '$lib/utils/delay';
 import { logger } from '$lib/utils/logger';
 
+import { createVncShutdownHandler, throwIfSpawnError } from '../vnc-common/spawn-helpers';
 import {
 	centerSparrowWindow,
 	clearSpawnError,
@@ -39,18 +40,7 @@ const SPARROW_OWNER = 'sparrow-wifi';
 
 // ───────────────────── shutdown handler (idempotent) ─────────────────────
 
-let shutdownHandlerRegistered = false;
-
-function registerShutdownHandler(): void {
-	if (shutdownHandlerRegistered) return;
-	shutdownHandlerRegistered = true;
-	const handler = () => {
-		logger.info('[sparrow-vnc] received shutdown signal, tearing down stack');
-		void killAllProcesses();
-	};
-	process.once('SIGTERM', handler);
-	process.once('SIGINT', handler);
-}
+const registerShutdownHandler = createVncShutdownHandler('sparrow-vnc', killAllProcesses);
 
 // ─────────────────────────────── start ──────────────────────────────────
 
@@ -78,8 +68,7 @@ async function spawnStackProcesses(): Promise<void> {
 }
 
 function assertNoSpawnError(): void {
-	const err = getSpawnError();
-	if (err) throw err;
+	throwIfSpawnError(getSpawnError);
 }
 
 async function cleanupFailedStart(): Promise<SparrowVncControlResult> {

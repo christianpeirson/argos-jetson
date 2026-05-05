@@ -7,6 +7,7 @@
 	// records the AppEvent. No synthetic data; no fake responses.
 
 	import type { KismetDevice } from '$lib/types/kismet-device';
+	import { fmtNullable, fmtRelativeTime } from '$lib/utils/format-helpers';
 
 	interface Props {
 		device: KismetDevice | null;
@@ -29,17 +30,13 @@
 		return d.rssiDbm === null ? '—' : `${d.rssiDbm.toFixed(0)} dBm`;
 	}
 	function fmtVendor(d: KismetDevice): string {
-		return d.vendor ?? '—';
+		return fmtNullable(d.vendor);
 	}
 	function fmtSsid(d: KismetDevice): string {
-		return d.ssid ?? '—';
+		return fmtNullable(d.ssid);
 	}
 	function fmtLastSeen(d: KismetDevice): string {
-		if (d.lastSeen === null) return '—';
-		const sec = Math.floor(Math.max(0, Date.now() - d.lastSeen) / 1000);
-		if (sec < 60) return `${sec}s`;
-		if (sec < 3600) return `${Math.floor(sec / 60)}m`;
-		return `${Math.floor(sec / 3600)}h`;
+		return fmtRelativeTime(d.lastSeen);
 	}
 </script>
 
@@ -49,15 +46,21 @@
 	</header>
 	{#if device}
 		<div class="kv-list">
-			<div class="kv-row"><span class="k">MAC</span><span class="v mono">{device.mac}</span></div>
+			<div class="kv-row">
+				<span class="k">MAC</span><span class="v mono">{device.mac}</span>
+			</div>
 			<div class="kv-row">
 				<span class="k">VENDOR</span><span class="v">{fmtVendor(device)}</span>
 			</div>
-			<div class="kv-row"><span class="k">SSID</span><span class="v">{fmtSsid(device)}</span></div>
+			<div class="kv-row">
+				<span class="k">SSID</span><span class="v">{fmtSsid(device)}</span>
+			</div>
 			<div class="kv-row">
 				<span class="k">CHANNEL</span><span class="v num">{fmtChannel(device)}</span>
 			</div>
-			<div class="kv-row"><span class="k">RSSI</span><span class="v num">{fmtRssi(device)}</span></div>
+			<div class="kv-row">
+				<span class="k">RSSI</span><span class="v num">{fmtRssi(device)}</span>
+			</div>
 			<div class="kv-row">
 				<span class="k">SEEN</span><span class="v num">{fmtLastSeen(device)}</span>
 			</div>

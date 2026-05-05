@@ -36,18 +36,33 @@ export interface SpectrumFrame {
 
 /**
  * Per-device gain knobs — discriminated union so device-specific tuning
- * stays type-safe across the form switcher.
+ * stays type-safe across the wire and in the UI form switcher.
+ *
+ * HackRF ranges per `hackrf_sweep -h`:
+ *   - amp: 0 or 1   (RX RF amplifier on/off)
+ *   - lna: 0–40 dB  (RX LNA / IF gain, 8 dB steps)
+ *   - vga: 0–62 dB  (RX VGA / baseband gain, 2 dB steps)
+ *
+ * B205 ranges per UHD `multi_usrp::set_rx_gain`:
+ *   - rxGain:    0–76 dB nominal (AD9364; query device via
+ *                `usrp.get_rx_gain_range()` for exact bounds)
+ *   - bandwidth: optional Hz; defaults track sample rate
  */
 export type GainConfig =
 	| { readonly kind: 'hackrf'; readonly amp: 0 | 1; readonly lna: number; readonly vga: number }
 	| { readonly kind: 'b205'; readonly rxGain: number; readonly bandwidth?: number };
 
 /**
- * Sweep configuration accepted by the `/api/spectrum/start` endpoint.
+ * Sweep configuration accepted by `SpectrumSource.start()` (and the
+ * `/api/spectrum/start` endpoint that forwards into it).
  *
- * - `startFreq` / `endFreq`: in Hz (1e6 – 6e9 valid for both backends).
+ * - `startFreq` / `endFreq`: in Hz (1e6 – 6e9 valid for both HackRF and
+ *   B205, narrower for B205mini at 70e6 – 6e9).
  * - `binWidth`: in Hz (HackRF: 2445 – 5_000_000 per `hackrf_sweep -w`).
  * - `sampleRate`: B205-only; HackRF derives from `binWidth`.
+ *
+ * Source implementations validate device-specific bounds at `start()`
+ * time and reject invalid configs with a typed error.
  */
 export interface SpectrumConfig {
 	readonly startFreq: number;

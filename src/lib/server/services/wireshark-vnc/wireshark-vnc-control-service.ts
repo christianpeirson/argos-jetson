@@ -15,6 +15,7 @@ import { errMsg } from '$lib/server/api/error-utils';
 import { delay } from '$lib/utils/delay';
 import { logger } from '$lib/utils/logger';
 
+import { throwIfSpawnError } from '../vnc-common/spawn-helpers';
 import {
 	assertWiresharkGroupMember,
 	clearSpawnError,
@@ -89,8 +90,7 @@ async function spawnStackProcesses(iface: string, filter: string): Promise<void>
 }
 
 function assertNoSpawnError(): void {
-	const err = getSpawnError();
-	if (err) throw err;
+	throwIfSpawnError(getSpawnError);
 }
 
 async function cleanupFailedStart(): Promise<WiresharkVncControlResult> {

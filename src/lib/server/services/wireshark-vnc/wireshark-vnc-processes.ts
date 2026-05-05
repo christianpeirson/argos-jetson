@@ -12,14 +12,22 @@
 
 import { type ChildProcess, spawn } from 'child_process';
 import { readFile } from 'fs/promises';
-import { connect as netConnect } from 'net';
 
 import { env } from '$lib/server/env';
 import { execFileAsync } from '$lib/server/exec';
-import { delay } from '$lib/utils/delay';
 import { logger } from '$lib/utils/logger';
 
 import { resolveBin } from '../vnc-common/resolve-bin';
+import {
+	isPortOpen,
+	isWebsockifyResponding as isWebsockifyRespondingShared,
+	killOrphansByPort as killOrphansByPortShared,
+	killVncProcess,
+	setVncBackground as setVncBackgroundShared,
+	spawnWebsockify as spawnWebsockifyShared,
+	spawnXtigervnc as spawnXtigervncShared,
+	waitForStackReady as waitForStackReadyShared
+} from '../vnc-common/spawn-helpers';
 import {
 	WIRESHARK_DEPTH,
 	WIRESHARK_GEOMETRY,
@@ -28,20 +36,6 @@ import {
 	WIRESHARK_VNC_PORT,
 	WIRESHARK_WS_PORT
 } from './wireshark-vnc-types';
-
-const resolveXtigervncBin = () =>
-	resolveBin(
-		[env.ARGOS_VNC_XTIGERVNC_BIN, '/usr/bin/Xtigervnc', '/usr/local/bin/Xtigervnc'],
-		'Xtigervnc',
-		'ARGOS_VNC_XTIGERVNC_BIN'
-	);
-
-const resolveWebsockifyBin = () =>
-	resolveBin(
-		[env.ARGOS_VNC_WEBSOCKIFY_BIN, '/usr/bin/websockify', '/usr/local/bin/websockify'],
-		'websockify',
-		'ARGOS_VNC_WEBSOCKIFY_BIN'
-	);
 
 const resolveWiresharkBin = () =>
 	resolveBin(
@@ -231,50 +225,30 @@ export async function assertWiresharkGroupMember(): Promise<void> {
 
 /** Spawn Xtigervnc as a combined X server + VNC server on `:96`. */
 export function spawnXtigervnc(): void {
-	const child = spawn(
-		resolveXtigervncBin(),
-		[
-			WIRESHARK_VNC_DISPLAY,
-			'-geometry',
-			WIRESHARK_GEOMETRY,
-			'-depth',
-			String(WIRESHARK_DEPTH),
-			'-SecurityTypes',
-			'None',
-			'-localhost',
-			'-rfbport',
-			String(WIRESHARK_VNC_PORT),
-			'-AlwaysShared'
-		],
-		{ stdio: 'ignore', detached: true }
+	const child = spawnXtigervncShared(
+		{
+			display: WIRESHARK_VNC_DISPLAY,
+			geometry: WIRESHARK_GEOMETRY,
+			depth: WIRESHARK_DEPTH,
+			port: WIRESHARK_VNC_PORT
+		},
+		{
+			scope: 'wireshark-vnc',
+			onExit: () => {
+				if (state.xvncProcess === child) state.xvncProcess = null;
+			},
+			onError: (err) => {
+				recordSpawnError('Xtigervnc', err);
+				if (state.xvncProcess === child) state.xvncProcess = null;
+			}
+		}
 	);
 	state.xvncProcess = child;
-	child.unref();
-	child.on('exit', (code, signal) => {
-		logger.info('[wireshark-vnc] Xtigervnc exited', { code, signal });
-		if (state.xvncProcess === child) state.xvncProcess = null;
-	});
-	child.on('error', (err) => {
-		recordSpawnError('Xtigervnc', err);
-		if (state.xvncProcess === child) state.xvncProcess = null;
-	});
 }
 
 /** Set X11 background to match Lunaris dark theme (#111111). */
 export function setVncBackground(): void {
-	const bg = spawn('/usr/bin/xsetroot', ['-solid', '#111111'], {
-		env: { ...process.env, DISPLAY: WIRESHARK_VNC_DISPLAY },
-		stdio: 'ignore'
-	});
-	// Handler before unref: an unhandled 'error' event on xsetroot (missing
-	// binary, ENOEXEC) would otherwise crash the Node process. Cosmetic-only
-	// — a failed background set doesn't break the VNC stack.
-	bg.on('error', (err) => {
-		logger.warn('[wireshark-vnc] xsetroot spawn failed (cosmetic)', {
-			error: err.message
-		});
-	});
-	bg.unref();
+	setVncBackgroundShared(WIRESHARK_VNC_DISPLAY, 'wireshark-vnc');
 }
 
 /**
@@ -328,108 +302,49 @@ export function spawnWiresharkGui(iface: string, filter: string): void {
 
 /** Spawn websockify to bridge the VNC port to a WebSocket. */
 export function spawnWebsockify(): void {
-	const child = spawn(
-		resolveWebsockifyBin(),
-		[String(WIRESHARK_WS_PORT), `localhost:${WIRESHARK_VNC_PORT}`],
-		{ stdio: 'ignore', detached: true }
+	const child = spawnWebsockifyShared(
+		{ wsPort: WIRESHARK_WS_PORT, vncPort: WIRESHARK_VNC_PORT },
+		{
+			scope: 'wireshark-vnc',
+			onExit: () => {
+				if (state.websockifyProcess === child) state.websockifyProcess = null;
+			},
+			onError: (err) => {
+				recordSpawnError('websockify', err);
+				if (state.websockifyProcess === child) state.websockifyProcess = null;
+			}
+		}
 	);
 	state.websockifyProcess = child;
-	child.unref();
-	child.on('exit', (code, signal) => {
-		logger.info('[wireshark-vnc] websockify exited', { code, signal });
-		if (state.websockifyProcess === child) state.websockifyProcess = null;
-	});
-	child.on('error', (err) => {
-		recordSpawnError('websockify', err);
-		if (state.websockifyProcess === child) state.websockifyProcess = null;
-	});
 }
 
 // ─────────────────────────────── health ─────────────────────────────────
 
 /** Probe whether the VNC TCP port is accepting connections. */
 export function isVncPortOpen(): Promise<boolean> {
-	return new Promise((resolve) => {
-		const socket = netConnect({ host: 'localhost', port: WIRESHARK_VNC_PORT });
-		const done = (ok: boolean) => {
-			socket.destroy();
-			resolve(ok);
-		};
-		socket.setTimeout(1000);
-		socket.once('connect', () => done(true));
-		socket.once('error', () => done(false));
-		socket.once('timeout', () => done(false));
-	});
+	return isPortOpen(WIRESHARK_VNC_PORT);
 }
 
 /** Probe whether websockify is responding. */
 export async function isWebsockifyResponding(): Promise<boolean> {
-	try {
-		const res = await fetch(`http://localhost:${WIRESHARK_WS_PORT}/`, {
-			method: 'HEAD',
-			signal: AbortSignal.timeout(1000)
-		});
-		return res.status > 0;
-	} catch {
-		return false;
-	}
+	return isWebsockifyRespondingShared(WIRESHARK_WS_PORT);
 }
 
 /** Poll until both VNC and websockify are alive. */
 export async function waitForStackReady(maxAttempts = 25): Promise<boolean> {
-	for (let i = 0; i < maxAttempts; i++) {
-		const [vncOk, wsOk] = await Promise.all([isVncPortOpen(), isWebsockifyResponding()]);
-		if (vncOk && wsOk) return true;
-		await delay(200);
-	}
-	return false;
+	return waitForStackReadyShared(WIRESHARK_VNC_PORT, WIRESHARK_WS_PORT, maxAttempts);
 }
 
 // ─────────────────────────────── cleanup ────────────────────────────────
 
-function sendSignal(ref: ChildProcess, signal: NodeJS.Signals): void {
-	const pid = ref.pid;
-	if (pid == null) return;
-	try {
-		process.kill(-pid, signal);
-	} catch {
-		try {
-			ref.kill(signal);
-		} catch {
-			/* already dead */
-		}
-	}
-}
-
-/**
- * Send SIGTERM, wait 500ms, then SIGKILL any surviving process.
- *
- * Uses `exitCode` rather than `ref.killed`: `ref.killed` only reports
- * whether `.kill()` was invoked on this handle — it stays `false` when
- * the signal was sent via `process.kill(-pid, …)` (our group-signal
- * path above). `exitCode === null` is the accurate liveness check.
- */
-// fallow-ignore-next-line complexity
+/** Send SIGTERM, wait 500ms, then SIGKILL any surviving process. */
 export async function killProcess(ref: ChildProcess | null, name: string): Promise<void> {
-	if (!ref || ref.pid == null) return;
-	if (ref.exitCode !== null) return;
-	sendSignal(ref, 'SIGTERM');
-	await delay(500);
-	if (ref.exitCode === null) sendSignal(ref, 'SIGKILL');
-	logger.info('[wireshark-vnc] killed process', { name });
+	return killVncProcess(ref, name, 'wireshark-vnc');
 }
 
 /** Non-fatal fuser-kill of anything bound to the VNC or WebSocket ports. */
 export async function killOrphansByPort(): Promise<void> {
-	try {
-		await execFileAsync('/usr/bin/fuser', [
-			'-k',
-			`${WIRESHARK_VNC_PORT}/tcp`,
-			`${WIRESHARK_WS_PORT}/tcp`
-		]);
-	} catch {
-		/* fuser exits non-zero when nothing to kill */
-	}
+	return killOrphansByPortShared(WIRESHARK_VNC_PORT, WIRESHARK_WS_PORT);
 }
 
 /** Tear down all three processes in reverse spawn order. */

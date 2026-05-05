@@ -1,4 +1,4 @@
-import { WebSocketEvent as WebSocketEventEnum } from '$lib/types/enums';
+import { WebSocketEventName as WebSocketEventEnum } from '$lib/types/enums';
 
 export type WebSocketEventType = WebSocketEventEnum;
 

@@ -15,6 +15,7 @@
 	import { recordEvent } from '$lib/state/events.svelte';
 	import { kismetStore } from '$lib/state/kismet.svelte';
 	import type { KismetDevice, KismetSortKey } from '$lib/types/kismet-device';
+	import { fmtNullable, fmtRelativeTime } from '$lib/utils/format-helpers';
 
 	onMount(() => kismetStore.start());
 	onDestroy(() => kismetStore.stop());
@@ -41,17 +42,13 @@
 		return d.rssiDbm === null ? '—' : d.rssiDbm.toFixed(0);
 	}
 	function fmtVendor(d: KismetDevice): string {
-		return d.vendor ?? '—';
+		return fmtNullable(d.vendor);
 	}
 	function fmtSsid(d: KismetDevice): string {
-		return d.ssid ?? '—';
+		return fmtNullable(d.ssid);
 	}
 	function fmtLastSeen(d: KismetDevice): string {
-		if (d.lastSeen === null) return '—';
-		const sec = Math.floor(Math.max(0, Date.now() - d.lastSeen) / 1000);
-		if (sec < 60) return `${sec}s`;
-		if (sec < 3600) return `${Math.floor(sec / 60)}m`;
-		return `${Math.floor(sec / 3600)}h`;
+		return fmtRelativeTime(d.lastSeen);
 	}
 
 	function arrowFor(key: KismetSortKey): string {
@@ -89,7 +86,10 @@
 								class:num={col.num}
 								class:active={kismetStore.sortKey === col.key}
 							>
-								<button type="button" onclick={() => kismetStore.toggleSort(col.key)}>
+								<button
+									type="button"
+									onclick={() => kismetStore.toggleSort(col.key)}
+								>
 									{col.label}
 									<span class="arrow">{arrowFor(col.key)}</span>
 								</button>

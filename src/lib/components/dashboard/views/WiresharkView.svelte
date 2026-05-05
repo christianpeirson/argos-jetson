@@ -6,8 +6,11 @@
 	import { activeView } from '$lib/stores/dashboard/dashboard-store';
 
 	import ToolViewWrapper from './ToolViewWrapper.svelte';
+	import { buildWsUrl } from './vnc-tool-view-helpers';
 	import WebtakVncViewer from './webtak/webtak-vnc-viewer.svelte';
 
+	// Wireshark adds 'idle', 'starting', and 'disabled' to the base
+	// ServiceStatus exported from `vnc-tool-view-helpers`. Local alias.
 	type ServiceStatus =
 		| 'idle'
 		| 'checking'
@@ -26,12 +29,6 @@
 	let stopping = $state(false);
 	// Set once handleStop issues POST('stop'); onDestroy skips its fallback when true.
 	let stopSent = $state(false);
-
-	function buildWsUrl(wsPort: number, wsPath: string): string {
-		const host = window.location.hostname;
-		const proto = window.location.protocol === 'https:' ? 'wss' : 'ws';
-		return `${proto}://${host}:${wsPort}${wsPath}`;
-	}
 
 	function extractReason(data: Record<string, unknown>): string {
 		const err = data.error as string | undefined;

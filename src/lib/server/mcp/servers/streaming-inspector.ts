@@ -20,6 +20,23 @@ import {
 
 // $lib/server/env loads dotenv + Zod-validates on import.
 
+/**
+ * Construct an EventSource against `url` with the `X-API-Key` header
+ * injected via the custom `fetch` option. Centralises the dynamic
+ * `eventsource` import + header-merge boilerplate that every SSE
+ * inspector tool in this module repeats.
+ */
+async function createAuthedEventSource(url: string, apiKey: string): Promise<EventSource> {
+	const { EventSource } = await import('eventsource');
+	return new EventSource(url, {
+		fetch: (input, init) =>
+			fetch(input, {
+				...init,
+				headers: { ...init?.headers, 'X-API-Key': apiKey }
+			})
+	});
+}
+
 /** Parse SSE frame payload; on failure record an error and return null.
  *  Exported for unit-test access — the StreamingInspector class itself is
  *  private (instantiated + started inline at module load) so the `tools[]`
@@ -105,7 +122,7 @@ class StreamingInspector extends BaseMCPServer {
 				}
 
 				const fullUrl = `${apiUrl}${streamUrl}`;
-				const { EventSource } = await import('eventsource');
+				const eventSource = await createAuthedEventSource(fullUrl, apiKey);
 
 				return new Promise((resolve) => {
 					const events: Array<{ type: string; data: unknown; timestamp: number }> = [];
@@ -114,14 +131,6 @@ class StreamingInspector extends BaseMCPServer {
 					let eventCount = 0;
 					let byteCount = 0;
 					const eventTypes = new Set<string>();
-
-					const eventSource = new EventSource(fullUrl, {
-						fetch: (input, init) =>
-							fetch(input, {
-								...init,
-								headers: { ...init?.headers, 'X-API-Key': apiKey }
-							})
-					});
 
 					const handleEvent = (type: string, data: string) => {
 						const now = Date.now();
@@ -241,19 +250,11 @@ class StreamingInspector extends BaseMCPServer {
 				}
 
 				const fullUrl = `${apiUrl}${streamUrl}`;
-				const { EventSource } = await import('eventsource');
+				const eventSource = await createAuthedEventSource(fullUrl, apiKey);
 
 				return new Promise((resolve) => {
 					const startTime = Date.now();
 					let resolved = false;
-
-					const eventSource = new EventSource(fullUrl, {
-						fetch: (input, init) =>
-							fetch(input, {
-								...init,
-								headers: { ...init?.headers, 'X-API-Key': apiKey }
-							})
-					});
 
 					const onFirstEvent = (type: string, dataSize: number) => {
 						if (resolved) return;
@@ -362,7 +363,7 @@ class StreamingInspector extends BaseMCPServer {
 					return { status: 'ERROR', error: 'ARGOS_API_KEY not set in environment' };
 				}
 				const fullUrl = `${apiUrl}/api/spectrum/stream`;
-				const { EventSource } = await import('eventsource');
+				const eventSource = await createAuthedEventSource(fullUrl, apiKey);
 
 				return new Promise((resolve) => {
 					const events: Array<{ type: string; data: unknown; timestamp: number }> = [];
@@ -370,14 +371,6 @@ class StreamingInspector extends BaseMCPServer {
 					const startTime = Date.now();
 					let eventCount = 0;
 					let byteCount = 0;
-
-					const eventSource = new EventSource(fullUrl, {
-						fetch: (input, init) =>
-							fetch(input, {
-								...init,
-								headers: { ...init?.headers, 'X-API-Key': apiKey }
-							})
-					});
 
 					eventSource.addEventListener('frame', (event: { data: string }) => {
 						eventCount++;

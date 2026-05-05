@@ -13,6 +13,8 @@
 import type { CellLocation, ImsiRow, ImsiSortDir, ImsiSortKey } from '$lib/types/imsi-row';
 import { fetchTowerLocation } from '$lib/utils/gsm-tower-lookup';
 
+import { compareNullable } from './sort-helpers';
+
 const IMSI_POLL_MS = 5_000;
 const STATUS_POLL_MS = 3_000;
 
@@ -63,22 +65,6 @@ function normalize(d: ImsiApi): ImsiRow {
 		ci: asString(d.ci),
 		datetime: parseDatetime(d.datetime)
 	};
-}
-
-type Sortable = string | number;
-
-function rawCompare(a: Sortable, b: Sortable): number {
-	if (a < b) return -1;
-	if (a > b) return 1;
-	return 0;
-}
-
-// fallow-ignore-next-line complexity
-function compareNullable(a: Sortable | null, b: Sortable | null, dir: ImsiSortDir): number {
-	if (a === null) return b === null ? 0 : 1;
-	if (b === null) return -1;
-	const cmp = rawCompare(a, b);
-	return dir === 'asc' ? cmp : -cmp;
 }
 
 function defaultDirFor(key: ImsiSortKey): ImsiSortDir {

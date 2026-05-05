@@ -13,6 +13,8 @@
 
 import { existsSync } from 'fs';
 
+import { env } from '$lib/server/env';
+
 export class BinaryNotFoundError extends Error {
 	readonly binary: string;
 	readonly tried: readonly string[];
@@ -53,3 +55,19 @@ export function resolveBin(
 	}
 	throw new BinaryNotFoundError(binaryName, tried, envVar);
 }
+
+/** Resolve the Xtigervnc binary, common to every VNC stack service. */
+export const resolveXtigervncBin = (): string =>
+	resolveBin(
+		[env.ARGOS_VNC_XTIGERVNC_BIN, '/usr/bin/Xtigervnc', '/usr/local/bin/Xtigervnc'],
+		'Xtigervnc',
+		'ARGOS_VNC_XTIGERVNC_BIN'
+	);
+
+/** Resolve the websockify binary, common to every VNC stack service. */
+export const resolveWebsockifyBin = (): string =>
+	resolveBin(
+		[env.ARGOS_VNC_WEBSOCKIFY_BIN, '/usr/bin/websockify', '/usr/local/bin/websockify'],
+		'websockify',
+		'ARGOS_VNC_WEBSOCKIFY_BIN'
+	);

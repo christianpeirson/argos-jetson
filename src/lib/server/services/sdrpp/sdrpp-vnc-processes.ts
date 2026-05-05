@@ -10,14 +10,21 @@
  */
 
 import { type ChildProcess, spawn } from 'child_process';
-import { connect as netConnect } from 'net';
 
-import { env } from '$lib/server/env';
-import { execFileAsync } from '$lib/server/exec';
-import { delay } from '$lib/utils/delay';
 import { logger } from '$lib/utils/logger';
 
-import { resolveBin } from '../vnc-common/resolve-bin';
+import {
+	centerVncWindow,
+	createSpawnErrorTracker,
+	isPortOpen,
+	isWebsockifyResponding as isWebsockifyRespondingShared,
+	killOrphansByPort as killOrphansByPortShared,
+	killVncProcess,
+	setVncBackground as setVncBackgroundShared,
+	spawnWebsockify as spawnWebsockifyShared,
+	spawnXtigervnc as spawnXtigervncShared,
+	waitForStackReady as waitForStackReadyShared
+} from '../vnc-common/spawn-helpers';
 import {
 	SDRPP_DEPTH,
 	SDRPP_GEOMETRY,
@@ -28,108 +35,59 @@ import {
 	SDRPP_WS_PORT
 } from './sdrpp-vnc-types';
 
-const resolveXtigervncBin = () =>
-	resolveBin(
-		[env.ARGOS_VNC_XTIGERVNC_BIN, '/usr/bin/Xtigervnc', '/usr/local/bin/Xtigervnc'],
-		'Xtigervnc',
-		'ARGOS_VNC_XTIGERVNC_BIN'
-	);
-
-const resolveWebsockifyBin = () =>
-	resolveBin(
-		[env.ARGOS_VNC_WEBSOCKIFY_BIN, '/usr/bin/websockify', '/usr/local/bin/websockify'],
-		'websockify',
-		'ARGOS_VNC_WEBSOCKIFY_BIN'
-	);
+const SCOPE = 'sdrpp-vnc';
 
 // ───────────────────────────── module state ──────────────────────────────
 
 let xvncProcess: ChildProcess | null = null;
 let sdrppProcess: ChildProcess | null = null;
 let websockifyProcess: ChildProcess | null = null;
-// Latched error from any child's async 'error' event. Cleared at stack start.
-let spawnError: Error | null = null;
+const errorTracker = createSpawnErrorTracker(SCOPE);
 
 function recordSpawnError(label: string, err: Error): void {
-	logger.error(`[sdrpp-vnc] ${label} error`, { error: err.message });
-	if (!spawnError) spawnError = new Error(`${label}: ${err.message}`);
+	errorTracker.record(label, err);
 }
 
 export function clearSpawnError(): void {
-	spawnError = null;
+	errorTracker.clear();
 }
 
 export function getSpawnError(): Error | null {
-	return spawnError;
+	return errorTracker.get();
 }
 
 // ─────────────────────────────── spawn ──────────────────────────────────
 
 /** Spawn Xtigervnc as a combined X server + VNC server on `:97`. */
 export function spawnXtigervnc(): void {
-	xvncProcess = spawn(
-		resolveXtigervncBin(),
-		[
-			SDRPP_VNC_DISPLAY,
-			'-geometry',
-			SDRPP_GEOMETRY,
-			'-depth',
-			String(SDRPP_DEPTH),
-			'-SecurityTypes',
-			'None',
-			'-localhost',
-			'-rfbport',
-			String(SDRPP_VNC_PORT),
-			'-AlwaysShared'
-		],
-		{ stdio: 'ignore', detached: true }
+	xvncProcess = spawnXtigervncShared(
+		{
+			display: SDRPP_VNC_DISPLAY,
+			geometry: SDRPP_GEOMETRY,
+			depth: SDRPP_DEPTH,
+			port: SDRPP_VNC_PORT
+		},
+		{
+			scope: SCOPE,
+			onExit: () => {
+				xvncProcess = null;
+			},
+			onError: (err) => {
+				recordSpawnError('Xtigervnc', err);
+				xvncProcess = null;
+			}
+		}
 	);
-	xvncProcess.unref();
-	xvncProcess.on('exit', (code, signal) => {
-		logger.info('[sdrpp-vnc] Xtigervnc exited', { code, signal });
-		xvncProcess = null;
-	});
-	xvncProcess.on('error', (err) => {
-		recordSpawnError('Xtigervnc', err);
-		xvncProcess = null;
-	});
 }
 
 /** Set X11 background to match Lunaris dark theme (#111111). */
 export function setVncBackground(): void {
-	const bg = spawn('/usr/bin/xsetroot', ['-solid', '#111111'], {
-		env: { ...process.env, DISPLAY: SDRPP_VNC_DISPLAY },
-		stdio: 'ignore'
-	});
-	// Handler before unref: an unhandled 'error' event on xsetroot (missing
-	// binary, ENOEXEC) would otherwise crash the Node process. Cosmetic-only
-	// — a failed background set doesn't break the VNC stack.
-	bg.on('error', (err) => {
-		logger.warn('[sdrpp-vnc] xsetroot spawn failed (cosmetic)', {
-			error: err.message
-		});
-	});
-	bg.unref();
+	setVncBackgroundShared(SDRPP_VNC_DISPLAY, SCOPE);
 }
 
 /** Center the SDR++ window within the VNC framebuffer. */
 export function centerSdrppWindow(): void {
-	const script = `
-		WID=$(xdotool search --name "SDR++" 2>/dev/null | head -1)
-		if [ -n "$WID" ]; then
-			eval $(xdotool getwindowgeometry --shell "$WID")
-			SCREEN_W=$(xdpyinfo | grep dimensions | awk '{print $2}' | cut -dx -f1)
-			SCREEN_H=$(xdpyinfo | grep dimensions | awk '{print $2}' | cut -dx -f2)
-			X=$(( (SCREEN_W - WIDTH) / 2 ))
-			Y=$(( (SCREEN_H - HEIGHT) / 2 ))
-			xdotool windowmove "$WID" "$X" "$Y"
-		fi
-	`;
-	const proc = spawn('/bin/bash', ['-c', script], {
-		env: { ...process.env, DISPLAY: SDRPP_VNC_DISPLAY },
-		stdio: 'ignore'
-	});
-	proc.unref();
+	centerVncWindow(SDRPP_VNC_DISPLAY, 'SDR++');
 }
 
 /** Spawn the SDR++ GUI rendering into the Xtigervnc display.
@@ -158,99 +116,48 @@ export function spawnSdrppGui(): void {
 
 /** Spawn websockify to bridge the VNC port to a WebSocket. */
 export function spawnWebsockify(): void {
-	websockifyProcess = spawn(
-		resolveWebsockifyBin(),
-		[String(SDRPP_WS_PORT), `localhost:${SDRPP_VNC_PORT}`],
-		{ stdio: 'ignore', detached: true }
+	websockifyProcess = spawnWebsockifyShared(
+		{ wsPort: SDRPP_WS_PORT, vncPort: SDRPP_VNC_PORT },
+		{
+			scope: SCOPE,
+			onExit: () => {
+				websockifyProcess = null;
+			},
+			onError: (err) => {
+				recordSpawnError('websockify', err);
+				websockifyProcess = null;
+			}
+		}
 	);
-	websockifyProcess.unref();
-	websockifyProcess.on('exit', (code, signal) => {
-		logger.info('[sdrpp-vnc] websockify exited', { code, signal });
-		websockifyProcess = null;
-	});
-	websockifyProcess.on('error', (err) => {
-		recordSpawnError('websockify', err);
-		websockifyProcess = null;
-	});
 }
 
 // ─────────────────────────────── health ─────────────────────────────────
 
 /** Probe whether the VNC TCP port is accepting connections. */
 export function isVncPortOpen(): Promise<boolean> {
-	return new Promise((resolve) => {
-		const socket = netConnect({ host: 'localhost', port: SDRPP_VNC_PORT });
-		const done = (ok: boolean) => {
-			socket.destroy();
-			resolve(ok);
-		};
-		socket.setTimeout(1000);
-		socket.once('connect', () => done(true));
-		socket.once('error', () => done(false));
-		socket.once('timeout', () => done(false));
-	});
+	return isPortOpen(SDRPP_VNC_PORT);
 }
 
 /** Probe whether websockify is responding. */
 export async function isWebsockifyResponding(): Promise<boolean> {
-	try {
-		const res = await fetch(`http://localhost:${SDRPP_WS_PORT}/`, {
-			method: 'HEAD',
-			signal: AbortSignal.timeout(1000)
-		});
-		return res.status > 0;
-	} catch {
-		return false;
-	}
+	return isWebsockifyRespondingShared(SDRPP_WS_PORT);
 }
 
 /** Poll until both VNC and websockify are alive. */
 export async function waitForStackReady(maxAttempts = 25): Promise<boolean> {
-	for (let i = 0; i < maxAttempts; i++) {
-		const [vncOk, wsOk] = await Promise.all([isVncPortOpen(), isWebsockifyResponding()]);
-		if (vncOk && wsOk) return true;
-		await delay(200);
-	}
-	return false;
+	return waitForStackReadyShared(SDRPP_VNC_PORT, SDRPP_WS_PORT, maxAttempts);
 }
 
 // ─────────────────────────────── cleanup ────────────────────────────────
 
-function sendSignal(ref: ChildProcess, signal: NodeJS.Signals): void {
-	const pid = ref.pid;
-	if (pid == null) return;
-	try {
-		process.kill(-pid, signal);
-	} catch {
-		try {
-			ref.kill(signal);
-		} catch {
-			/* already dead */
-		}
-	}
-}
-
 /** Send SIGTERM, wait 500ms, then SIGKILL any surviving process. */
-// fallow-ignore-next-line complexity
 export async function killProcess(ref: ChildProcess | null, name: string): Promise<void> {
-	if (!ref || ref.pid == null || ref.killed) return;
-	sendSignal(ref, 'SIGTERM');
-	await delay(500);
-	if (!ref.killed) sendSignal(ref, 'SIGKILL');
-	logger.info('[sdrpp-vnc] killed process', { name });
+	return killVncProcess(ref, name, SCOPE);
 }
 
 /** Non-fatal fuser-kill of anything bound to the VNC or WebSocket ports. */
 export async function killOrphansByPort(): Promise<void> {
-	try {
-		await execFileAsync('/usr/bin/fuser', [
-			'-k',
-			`${SDRPP_VNC_PORT}/tcp`,
-			`${SDRPP_WS_PORT}/tcp`
-		]);
-	} catch {
-		/* fuser exits non-zero when nothing to kill */
-	}
+	return killOrphansByPortShared(SDRPP_VNC_PORT, SDRPP_WS_PORT);
 }
 
 /** Tear down all three processes in reverse spawn order. */

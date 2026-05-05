@@ -1,8 +1,8 @@
 <!-- @constitutional-exemption Article-IV-4.3 issue:#11 — Component state handling (loading/error/empty UI) deferred to UX improvement phase -->
 <script lang="ts">
-	import { onDestroy, onMount } from 'svelte';
-
 	import { browser } from '$app/environment';
+
+	import { bindPanelDragListeners } from './panel-drag-lifecycle';
 
 	/** Height of the always-visible tab bar strip */
 	const TAB_BAR_HEIGHT = 40;
@@ -90,25 +90,10 @@
 		onHeightChange?.(KEY_HEIGHTS[e.key]());
 	}
 
-	onMount(() => {
-		if (!browser) return;
-		window.addEventListener('mousemove', handleMouseMove);
-		window.addEventListener('mouseup', handleMouseUp);
-		window.addEventListener('touchmove', handleTouchMove);
-		window.addEventListener('touchend', handleMouseUp);
-		return () => {
-			window.removeEventListener('mousemove', handleMouseMove);
-			window.removeEventListener('mouseup', handleMouseUp);
-			window.removeEventListener('touchmove', handleTouchMove);
-			window.removeEventListener('touchend', handleMouseUp);
-		};
-	});
-
-	onDestroy(() => {
-		if (browser) {
-			document.body.style.cursor = '';
-			document.body.style.userSelect = '';
-		}
+	bindPanelDragListeners({
+		onMouseMove: handleMouseMove,
+		onTouchMove: handleTouchMove,
+		onPointerEnd: handleMouseUp
 	});
 </script>
 
