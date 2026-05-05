@@ -8,6 +8,8 @@ import type {
 	BluetoothDevice
 } from '$lib/types/bluedragon';
 
+import { createControlClient } from '../control-client';
+
 interface BluetoothState {
 	status: BluedragonStatus;
 	pid: number | null;
@@ -88,43 +90,10 @@ export async function fetchBluetoothDevices(): Promise<void> {
 	}
 }
 
-interface ControlResponse {
-	success?: boolean;
-	message?: string;
-	error?: string;
-}
-
-async function sendControlRequest(
-	body: Record<string, unknown>
-): Promise<{ ok: boolean; data: ControlResponse }> {
-	const res = await fetch('/api/bluedragon/control', {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		credentials: 'same-origin',
-		body: JSON.stringify(body)
-	});
-	const data = (await res.json()) as ControlResponse;
-	return { ok: res.ok && data.success === true, data };
-}
-
-function handleControlFailure(data: ControlResponse, failLabel: string): void {
-	setBluetoothError(data.error ?? data.message ?? failLabel);
-}
-
-async function runControl(body: Record<string, unknown>, failLabel: string): Promise<boolean> {
-	try {
-		const { ok, data } = await sendControlRequest(body);
-		if (!ok) {
-			handleControlFailure(data, failLabel);
-			return false;
-		}
-		await fetchBluetoothStatus();
-		return true;
-	} catch (err) {
-		setBluetoothError(err instanceof Error ? err.message : failLabel);
-		return false;
-	}
-}
+const runControl = createControlClient('/api/bluedragon/control', {
+	setError: setBluetoothError,
+	refreshStatus: fetchBluetoothStatus
+});
 
 export async function startBluedragonFromUi(
 	profile: BluedragonProfile = 'volume',

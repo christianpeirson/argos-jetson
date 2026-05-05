@@ -1,10 +1,9 @@
 <script lang="ts">
-	import { onDestroy, onMount } from 'svelte';
-
 	import { browser } from '$app/environment';
 	import { activePanel } from '$lib/stores/dashboard/dashboard-store';
 	import { themeStore } from '$lib/stores/theme-store.svelte';
 
+	import { bindPanelDragListeners } from './panel-drag-lifecycle';
 	import HardwareConfigPanel from './panels/HardwareConfigPanel.svelte';
 	import MapSettingsPanel from './panels/MapSettingsPanel.svelte';
 	import OnnetToolsPanel from './panels/OnnetToolsPanel.svelte';
@@ -73,26 +72,10 @@
 		}
 	}
 
-	onMount(() => {
-		if (!browser) return;
-		window.addEventListener('mousemove', handleMouseMove);
-		window.addEventListener('mouseup', handleMouseUp);
-		window.addEventListener('touchmove', handleTouchMove);
-		window.addEventListener('touchend', handleMouseUp);
-
-		return () => {
-			window.removeEventListener('mousemove', handleMouseMove);
-			window.removeEventListener('mouseup', handleMouseUp);
-			window.removeEventListener('touchmove', handleTouchMove);
-			window.removeEventListener('touchend', handleMouseUp);
-		};
-	});
-
-	onDestroy(() => {
-		if (browser) {
-			document.body.style.cursor = '';
-			document.body.style.userSelect = '';
-		}
+	bindPanelDragListeners({
+		onMouseMove: handleMouseMove,
+		onTouchMove: handleTouchMove,
+		onPointerEnd: handleMouseUp
 	});
 </script>
 

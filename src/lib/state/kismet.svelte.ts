@@ -14,6 +14,8 @@
 
 import type { KismetDevice, KismetSortDir, KismetSortKey } from '$lib/types/kismet-device';
 
+import { compareNullable } from './sort-helpers';
+
 const POLL_MS = 3_000;
 
 interface ApiResponse {
@@ -76,22 +78,6 @@ function normalize(d: Record<string, unknown>): KismetDevice | null {
 		rssiDbm: pickRssi(d),
 		lastSeen: pickLastSeen(d)
 	};
-}
-
-type Sortable = string | number;
-
-function rawCompare(a: Sortable, b: Sortable): number {
-	if (a < b) return -1;
-	if (a > b) return 1;
-	return 0;
-}
-
-// fallow-ignore-next-line complexity
-function compareNullable(a: Sortable | null, b: Sortable | null, dir: KismetSortDir): number {
-	if (a === null) return b === null ? 0 : 1;
-	if (b === null) return -1;
-	const cmp = rawCompare(a, b);
-	return dir === 'asc' ? cmp : -cmp;
 }
 
 function defaultDirFor(key: KismetSortKey): KismetSortDir {

@@ -13,6 +13,8 @@ import type {
 	DragonSyncStatusResult
 } from '$lib/types/dragonsync';
 
+import { createControlClient } from '../control-client';
+
 export interface UASState {
 	status: DragonSyncServiceStatus;
 	drones: Map<string, DragonSyncDrone>;
@@ -185,43 +187,10 @@ export async function fetchUASC2Signals(): Promise<void> {
 	}
 }
 
-interface ControlResponse {
-	success?: boolean;
-	message?: string;
-	error?: string;
-}
-
-async function sendControlRequest(
-	body: Record<string, unknown>
-): Promise<{ ok: boolean; data: ControlResponse }> {
-	const res = await fetch('/api/dragonsync/control', {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		credentials: 'same-origin',
-		body: JSON.stringify(body)
-	});
-	const data = (await res.json()) as ControlResponse;
-	return { ok: res.ok && data.success === true, data };
-}
-
-function handleControlFailure(data: ControlResponse, failLabel: string): void {
-	setUASError(data.error ?? data.message ?? failLabel);
-}
-
-async function runControl(body: Record<string, unknown>, failLabel: string): Promise<boolean> {
-	try {
-		const { ok, data } = await sendControlRequest(body);
-		if (!ok) {
-			handleControlFailure(data, failLabel);
-			return false;
-		}
-		await fetchUASStatus();
-		return true;
-	} catch (err) {
-		setUASError(err instanceof Error ? err.message : failLabel);
-		return false;
-	}
-}
+const runControl = createControlClient('/api/dragonsync/control', {
+	setError: setUASError,
+	refreshStatus: fetchUASStatus
+});
 
 export async function startDragonSyncFromUi(): Promise<boolean> {
 	return runControl({ action: 'start' }, 'start request failed');
