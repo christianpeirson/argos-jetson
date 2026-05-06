@@ -257,6 +257,8 @@ export class DatabaseCleanupService {
 			.all(hours);
 	}
 
+	// fallow-ignore-next-line unused-class-member
+	// Singleton chain fallow can't trace. Called via src/routes/api/db/cleanup/+server.ts:76 (via db.getCleanupService()).
 	/** Manual vacuum */
 	vacuum() {
 		logger.info('Running VACUUM', {}, 'vacuum-start');
@@ -278,6 +280,8 @@ export class DatabaseCleanupService {
 		return { before: before.size, after: after.size, saved };
 	}
 
+	// fallow-ignore-next-line unused-class-member
+	// Singleton chain fallow can't trace. Called via src/routes/api/db/cleanup/+server.ts:79 (via db.getCleanupService()).
 	/** Analyze database and update statistics */
 	analyze() {
 		this.db.exec('ANALYZE');

@@ -78,6 +78,8 @@ export class GlobalProtectService {
 		return GlobalProtectService.instance;
 	}
 
+	// fallow-ignore-next-line unused-class-member
+	// Singleton chain fallow can't trace. Called via bootstrap.ts:37.
 	async initialize(): Promise<void> {
 		this.loadConfig();
 		await this.cleanupOrphanedProcess();
@@ -92,10 +94,14 @@ export class GlobalProtectService {
 		return this.config;
 	}
 
+	// fallow-ignore-next-line unused-class-member
+	// Singleton chain fallow can't trace. Called via src/routes/api/globalprotect/config/+server.ts:14.
 	getConfig(): GlobalProtectConfig | null {
 		return this.config;
 	}
 
+	// fallow-ignore-next-line unused-class-member
+	// Singleton chain fallow can't trace. Called via src/routes/api/globalprotect/config/+server.ts:23.
 	persistConfig(config: Partial<GlobalProtectConfig>): GlobalProtectConfig {
 		const current = this.config ?? {
 			id: randomUUID(),
@@ -115,10 +121,14 @@ export class GlobalProtectService {
 
 	// -- Connection Management --
 
+	// fallow-ignore-next-line unused-class-member
+	// Singleton chain fallow can't trace. Called via src/routes/api/globalprotect/connection/+server.ts:15.
 	getOutput(): string[] {
 		return [...this.outputLines];
 	}
 
+	// fallow-ignore-next-line unused-class-member
+	// Singleton chain fallow can't trace. Called via src/routes/api/globalprotect/connection/+server.ts:14.
 	async getStatus(): Promise<GlobalProtectStatus> {
 		if (this.ocProcess && !this.ocProcess.killed) {
 			return this.currentStatus;
@@ -144,6 +154,8 @@ export class GlobalProtectService {
 		}
 	}
 
+	// fallow-ignore-next-line unused-class-member
+	// Singleton chain fallow can't trace. Called via src/routes/api/globalprotect/connection/+server.ts:24.
 	async connect(
 		portal: string,
 		username: string,
@@ -173,6 +185,8 @@ export class GlobalProtectService {
 		});
 	}
 
+	// fallow-ignore-next-line unused-class-member
+	// Singleton chain fallow can't trace. Called via src/routes/api/globalprotect/connection/+server.ts:32.
 	async disconnect(): Promise<GlobalProtectStatus> {
 		if (!this.ocProcess || this.ocProcess.killed) {
 			this.currentStatus = { status: 'disconnected' };

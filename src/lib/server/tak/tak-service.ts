@@ -73,6 +73,8 @@ export class TakService extends EventEmitter {
 		return TakService.instance;
 	}
 
+	// fallow-ignore-next-line unused-class-member
+	// Singleton chain fallow can't trace. Called via bootstrap.ts:32.
 	public async initialize() {
 		logger.info('[TakService] Initializing...');
 		this.config = loadTakConfig(this.db.rawDb);
@@ -82,6 +84,8 @@ export class TakService extends EventEmitter {
 		}
 	}
 
+	// fallow-ignore-next-line unused-class-member
+	// Singleton chain fallow can't trace. Called via src/routes/api/tak/connection/+server.ts:16.
 	/** Reload config from DB — call before connect() if config may have changed externally. */
 	public reloadConfig() {
 		this.config = loadTakConfig(this.db.rawDb);
@@ -110,6 +114,8 @@ export class TakService extends EventEmitter {
 		};
 	}
 
+	// fallow-ignore-next-line unused-class-member
+	// Singleton chain fallow can't trace. Called via src/routes/api/tak/connection/+server.ts:8.
 	public getStatus(): TakStatus {
 		const isOpen = !!this.tak?.open;
 		return {
@@ -233,6 +239,8 @@ export class TakService extends EventEmitter {
 		}, delay);
 	}
 
+	// fallow-ignore-next-line unused-class-member
+	// Singleton chain fallow can't trace. Called via src/routes/api/tak/connection/+server.ts:26.
 	public disconnect() {
 		this.shouldConnect = false;
 		this.saBroadcaster.stop();
@@ -250,11 +258,15 @@ export class TakService extends EventEmitter {
 		broadcastTakStatus(this.broadcastState(), 'disconnected');
 	}
 
+	// fallow-ignore-next-line unused-class-member
+	// Singleton chain fallow can't trace. Called via tak-sa-broadcaster.ts:120 (CotSender interface dispatch).
 	/** Sends a CoT message, throttled to max 1 update/sec per entity UID. */
 	public sendCot(cot: CoT) {
 		this.throttler.send(cot);
 	}
 
+	// fallow-ignore-next-line unused-class-member
+	// Singleton chain fallow can't trace. Called via src/routes/api/tak/config/+server.ts:52.
 	public async saveConfig(config: TakServerConfig) {
 		saveTakConfig(this.db.rawDb, config);
 		this.config = config;
