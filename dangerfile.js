@@ -108,8 +108,8 @@ function computeFormatOnlyLOC() {
 			const out = execSync(`git show --shortstat --format="" ${c.sha}`, {
 				encoding: 'utf8'
 			});
-			const ins = Number((out.match(/(\d+) insertion/) || [, 0])[1]);
-			const del = Number((out.match(/(\d+) deletion/) || [, 0])[1]);
+			const ins = Number((out.match(/(\d+) insertion/) || ['', 0])[1]);
+			const del = Number((out.match(/(\d+) deletion/) || ['', 0])[1]);
 			total += ins + del;
 			matched.push({ sha: c.sha.slice(0, 7), subject, loc: ins + del });
 		} catch {
