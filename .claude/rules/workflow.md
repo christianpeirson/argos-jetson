@@ -31,16 +31,16 @@ For ANY GitHub API operation: use `mcp__github__*` tools (github-mcp-server, rem
 
 **Routing matrix:**
 
-| Operation | Tool |
-| --- | --- |
-| Read repo file/structure/history | `mcp__github__get_file_contents` / `list_commits` / `list_branches` |
-| Search code/PRs/issues | `mcp__github__search_code` / `search_pull_requests` / `search_issues` |
-| PR create/read/update/merge | `mcp__github__create_pull_request` / `pull_request_read` / `update_pull_request` / `merge_pull_request` / `list_pull_requests` |
-| PR review | `mcp__github__pull_request_review_write` / `add_comment_to_pending_review` / `add_reply_to_pull_request_comment` |
-| Issues | `mcp__github__issue_write` / `issue_read` / `add_issue_comment` / `list_issues` |
-| Branches (remote) | `mcp__github__create_branch` / `list_branches` |
-| Releases / tags | `mcp__github__list_releases` / `get_latest_release` / `get_release_by_tag` / `list_tags` / `get_tag` |
-| CI / runs | `mcp__github__` actions toolset |
+| Operation                        | Tool                                                                                                                           |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Read repo file/structure/history | `mcp__github__get_file_contents` / `list_commits` / `list_branches`                                                            |
+| Search code/PRs/issues           | `mcp__github__search_code` / `search_pull_requests` / `search_issues`                                                          |
+| PR create/read/update/merge      | `mcp__github__create_pull_request` / `pull_request_read` / `update_pull_request` / `merge_pull_request` / `list_pull_requests` |
+| PR review                        | `mcp__github__pull_request_review_write` / `add_comment_to_pending_review` / `add_reply_to_pull_request_comment`               |
+| Issues                           | `mcp__github__issue_write` / `issue_read` / `add_issue_comment` / `list_issues`                                                |
+| Branches (remote)                | `mcp__github__create_branch` / `list_branches`                                                                                 |
+| Releases / tags                  | `mcp__github__list_releases` / `get_latest_release` / `get_release_by_tag` / `list_tags` / `get_tag`                           |
+| CI / runs                        | `mcp__github__` actions toolset                                                                                                |
 
 **`gh` CLI allow-list** (gaps github-mcp-server doesn't cover):
 
@@ -180,13 +180,14 @@ Assistant MUST NOT auto-proceed to the next phase. Prompt is non-skippable.
 4. Sentrux pre-push gate: `rescan` → `scan` → `check_rules` (quality_signal must not regress).
 5. `npm run build` in background (per `feedback_argos_commit_always_bg.md`). Do parallel work per Rule 9 while build runs.
 6. `git push -u origin <branch>` (pre-push hook fires once for the whole bundle ~13-25s).
-7. `mcp__github__create_pull_request` with body listing all bundled phases + per-phase commit SHAs + sentrux delta.
-8. CR loop per `feedback_pr_wait_pattern.md` — `ScheduleWakeup ~270s` then dual-check `mcp__github__pull_request_read` (status-check rollup) AND CR reviewThreads.
-9. Merge with `--admin` if Danger 2000-LOC cap warns OR if PR is doc-only / CR has nothing actionable (per `project_review_workflow.md`).
-10. Tag end-of-day: `git tag eod-YYYY-MM-DD <sha> && git push origin <tag>`.
-11. Cleanup worktree + post-merge sentrux scan from main checkout.
-12. ONE memory entry covering the full daily batch. ONE pointer line in MEMORY.md.
-13. Refresh phase board per Rule 8 — print FULL updated phase table marking all phases that landed.
+7. **PRE-PR LOC GATE** — run `git diff --stat origin/dev...HEAD | tail -1`. If `(insertions + deletions) > 2000`, **STOP**. Do NOT open one mega-PR. Split bundle along phase boundaries into N session-N PRs, each ≤2000 LOC, opened/merged sequentially. See `feedback_no_admin_bypass_daily_loc_cap.md` for the split protocol. Admin-bypass on session-N → dev PRs is **FORBIDDEN**.
+8. `mcp__github__create_pull_request` with body listing all bundled phases + per-phase commit SHAs + sentrux delta. (Repeat per split slice.)
+9. CR loop per `feedback_pr_wait_pattern.md` — `ScheduleWakeup ~270s` then dual-check `mcp__github__pull_request_read` (status-check rollup) AND CR reviewThreads.
+10. Merge ONLY when ALL required checks green. Admin override is reserved for `dev → main` rollup PRs only (per `feedback_rollup_pr_admin_squash.md`); session-N → dev PRs always wait for green CI. Doc-only PRs with green CI + no actionable CR may merge without further wait.
+11. Tag end-of-day: `git tag eod-YYYY-MM-DD <sha> && git push origin <tag>` (after FINAL slice if split).
+12. Cleanup worktree + post-merge sentrux scan from main checkout.
+13. ONE memory entry covering the full daily batch. ONE pointer line in MEMORY.md.
+14. Refresh phase board per Rule 8 — print FULL updated phase table marking all phases that landed.
 
 **WIP recovery checkpoint** (between phases): each phase end pushes `wip/YYYY-MM-DD-phase-N` with `git push --force-with-lease origin <wip-branch>`. NO PR opened. Wip branches deleted after end-of-day PR merges. This is the recovery path if the worktree is accidentally removed or the session crashes mid-day.
 

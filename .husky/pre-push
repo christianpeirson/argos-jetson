@@ -58,6 +58,22 @@ fi
 echo "[pre-push] typecheck (svelte-check)..."
 npm run typecheck
 
+# 2b) Prettier format:check — catches drift that ci.yml's format:check step
+#     also enforces. Without this gate the bundle ships unformatted to dev,
+#     and the dev → main rollup PR fails ci.yml. Discovered 2026-05-06 when
+#     PR #110 (8000 LOC) merged unformatted because pre-push had no format
+#     gate. Skip: SKIP_FORMAT_CHECK=1 git push ...
+if [ "${SKIP_FORMAT_CHECK:-0}" = "1" ]; then
+	echo "[pre-push] SKIP_FORMAT_CHECK=1 — skipping prettier format:check"
+else
+	echo "[pre-push] prettier format:check..."
+	if ! npm run format:check; then
+		echo "[pre-push] ❌ prettier drift — fix with: npm run format" >&2
+		echo "[pre-push]    Bypass: SKIP_FORMAT_CHECK=1 git push ..." >&2
+		exit 1
+	fi
+fi
+
 # 3) Full-repo ESLint scan (cached, blocking on any error)
 if [ "${SKIP_FULL_LINT:-0}" = "1" ]; then
 	echo "[pre-push] SKIP_FULL_LINT=1 — skipping full-repo eslint scan"
@@ -125,6 +141,32 @@ elif [ -f .fallowrc.json ]; then
 		echo "[pre-push]    Bypass:  SKIP_FALLOW=1 git push ..." >&2
 		exit 1
 	fi
+fi
+
+# 5) Daily-PR LOC advisory — non-blocking warning when bundle exceeds Danger
+#    2000-LOC PR-shape cap. Push proceeds (WIP recovery needs the remote ref);
+#    the warning prompts the operator to split BEFORE opening the PR.
+#    See ~/.claude/projects/-home-jetson2-code-Argos/memory/feedback_no_admin_bypass_daily_loc_cap.md
+#    Skip: SKIP_LOC_ADVISORY=1 git push ...
+if [ "${SKIP_LOC_ADVISORY:-0}" != "1" ] && git rev-parse --abbrev-ref --symbolic-full-name 'origin/dev' >/dev/null 2>&1; then
+	_loc_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
+	case "$_loc_branch" in
+		session-*|feature/*|chore/*|fix/*|docs/*)
+			_loc_stat=$(git diff --shortstat origin/dev...HEAD 2>/dev/null || echo "")
+			_loc_ins=$(echo "$_loc_stat" | grep -oE '[0-9]+ insertion' | grep -oE '[0-9]+' || echo 0)
+			_loc_del=$(echo "$_loc_stat" | grep -oE '[0-9]+ deletion' | grep -oE '[0-9]+' || echo 0)
+			_loc_total=$((_loc_ins + _loc_del))
+			if [ "$_loc_total" -gt 2000 ]; then
+				echo "" >&2
+				echo "[pre-push] ⚠️  DAILY-PR LOC ADVISORY: branch $_loc_branch is $_loc_total LOC vs origin/dev" >&2
+				echo "[pre-push]    Danger PR-shape cap = 2000 LOC. A PR opened with this diff will FAIL the required check." >&2
+				echo "[pre-push]    Admin-bypass on session-N → dev is FORBIDDEN. Split before opening the PR." >&2
+				echo "[pre-push]    Protocol: feedback_no_admin_bypass_daily_loc_cap.md" >&2
+				echo "[pre-push]    Skip this advisory: SKIP_LOC_ADVISORY=1 git push ..." >&2
+				echo "" >&2
+			fi
+			;;
+	esac
 fi
 
 echo "[pre-push] ✓ all checks passed"
