@@ -48,6 +48,8 @@ export class FrequencyCycler {
 	private frequencyBlacklist = new FrequencyBlacklist();
 
 	/** Initialize cycling with frequency configuration */
+	// Called via src/lib/server/hackrf/sweep-cycle-init.ts:146
+	// fallow-ignore-next-line unused-class-member
 	initializeCycling(config: CycleConfig): void {
 		this.cycleConfig = { ...config };
 		this.cycleState.currentIndex = 0;
@@ -82,43 +84,6 @@ export class FrequencyCycler {
 		if (this.cycleConfig.frequencies.length === 0) return null;
 		const nextIndex = (this.cycleState.currentIndex + 1) % this.cycleConfig.frequencies.length;
 		return this.cycleConfig.frequencies[nextIndex];
-	}
-
-	private scheduleCycleTimer(
-		onCycleComplete: (nextFreq: FrequencyConfig) => Promise<void>
-	): void {
-		this.cycleState.cycleTimer = setTimeout(() => {
-			this.cycleToNext(onCycleComplete).catch((error) => {
-				logger.error('Error cycling to next frequency', {
-					error: error instanceof Error ? error.message : String(error)
-				});
-			});
-		}, this.cycleConfig.cycleTime);
-	}
-
-	private shouldCycle(): boolean {
-		return this.cycleState.isCycling && this.cycleConfig.frequencies.length > 1;
-	}
-
-	/** Start automatic cycling */
-	startAutomaticCycling(
-		onCycleComplete: (nextFreq: FrequencyConfig) => Promise<void>,
-		onCycleStart?: (currentFreq: FrequencyConfig) => void
-	): void {
-		if (!this.shouldCycle()) {
-			logger.info('Single frequency mode - no cycling needed');
-			return;
-		}
-
-		const currentFreq = this.getCurrentFrequency();
-		if (currentFreq) onCycleStart?.(currentFreq);
-
-		this.scheduleCycleTimer(onCycleComplete);
-
-		logger.info('[RETRY] Automatic cycling started', {
-			currentFreq: currentFreq?.value,
-			nextCycleIn: this.cycleConfig.cycleTime
-		});
 	}
 
 	/** Cycle to next frequency */
@@ -157,21 +122,6 @@ export class FrequencyCycler {
 		}, this.cycleConfig.switchingTime);
 	}
 
-	/** Skip to specific frequency index */
-	skipToFrequency(index: number): FrequencyConfig | null {
-		if (index < 0 || index >= this.cycleConfig.frequencies.length) {
-			logger.warn('Invalid frequency index', {
-				index,
-				total: this.cycleConfig.frequencies.length
-			});
-			return null;
-		}
-		this.cycleState.currentIndex = index;
-		const frequency = this.getCurrentFrequency();
-		logger.info('Skipped to frequency', { index, frequency });
-		return frequency;
-	}
-
 	/** Stop cycling and clear timers */
 	stopCycling(): void {
 		this.cycleState.isCycling = false;
@@ -187,10 +137,14 @@ export class FrequencyCycler {
 		logger.info('[STOP] Frequency cycling stopped');
 	}
 
+	// Called via src/lib/server/hackrf/sweep-coordinator.ts:312
+	// fallow-ignore-next-line unused-class-member
 	blacklistFrequency(frequency: FrequencyConfig): void {
 		this.frequencyBlacklist.add(frequency);
 	}
 
+	// Called via src/lib/server/hackrf/sweep-cycle-init.ts:133
+	// fallow-ignore-next-line unused-class-member
 	normalizeFrequencies(
 		frequencies: (number | { frequency?: number; value?: number; unit?: string })[]
 	): FrequencyConfig[] {
@@ -198,49 +152,15 @@ export class FrequencyCycler {
 	}
 
 	/** Get current cycle state */
+	// Called via sweep-cycle-init.ts:165,217,238 and sweep-coordinator.ts:281 and sweep-health-checker.ts:49,191
+	// fallow-ignore-next-line unused-class-member
 	getCycleState(): CycleState {
 		return { ...this.cycleState };
 	}
 
-	/** Get cycle configuration */
-	getCycleConfig(): CycleConfig {
-		return { ...this.cycleConfig };
-	}
-
-	/** Get cycle progress information */
-	getCycleProgress(): {
-		currentIndex: number;
-		totalFrequencies: number;
-		progress: number;
-		currentFrequency: FrequencyConfig | null;
-		nextFrequency: FrequencyConfig | null;
-		blacklistedCount: number;
-	} {
-		const progress =
-			this.cycleConfig.frequencies.length > 0
-				? (this.cycleState.currentIndex / this.cycleConfig.frequencies.length) * 100
-				: 0;
-		return {
-			currentIndex: this.cycleState.currentIndex,
-			totalFrequencies: this.cycleConfig.frequencies.length,
-			progress,
-			currentFrequency: this.getCurrentFrequency(),
-			nextFrequency: this.getNextFrequency(),
-			blacklistedCount: this.frequencyBlacklist.size
-		};
-	}
-
-	/** Update cycle timing configuration */
-	updateTiming(cycleTime?: number, switchingTime?: number): void {
-		if (cycleTime !== undefined) this.cycleConfig.cycleTime = cycleTime;
-		if (switchingTime !== undefined) this.cycleConfig.switchingTime = switchingTime;
-		logger.info('[TIMER] Cycle timing updated', {
-			cycleTime: this.cycleConfig.cycleTime,
-			switchingTime: this.cycleConfig.switchingTime
-		});
-	}
-
 	/** Reset cycling state to initial values */
+	// Called via src/lib/server/hackrf/sweep-manager-lifecycle.ts:37
+	// fallow-ignore-next-line unused-class-member
 	resetCycling(): void {
 		this.stopCycling();
 		this.cycleState.currentIndex = 0;
@@ -254,19 +174,16 @@ export class FrequencyCycler {
 	}
 
 	/** Start cycle timer with callback */
+	// Called via src/lib/server/hackrf/sweep-cycle-init.ts:223
+	// fallow-ignore-next-line unused-class-member
 	startCycleTimer(callback: () => void): void {
 		this.cycleState.cycleTimer = setTimeout(callback, this.cycleConfig.cycleTime);
 	}
 
 	/** Start switch timer with callback */
+	// Called via src/lib/server/hackrf/sweep-cycle-init.ts:245
+	// fallow-ignore-next-line unused-class-member
 	startSwitchTimer(callback: () => void): void {
 		this.cycleState.switchTimer = setTimeout(callback, this.cycleConfig.switchingTime);
-	}
-
-	/** Clean up resources */
-	cleanup(): void {
-		this.stopCycling();
-		this.frequencyBlacklist.clear();
-		logger.info('[CLEANUP] FrequencyCycler cleanup completed');
 	}
 }

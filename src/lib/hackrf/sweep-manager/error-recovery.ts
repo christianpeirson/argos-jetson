@@ -32,10 +32,14 @@ export class RecoveryManager {
 		};
 	}
 
+	// Called via src/lib/server/hackrf/sweep-manager-lifecycle.ts:49 and sweep-health-checker.ts:62,63
+	// fallow-ignore-next-line unused-class-member
 	get isRecovering(): boolean {
 		return this.recovering;
 	}
 
+	// Called via src/lib/server/hackrf/sweep-manager-lifecycle.ts:47 and sweep-health-checker.ts:62
+	// fallow-ignore-next-line unused-class-member
 	get recoveryAttempts(): number {
 		return this.attempts;
 	}

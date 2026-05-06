@@ -2,11 +2,9 @@ import { logger } from '$lib/utils/logger';
 
 import {
 	analyzeError,
-	calculateHealthScore,
 	deriveDeviceStatus,
 	type DeviceState,
 	type ErrorAnalysis,
-	findMostProblematicFrequency,
 	type RecoveryConfig
 } from './error-analysis';
 import { RecoveryManager } from './error-recovery';
@@ -77,6 +75,8 @@ export class ErrorTracker {
 	}
 
 	/** Record an error and analyze it */
+	// Called via src/lib/server/hackrf/sweep-coordinator.ts:114,161,267,300 and sweep-cycle-init.ts:198
+	// fallow-ignore-next-line unused-class-member
 	recordError(
 		error: Error | string,
 		context: { frequency?: number; operation?: string } = {}
@@ -108,26 +108,26 @@ export class ErrorTracker {
 		return analysis;
 	}
 
+	// Called via src/lib/server/hackrf/sweep-coordinator.ts:318
+	// fallow-ignore-next-line unused-class-member
 	hasMaxConsecutiveErrors(): boolean {
 		return this.errorState.consecutiveErrors >= this.errorState.maxConsecutiveErrors;
 	}
 
+	// Called via src/lib/server/hackrf/sweep-coordinator.ts:318
+	// fallow-ignore-next-line unused-class-member
 	hasMaxFailuresPerMinute(): boolean {
 		return this.errorState.recentFailures.length >= this.errorState.maxFailuresPerMinute;
 	}
 
+	// Called via src/lib/server/hackrf/sweep-coordinator.ts:311
+	// fallow-ignore-next-line unused-class-member
 	shouldBlacklistFrequency(frequency: number): boolean {
 		return (this.errorState.frequencyErrors.get(frequency) || 0) >= 3;
 	}
 
-	getFrequenciesToBlacklist(): number[] {
-		const toBlacklist: number[] = [];
-		for (const [frequency, errorCount] of this.errorState.frequencyErrors.entries()) {
-			if (errorCount >= 3) toBlacklist.push(frequency);
-		}
-		return toBlacklist;
-	}
-
+	// Called via src/lib/server/hackrf/sweep-coordinator.ts:287 and sweep-health-checker.ts:170
+	// fallow-ignore-next-line unused-class-member
 	shouldAttemptRecovery(): boolean {
 		return this.recovery.shouldAttemptRecovery(
 			this.errorState.consecutiveErrors,
@@ -135,51 +135,16 @@ export class ErrorTracker {
 		);
 	}
 
+	// Called via src/lib/hackrf/sweep-manager/sweep-health-checker.ts:177
+	// fallow-ignore-next-line unused-class-member
 	startRecovery(): void {
 		this.deviceState.recoveryState = this.recovery.start();
 	}
 
-	completeRecovery(successful: boolean): void {
-		this.recovery.complete(successful);
-		if (successful) {
-			this.recordSuccess();
-		} else {
-			this.deviceState.recoveryState = 'cooling_down';
-		}
-	}
-
-	getErrorState(): ErrorState {
-		return { ...this.errorState, frequencyErrors: new Map(this.errorState.frequencyErrors) };
-	}
-
-	getDeviceState(): DeviceState {
-		return { ...this.deviceState };
-	}
-
+	// Called via src/lib/server/hackrf/sweep-manager-lifecycle.ts:40 and sweep-health-checker.ts:50,166
+	// fallow-ignore-next-line unused-class-member
 	getRecoveryStatus() {
 		return this.recovery.getStatus(this.errorState.consecutiveErrors, this.deviceState.status);
-	}
-
-	getErrorStatistics() {
-		return {
-			consecutiveErrors: this.errorState.consecutiveErrors,
-			recentFailureCount: this.errorState.recentFailures.length,
-			frequencyErrorCount: this.errorState.frequencyErrors.size,
-			mostProblematicFrequency: findMostProblematicFrequency(this.errorState.frequencyErrors),
-			deviceStatus: this.deviceState.status,
-			overallHealthScore: calculateHealthScore(
-				this.errorState.consecutiveErrors,
-				this.errorState.maxConsecutiveErrors,
-				this.errorState.recentFailures.length,
-				this.errorState.maxFailuresPerMinute,
-				this.deviceState.status
-			)
-		};
-	}
-
-	resetFrequencyErrors(frequency: number): void {
-		this.errorState.frequencyErrors.delete(frequency);
-		logger.info('[CLEANUP] Frequency error count reset', { frequency });
 	}
 
 	resetErrorTracking(): void {
@@ -214,10 +179,5 @@ export class ErrorTracker {
 		this.errorState.recentFailures = this.errorState.recentFailures.filter(
 			(timestamp) => timestamp > oneMinuteAgo
 		);
-	}
-
-	cleanup(): void {
-		this.resetErrorTracking();
-		logger.info('[CLEANUP] ErrorTracker cleanup completed');
 	}
 }
