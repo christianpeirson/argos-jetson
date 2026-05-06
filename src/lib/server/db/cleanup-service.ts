@@ -257,9 +257,9 @@ export class DatabaseCleanupService {
 			.all(hours);
 	}
 
-	// fallow-ignore-next-line unused-class-member
 	// Singleton chain fallow can't trace. Called via src/routes/api/db/cleanup/+server.ts:76 (via db.getCleanupService()).
 	/** Manual vacuum */
+	// fallow-ignore-next-line unused-class-member
 	vacuum() {
 		logger.info('Running VACUUM', {}, 'vacuum-start');
 		// Safe: page_count * page_size always returns a single numeric 'size' column
@@ -280,9 +280,9 @@ export class DatabaseCleanupService {
 		return { before: before.size, after: after.size, saved };
 	}
 
-	// fallow-ignore-next-line unused-class-member
 	// Singleton chain fallow can't trace. Called via src/routes/api/db/cleanup/+server.ts:79 (via db.getCleanupService()).
 	/** Analyze database and update statistics */
+	// fallow-ignore-next-line unused-class-member
 	analyze() {
 		this.db.exec('ANALYZE');
 		logger.info('Database statistics updated', {}, 'database-analyze-completed');

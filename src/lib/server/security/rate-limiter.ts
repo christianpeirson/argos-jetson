@@ -23,8 +23,8 @@ export class RateLimiter {
 	 * @param refillRate - Tokens added per second
 	 * @returns true if request is allowed, false if rate-limited
 	 */
-	// fallow-ignore-next-line unused-class-member
 	// globalThis chain fallow can't trace. Called via src/lib/server/middleware/rate-limit-middleware.ts:167.
+	// fallow-ignore-next-line unused-class-member
 	check(key: string, maxTokens: number, refillRate: number): boolean {
 		const now = Date.now();
 		const bucket = this.buckets.get(key) ?? { tokens: maxTokens, lastRefill: now };
@@ -47,8 +47,8 @@ export class RateLimiter {
 	 * Cleanup stale bucket entries to prevent memory growth.
 	 * Call periodically (e.g., every 5 minutes via setInterval).
 	 */
-	// fallow-ignore-next-line unused-class-member
 	// globalThis chain fallow can't trace. Called via src/lib/server/middleware/rate-limit-middleware.ts:19 (setInterval).
+	// fallow-ignore-next-line unused-class-member
 	cleanup(): void {
 		const cutoff = Date.now() - 300_000; // 5 minutes
 		for (const [key, bucket] of this.buckets) {

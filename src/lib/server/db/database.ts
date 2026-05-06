@@ -93,8 +93,8 @@ export class RFDatabase {
 	 * code path that depends on a migrated schema (new columns/indexes/tables)
 	 * should `await db.ready()` first.
 	 */
-	// fallow-ignore-next-line unused-class-member
 	// globalThis chain fallow can't trace. Called via getRFDatabaseReady() at database.ts:382 and kismet-signal-source.ts:188.
+	// fallow-ignore-next-line unused-class-member
 	ready(): Promise<void> {
 		return this.initPromise;
 	}
@@ -246,16 +246,16 @@ export class RFDatabase {
 		return persistedIds.size;
 	}
 
-	// fallow-ignore-next-line unused-class-member
 	// globalThis chain fallow can't trace. Called via src/routes/api/signals/+server.ts:32.
+	// fallow-ignore-next-line unused-class-member
 	findSignalsInRadius(query: SpatialQuery & TimeQuery): SignalMarker[] {
 		return signalRepo.findSignalsInRadius(this.db, this.statements, query);
 	}
 
 	// ── Spatial operations (delegated to spatialRepository) ────────────
 
-	// fallow-ignore-next-line unused-class-member
 	// globalThis chain fallow can't trace. Called via src/routes/api/signals/statistics/+server.ts:77.
+	// fallow-ignore-next-line unused-class-member
 	getAreaStatistics(
 		bounds: { minLat: number; maxLat: number; minLon: number; maxLon: number },
 		timeWindow: number = ONE_HOUR
@@ -291,8 +291,8 @@ export class RFDatabase {
 		}
 	}
 
-	// fallow-ignore-next-line unused-class-member
 	// globalThis chain fallow can't trace. Called via src/routes/api/db/cleanup/+server.ts:28.
+	// fallow-ignore-next-line unused-class-member
 	getCleanupService(): DatabaseCleanupService | null {
 		return this.cleanupService;
 	}
