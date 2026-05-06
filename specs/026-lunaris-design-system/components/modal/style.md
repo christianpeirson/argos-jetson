@@ -4,12 +4,12 @@ This document maps Carbon Modal's visual treatment to Lunaris tokens. Per spec-0
 
 ## Carbon source-of-truth files
 
-| File                                                                | Purpose                                                                                                                  |
-| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `node_modules/carbon-components-svelte/src/Modal/Modal.svelte`      | Component template + class-name authority (`bx--modal`, `bx--modal-container`, `bx--modal-header`, `bx--modal-content`)  |
-| `node_modules/@carbon/styles/scss/components/modal/_modal.scss`     | SCSS rules + token consumption (sizes, spacing, focus-trap chrome, scrolling-content treatment, danger variant)          |
-| `node_modules/@carbon/styles/scss/components/button/_button.scss`   | `bx--btn--primary`, `bx--btn--secondary`, `bx--btn--danger` button styling for the footer button row                     |
-| Upstream: `https://github.com/carbon-design-system/carbon-components-svelte/blob/v0.107.0/src/Modal/Modal.svelte` | Pinned upstream source for diff-against-update audits                                                                    |
+| File                                                                                                              | Purpose                                                                                                                 |
+| ----------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `node_modules/carbon-components-svelte/src/Modal/Modal.svelte`                                                    | Component template + class-name authority (`bx--modal`, `bx--modal-container`, `bx--modal-header`, `bx--modal-content`) |
+| `node_modules/@carbon/styles/scss/components/modal/_modal.scss`                                                   | SCSS rules + token consumption (sizes, spacing, focus-trap chrome, scrolling-content treatment, danger variant)         |
+| `node_modules/@carbon/styles/scss/components/button/_button.scss`                                                 | `bx--btn--primary`, `bx--btn--secondary`, `bx--btn--danger` button styling for the footer button row                    |
+| Upstream: `https://github.com/carbon-design-system/carbon-components-svelte/blob/v0.107.0/src/Modal/Modal.svelte` | Pinned upstream source for diff-against-update audits                                                                   |
 
 ## Anatomy
 
@@ -42,16 +42,16 @@ The Lunaris wrapper (`src/lib/components/chassis/forms/Modal.svelte:69-123`) int
 
 These overrides live (or will live) in `src/lib/styles/lunaris-carbon-theme.scss`. **Token additions are deferred** to whichever PR's chrome-devtools visual diff first exposes drift; do not edit the theme file unless the diff fails.
 
-| Carbon token            | Lunaris value     | Used by                                        | Citation                                                |
-| ----------------------- | ----------------- | ---------------------------------------------- | ------------------------------------------------------- |
-| `$overlay`              | `var(--overlay)`  | scrim behind `bx--modal`                       | `_modal.scss` (~L70 `.#{$prefix}--modal`)               |
-| `$layer-01`             | `var(--bg-1)`     | `bx--modal-container` background               | `_modal.scss` `.#{$prefix}--modal-container`            |
-| `$text-primary`         | `var(--ink)`      | heading + body text                            | shared with all surfaces                                |
-| `$text-secondary`       | `var(--ink-3)`    | `bx--modal-header__label` (eyebrow)            | `_modal.scss` `.#{$prefix}--modal-header__label`        |
-| `$border-subtle-01`     | `var(--line-1)`   | header / footer divider                        | `_modal.scss`                                           |
-| `$focus`                | `var(--accent)`   | focused button + close-X focus ring            | shared                                                  |
-| `$button-danger-primary`| `var(--red)`      | danger variant primary button background       | `_button.scss` + `_modal.scss` danger override          |
-| `$icon-primary`         | `var(--ink)`      | `bx--modal-close__icon`                        | `Modal.svelte:~415`                                     |
+| Carbon token             | Lunaris value    | Used by                                  | Citation                                         |
+| ------------------------ | ---------------- | ---------------------------------------- | ------------------------------------------------ |
+| `$overlay`               | `var(--overlay)` | scrim behind `bx--modal`                 | `_modal.scss` (~L70 `.#{$prefix}--modal`)        |
+| `$layer-01`              | `var(--bg-1)`    | `bx--modal-container` background         | `_modal.scss` `.#{$prefix}--modal-container`     |
+| `$text-primary`          | `var(--ink)`     | heading + body text                      | shared with all surfaces                         |
+| `$text-secondary`        | `var(--ink-3)`   | `bx--modal-header__label` (eyebrow)      | `_modal.scss` `.#{$prefix}--modal-header__label` |
+| `$border-subtle-01`      | `var(--line-1)`  | header / footer divider                  | `_modal.scss`                                    |
+| `$focus`                 | `var(--accent)`  | focused button + close-X focus ring      | shared                                           |
+| `$button-danger-primary` | `var(--red)`     | danger variant primary button background | `_button.scss` + `_modal.scss` danger override   |
+| `$icon-primary`          | `var(--ink)`     | `bx--modal-close__icon`                  | `Modal.svelte:~415`                              |
 
 ## Typography
 
@@ -61,23 +61,23 @@ Carbon Modal inherits `$heading-03` for `modalHeading`, `$label-01` for `modalLa
 
 Carbon offers `'xs' | 'sm' | 'md' | 'lg'`. The wrapper exposes Argos sizes `'sm' | 'md' | 'lg'` and maps:
 
-| Argos `size` | Carbon `size`              | Container max-width (Carbon source)  |
-| ------------ | -------------------------- | ------------------------------------ |
-| `'sm'`       | `'sm'`                     | 24rem                                |
-| `'md'`       | undefined (Carbon default) | 32rem                                |
-| `'lg'`       | `'lg'`                     | 48rem                                |
+| Argos `size` | Carbon `size`              | Container max-width (Carbon source) |
+| ------------ | -------------------------- | ----------------------------------- |
+| `'sm'`       | `'sm'`                     | 24rem                               |
+| `'md'`       | undefined (Carbon default) | 32rem                               |
+| `'lg'`       | `'lg'`                     | 48rem                               |
 
 Mapping shape is identical to Select / NumberInput precedent (`components/select/style.md`).
 
 Variants — controlled via boolean props:
 
-| Prop                  | Effect                                                                                |
-| --------------------- | ------------------------------------------------------------------------------------- |
-| `passiveModal`        | Hides the footer button row entirely (informational dialog).                          |
-| `danger`              | Primary button switches to `bx--btn--danger` red. For destructive confirmations.      |
-| `alert`               | Adds `role="alertdialog"` + WAI-ARIA semantics for urgent attention.                  |
-| `hasForm`             | Adds `bx--modal-content--with-form` (extra padding for form-field rhythm).            |
-| `hasScrollingContent` | Adds `bx--modal-scroll-content` + `tabindex="0"` so keyboard can scroll the body.     |
+| Prop                  | Effect                                                                            |
+| --------------------- | --------------------------------------------------------------------------------- |
+| `passiveModal`        | Hides the footer button row entirely (informational dialog).                      |
+| `danger`              | Primary button switches to `bx--btn--danger` red. For destructive confirmations.  |
+| `alert`               | Adds `role="alertdialog"` + WAI-ARIA semantics for urgent attention.              |
+| `hasForm`             | Adds `bx--modal-content--with-form` (extra padding for form-field rhythm).        |
+| `hasScrollingContent` | Adds `bx--modal-scroll-content` + `tabindex="0"` so keyboard can scroll the body. |
 
 ## What the wrapper adds
 

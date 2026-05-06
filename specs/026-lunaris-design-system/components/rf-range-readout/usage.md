@@ -19,20 +19,20 @@ This is the readout half of the SPECTRUM screen's `[CTL-01] SWEEP CONTROL` panel
 
 ## When NOT to use
 
-| Pattern | Why not | Right primitive |
-|---|---|---|
-| Editable RF gain (LNA/VGA discrete steps) | Editing belongs in interactive input affordance | `<Dropdown>` (chassis) — already correct in `SpectrumControls.svelte` |
-| Editable frequency input (start / stop MHz) | Numeric typing affordance | `<NumberInput>` (chassis) |
-| Continuous-range slider for RF parameter | HackRF gain is discrete; sliders are anti-pattern for stepped values | `<Dropdown>` for discrete; `<NumberInput>` for free-form |
-| KV detail row inside a vertical inspector panel | Wrong shape — tall rows with longer labels | `<StructuredList>` (chassis 9.1) |
-| Full-tile state displays (LOADING / ERROR / NO DATA) | Wrong shape — multi-line padded tile | `<PanelStatus>` (chassis 8.4) |
+| Pattern                                              | Why not                                                              | Right primitive                                                       |
+| ---------------------------------------------------- | -------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| Editable RF gain (LNA/VGA discrete steps)            | Editing belongs in interactive input affordance                      | `<Dropdown>` (chassis) — already correct in `SpectrumControls.svelte` |
+| Editable frequency input (start / stop MHz)          | Numeric typing affordance                                            | `<NumberInput>` (chassis)                                             |
+| Continuous-range slider for RF parameter             | HackRF gain is discrete; sliders are anti-pattern for stepped values | `<Dropdown>` for discrete; `<NumberInput>` for free-form              |
+| KV detail row inside a vertical inspector panel      | Wrong shape — tall rows with longer labels                           | `<StructuredList>` (chassis 9.1)                                      |
+| Full-tile state displays (LOADING / ERROR / NO DATA) | Wrong shape — multi-line padded tile                                 | `<PanelStatus>` (chassis 8.4)                                         |
 
 ## Argos surface inventory (Phase 9.2 — chassis only, no migrations yet)
 
-| Site | Phase | Status |
-|---|---|---|
-| `src/lib/components/screens/parts/SpectrumControls.svelte` (CTL-01 sweep panel readout strip) | 9.6 | Deferred — SPECTRUM parity audit will wire 6 readouts (LNA, VGA, AMP, START, STOP, RBW) |
-| `src/lib/components/screens/parts/Spectrum.svelte` (panel meta line frequency range) | 9.6 | Candidate |
+| Site                                                                                          | Phase | Status                                                                                  |
+| --------------------------------------------------------------------------------------------- | ----- | --------------------------------------------------------------------------------------- |
+| `src/lib/components/screens/parts/SpectrumControls.svelte` (CTL-01 sweep panel readout strip) | 9.6   | Deferred — SPECTRUM parity audit will wire 6 readouts (LNA, VGA, AMP, START, STOP, RBW) |
+| `src/lib/components/screens/parts/Spectrum.svelte` (panel meta line frequency range)          | 9.6   | Candidate                                                                               |
 
 The chassis ships in 9.2; consumer migrations land in 9.6 alongside the `MODE` ContentSwitcher (PEAK/AVG/LIVE) and full SPECTRUM screen parity work.
 
@@ -40,25 +40,33 @@ The chassis ships in 9.2; consumer migrations land in 9.6 alongside the `MODE` C
 
 ```svelte
 <script lang="ts">
-  import RfRangeReadout from '$lib/components/chassis/forms/RfRangeReadout.svelte';
-  import { spectrumConfigStore } from '$lib/state/spectrum.svelte';
+	import RfRangeReadout from '$lib/components/chassis/forms/RfRangeReadout.svelte';
+	import { spectrumConfigStore } from '$lib/state/spectrum.svelte';
 </script>
 
 <div class="readout-strip">
-  <RfRangeReadout label="START" value={(spectrumConfigStore.value.startFreq / 1e6).toFixed(3)} unit="MHz" />
-  <RfRangeReadout label="STOP" value={(spectrumConfigStore.value.endFreq / 1e6).toFixed(3)} unit="MHz" />
-  <RfRangeReadout label="RBW" value="8.0" unit="kHz" />
-  <RfRangeReadout label="LNA" value="24" unit="dB" />
-  <RfRangeReadout label="VGA" value="16" unit="dB" />
-  <RfRangeReadout label="AMP" value="OFF" />
+	<RfRangeReadout
+		label="START"
+		value={(spectrumConfigStore.value.startFreq / 1e6).toFixed(3)}
+		unit="MHz"
+	/>
+	<RfRangeReadout
+		label="STOP"
+		value={(spectrumConfigStore.value.endFreq / 1e6).toFixed(3)}
+		unit="MHz"
+	/>
+	<RfRangeReadout label="RBW" value="8.0" unit="kHz" />
+	<RfRangeReadout label="LNA" value="24" unit="dB" />
+	<RfRangeReadout label="VGA" value="16" unit="dB" />
+	<RfRangeReadout label="AMP" value="OFF" />
 </div>
 
 <style>
-  .readout-strip {
-    display: flex;
-    gap: 18px;
-    align-items: center;
-  }
+	.readout-strip {
+		display: flex;
+		gap: 18px;
+		align-items: center;
+	}
 </style>
 ```
 

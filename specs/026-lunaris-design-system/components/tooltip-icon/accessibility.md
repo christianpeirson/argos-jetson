@@ -4,15 +4,15 @@ Carbon TooltipIcon's a11y model treats the trigger as a real `<button type="butt
 
 ## WCAG criteria covered
 
-| SC | Criterion | How the wrapper satisfies it |
-|---|---|---|
-| **1.4.3** (AA) | Contrast (Minimum) | Token mapping: `$icon-secondary` on parent surface (≥4.5:1); popover `$text-inverse` on `$background-inverse` (≥7:1) when shown |
-| **1.4.13** (AA) | Content on Hover or Focus (dismissible/persistent/hoverable) | Carbon TooltipIcon: dismissible (Esc closes), persistent (`leaveDelayMs=300` default), hoverable (mouse can enter popover area) |
-| **2.1.1** (A) | Keyboard | Trigger is real `<button type="button">`; ENTER/SPACE activates `onClick`; ESC closes tooltip if open |
-| **2.4.3** (A) | Focus Order | Trigger is in TAB order by default (button is natively focusable) |
-| **2.5.5** (AAA) | Target Size | Default Carbon trigger button minimum is set by Carbon's `_tooltip.scss` (typically 24×24+ px); Argos `size=16` icons inside default trigger meet AA (24×24+) but not AAA (44×44). For touch-screen surfaces, override `size={24}` or `size={32}` |
-| **4.1.2** (A) | Name, Role, Value | **`tooltipText` is REQUIRED in the chassis Props interface** — chassis enforces at compile time so an unlabeled icon button cannot ship. `aria-describedby` references the hidden assistive-text span |
-| **4.1.3** (AA) | Status Messages | TooltipIcon does NOT toggle `aria-expanded` (it's not a popup-trigger pattern — it's an action button with descriptive text). Status announcements happen via `aria-describedby` content, which AT reads on focus |
+| SC              | Criterion                                                    | How the wrapper satisfies it                                                                                                                                                                                                                      |
+| --------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **1.4.3** (AA)  | Contrast (Minimum)                                           | Token mapping: `$icon-secondary` on parent surface (≥4.5:1); popover `$text-inverse` on `$background-inverse` (≥7:1) when shown                                                                                                                   |
+| **1.4.13** (AA) | Content on Hover or Focus (dismissible/persistent/hoverable) | Carbon TooltipIcon: dismissible (Esc closes), persistent (`leaveDelayMs=300` default), hoverable (mouse can enter popover area)                                                                                                                   |
+| **2.1.1** (A)   | Keyboard                                                     | Trigger is real `<button type="button">`; ENTER/SPACE activates `onClick`; ESC closes tooltip if open                                                                                                                                             |
+| **2.4.3** (A)   | Focus Order                                                  | Trigger is in TAB order by default (button is natively focusable)                                                                                                                                                                                 |
+| **2.5.5** (AAA) | Target Size                                                  | Default Carbon trigger button minimum is set by Carbon's `_tooltip.scss` (typically 24×24+ px); Argos `size=16` icons inside default trigger meet AA (24×24+) but not AAA (44×44). For touch-screen surfaces, override `size={24}` or `size={32}` |
+| **4.1.2** (A)   | Name, Role, Value                                            | **`tooltipText` is REQUIRED in the chassis Props interface** — chassis enforces at compile time so an unlabeled icon button cannot ship. `aria-describedby` references the hidden assistive-text span                                             |
+| **4.1.3** (AA)  | Status Messages                                              | TooltipIcon does NOT toggle `aria-expanded` (it's not a popup-trigger pattern — it's an action button with descriptive text). Status announcements happen via `aria-describedby` content, which AT reads on focus                                 |
 
 ## ARIA wiring done by Carbon
 
@@ -22,12 +22,12 @@ Carbon TooltipIcon auto-wires (`TooltipIcon.svelte` source):
 <button
 	type="button"
 	class="bx--tooltip__trigger"
-	aria-describedby={tooltipId}
+	aria-describedby="{tooltipId}"
 	{disabled}
-	onclick={...}
+	onclick="{...}"
 >
-	<span class="bx--assistive-text" id={tooltipId}>{tooltipText}</span>
-	<svelte:component this={icon} aria-hidden="true" {size} />
+	<span class="bx--assistive-text" id="{tooltipId}">{tooltipText}</span>
+	<svelte:component this="{icon}" aria-hidden="true" {size} />
 </button>
 ```
 
@@ -51,8 +51,8 @@ TooltipIcon wraps an EXISTING icon button. The icon glyph is the consumer's choi
 
 ```ts
 interface Props {
-	tooltipText: string;  // REQUIRED — no fallback
-	icon: Component;       // REQUIRED — no fallback
+	tooltipText: string; // REQUIRED — no fallback
+	icon: Component; // REQUIRED — no fallback
 	// ...
 }
 ```
@@ -61,23 +61,23 @@ TypeScript errors at the consumer call site if either is omitted. WCAG 4.1.2 vio
 
 ## Consumer obligations
 
-| Owner | Responsibility |
-|---|---|
-| Carbon | `aria-describedby`, `<span class="bx--assistive-text">`, `aria-hidden` on icon, ESC-to-close, hoverable popover |
-| Chassis | REQUIRED `tooltipText` and `icon` in TypeScript; default `enterDelayMs=100` / `leaveDelayMs=300`; bridge events to Svelte-5 callbacks |
+| Owner        | Responsibility                                                                                                                                                                                                                                                                                         |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Carbon       | `aria-describedby`, `<span class="bx--assistive-text">`, `aria-hidden` on icon, ESC-to-close, hoverable popover                                                                                                                                                                                        |
+| Chassis      | REQUIRED `tooltipText` and `icon` in TypeScript; default `enterDelayMs=100` / `leaveDelayMs=300`; bridge events to Svelte-5 callbacks                                                                                                                                                                  |
 | **Consumer** | Pass a **descriptive action-verb `tooltipText`** (e.g. `'Clear chat'`, `'Send message'`, `'Refresh devices'` — not `'More information'`); pick a semantically-matched icon (trash for delete, send for submit, etc.); for touch surfaces, set `size={24}` or `size={32}` to meet 2.5.5 AAA target size |
 
 ## Keyboard interactions
 
-| Key | Behavior |
-|---|---|
-| TAB | Moves focus to the trigger button (button is natively in TAB order) |
-| ENTER / SPACE on trigger | Activates `onClick` (action handler) |
-| ESC (tooltip open) | Closes tooltip, focus stays on trigger |
-| Mouse hover on trigger | Opens tooltip after `enterDelayMs` (100 ms default) |
-| Mouse leave from trigger | Closes after `leaveDelayMs` (300 ms default) |
-| Focus on trigger | Opens tooltip (focus = hover-equivalent for keyboard users) |
-| Blur from trigger | Closes tooltip |
+| Key                      | Behavior                                                            |
+| ------------------------ | ------------------------------------------------------------------- |
+| TAB                      | Moves focus to the trigger button (button is natively in TAB order) |
+| ENTER / SPACE on trigger | Activates `onClick` (action handler)                                |
+| ESC (tooltip open)       | Closes tooltip, focus stays on trigger                              |
+| Mouse hover on trigger   | Opens tooltip after `enterDelayMs` (100 ms default)                 |
+| Mouse leave from trigger | Closes after `leaveDelayMs` (300 ms default)                        |
+| Focus on trigger         | Opens tooltip (focus = hover-equivalent for keyboard users)         |
+| Blur from trigger        | Closes tooltip                                                      |
 
 The chassis wrapper does NOT add custom keyboard handlers.
 
@@ -90,12 +90,12 @@ The chassis wrapper does NOT add custom keyboard handlers.
 
 ## Screen reader behavior
 
-| AT | Behavior |
-|---|---|
-| NVDA | Reads "[tooltipText] button" on focus → ENTER activates → action fires |
-| JAWS | Same pattern; some versions read tooltipText via virtual cursor too |
-| VoiceOver (Mac) | Reads "[tooltipText] button" → SPACE/ENTER activates |
-| TalkBack | Reads trigger label + "button"; double-tap activates |
+| AT              | Behavior                                                               |
+| --------------- | ---------------------------------------------------------------------- |
+| NVDA            | Reads "[tooltipText] button" on focus → ENTER activates → action fires |
+| JAWS            | Same pattern; some versions read tooltipText via virtual cursor too    |
+| VoiceOver (Mac) | Reads "[tooltipText] button" → SPACE/ENTER activates                   |
+| TalkBack        | Reads trigger label + "button"; double-tap activates                   |
 
 ## Warm-handoff store note (`activeTooltipIcon`)
 

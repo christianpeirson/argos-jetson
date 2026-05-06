@@ -64,7 +64,7 @@
 			</div>
 
 			{#if detailRows.length > 0}
-				<StructuredList columns={columns} rows={detailRows} flush condensed />
+				<StructuredList {columns} rows={detailRows} flush condensed />
 			{:else}
 				<div class="evt-empty">No additional payload.</div>
 			{/if}

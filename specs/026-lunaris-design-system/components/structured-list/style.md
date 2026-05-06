@@ -58,17 +58,17 @@ Key shape:
 
 ## Lunaris token map
 
-| Carbon token                | Lunaris value                             | Notes                                                            |
-| --------------------------- | ----------------------------------------- | ---------------------------------------------------------------- |
-| `$text-primary` (cell text) | `var(--ink)` for values; `var(--ink-2)` for keys | Keys slightly muted to emphasise values                          |
-| `$text-secondary` (key cells) | `var(--ink-2)`                          | Used for the leading `<StructuredListCell>` (the "key" column)   |
-| `$border-subtle` (row sep)  | `var(--border)` (#2E2E2E) 1 px            | Lower-contrast than `--border-strong`; rows are quiet            |
-| `$layer-hover` (row hover)  | `var(--bg-1)` (#161616)                   | Subtle lift on hover for selectable rows                         |
-| `$layer-selected`           | `var(--bg-2)` (#1A1A1A)                   | Selected row in selection mode                                   |
-| `$focus`                    | `var(--accent)`                           | 2-px outline on focused selectable row                           |
-| `$icon-primary` (sel check) | `var(--accent)`                           | Checkmark icon in selected row's trailing cell                   |
-| `body-compact-01` keys      | `var(--mk2-fs-3) / 1.4 var(--mk2-f-mono)` | Geist Mono UPPERCASE for tactical surfaces (key labels)          |
-| `body-compact-01` values    | `var(--mk2-fs-3) / 1.4 var(--mk2-f-mono)` | Geist Mono mixed case for values (BSSIDs, IMSIs, freq strings)   |
+| Carbon token                  | Lunaris value                                    | Notes                                                          |
+| ----------------------------- | ------------------------------------------------ | -------------------------------------------------------------- |
+| `$text-primary` (cell text)   | `var(--ink)` for values; `var(--ink-2)` for keys | Keys slightly muted to emphasise values                        |
+| `$text-secondary` (key cells) | `var(--ink-2)`                                   | Used for the leading `<StructuredListCell>` (the "key" column) |
+| `$border-subtle` (row sep)    | `var(--border)` (#2E2E2E) 1 px                   | Lower-contrast than `--border-strong`; rows are quiet          |
+| `$layer-hover` (row hover)    | `var(--bg-1)` (#161616)                          | Subtle lift on hover for selectable rows                       |
+| `$layer-selected`             | `var(--bg-2)` (#1A1A1A)                          | Selected row in selection mode                                 |
+| `$focus`                      | `var(--accent)`                                  | 2-px outline on focused selectable row                         |
+| `$icon-primary` (sel check)   | `var(--accent)`                                  | Checkmark icon in selected row's trailing cell                 |
+| `body-compact-01` keys        | `var(--mk2-fs-3) / 1.4 var(--mk2-f-mono)`        | Geist Mono UPPERCASE for tactical surfaces (key labels)        |
+| `body-compact-01` values      | `var(--mk2-fs-3) / 1.4 var(--mk2-f-mono)`        | Geist Mono mixed case for values (BSSIDs, IMSIs, freq strings) |
 
 ---
 
@@ -76,13 +76,13 @@ Key shape:
 
 Carbon ships two density modes via `condensed` boolean prop. Lunaris adopts both.
 
-| Argos surface           | Density   | Carbon `condensed` | Cell block padding | Key column width | Value column width |
-| ----------------------- | --------- | ------------------ | ------------------ | ---------------- | ------------------ |
-| Event detail dialog     | normal    | `false`            | 16 px              | 30 % (~120 px)   | 70 %               |
-| IMSI inspector pane     | compact   | `true`             | 8 px               | 35 % (~96 px)    | 65 %               |
-| AP detail pane          | compact   | `true`             | 8 px               | 30 % (~88 px)    | 70 %               |
-| Session detail pane     | compact   | `true`             | 8 px               | 30 % (~88 px)    | 70 %               |
-| Mission summary modal   | normal    | `false`            | 16 px              | 25 % (~140 px)   | 75 %               |
+| Argos surface         | Density | Carbon `condensed` | Cell block padding | Key column width | Value column width |
+| --------------------- | ------- | ------------------ | ------------------ | ---------------- | ------------------ |
+| Event detail dialog   | normal  | `false`            | 16 px              | 30 % (~120 px)   | 70 %               |
+| IMSI inspector pane   | compact | `true`             | 8 px               | 35 % (~96 px)    | 65 %               |
+| AP detail pane        | compact | `true`             | 8 px               | 30 % (~88 px)    | 70 %               |
+| Session detail pane   | compact | `true`             | 8 px               | 30 % (~88 px)    | 70 %               |
+| Mission summary modal | normal  | `false`            | 16 px              | 25 % (~140 px)   | 75 %               |
 
 Touch-target compliance for selection-mode rows is achieved by full-row click areas — see `accessibility.md` for WCAG 2.5.8 reasoning.
 
@@ -100,14 +100,14 @@ Touch-target compliance for selection-mode rows is achieved by full-row click ar
 
 Per Carbon `structured-list/style.mdx` confirmed against source SCSS:
 
-| State                   | Border (Lunaris)               | Fill (Lunaris)            | Cell text                                        |
-| ----------------------- | ------------------------------ | ------------------------- | ------------------------------------------------ |
-| Default row             | `var(--border)` 1 px bottom    | transparent               | key `var(--ink-2)`, value `var(--ink)`           |
-| Hover (selectable mode) | unchanged                      | `var(--bg-1)`             | unchanged                                        |
-| Selected (sel mode)     | unchanged                      | `var(--bg-2)`             | unchanged + `var(--accent)` checkmark trailing   |
-| Focus (sel mode)        | + 2-px ring `var(--accent)` outside row | unchanged        | unchanged                                        |
-| Disabled (sel mode row) | unchanged                      | transparent               | `var(--ink-5)` cell text                         |
-| Header row              | `var(--border-strong)` 1 px bottom | transparent           | `var(--ink-2)` UPPER mono                        |
+| State                   | Border (Lunaris)                        | Fill (Lunaris) | Cell text                                      |
+| ----------------------- | --------------------------------------- | -------------- | ---------------------------------------------- |
+| Default row             | `var(--border)` 1 px bottom             | transparent    | key `var(--ink-2)`, value `var(--ink)`         |
+| Hover (selectable mode) | unchanged                               | `var(--bg-1)`  | unchanged                                      |
+| Selected (sel mode)     | unchanged                               | `var(--bg-2)`  | unchanged + `var(--accent)` checkmark trailing |
+| Focus (sel mode)        | + 2-px ring `var(--accent)` outside row | unchanged      | unchanged                                      |
+| Disabled (sel mode row) | unchanged                               | transparent    | `var(--ink-5)` cell text                       |
+| Header row              | `var(--border-strong)` 1 px bottom      | transparent    | `var(--ink-2)` UPPER mono                      |
 
 ---
 

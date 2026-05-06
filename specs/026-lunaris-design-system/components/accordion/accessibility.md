@@ -29,29 +29,30 @@ Per Carbon Accordion source confirms (ARIA Authoring Practices "accordion" patte
 
 ### Keyboard interaction
 
-| Key | Behavior |
-| --- | --- |
-| Tab | Move focus into accordion (lands on first heading button). Tab again moves through subsequent heading buttons + any focusable children inside open bodies. |
-| Shift+Tab | Move focus backward. |
-| Space / Enter | Toggle the focused heading's expand state (open ↔ closed). |
-| Up / Down | Carbon does NOT ship arrow-key cycling between heading buttons; the W3C accordion APG treats arrow keys as optional. AT users use Tab to move between headings. |
-| Home / End | Carbon does NOT ship Home/End; APG considers them optional. |
+| Key           | Behavior                                                                                                                                                        |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tab           | Move focus into accordion (lands on first heading button). Tab again moves through subsequent heading buttons + any focusable children inside open bodies.      |
+| Shift+Tab     | Move focus backward.                                                                                                                                            |
+| Space / Enter | Toggle the focused heading's expand state (open ↔ closed).                                                                                                     |
+| Up / Down     | Carbon does NOT ship arrow-key cycling between heading buttons; the W3C accordion APG treats arrow keys as optional. AT users use Tab to move between headings. |
+| Home / End    | Carbon does NOT ship Home/End; APG considers them optional.                                                                                                     |
 
 ### Color contrast (Carbon's audit floor)
 
 Carbon's stock theme passes WCAG 2.1 AA. Lunaris token overrides MUST preserve those ratios.
 
-| Pair                                              | Min contrast (AA) | Lunaris target                                          | Status                                              |
-| ------------------------------------------------- | ----------------- | ------------------------------------------------------- | --------------------------------------------------- |
-| Heading text (collapsed) on `--bg`                | 4.5:1             | `var(--ink-2)` on `var(--bg)`                           | ≈ 11.4:1 ✓                                           |
-| Heading text (expanded) on `--bg`                 | 4.5:1             | `var(--ink)` on `var(--bg)`                             | ≈ 14.6:1 ✓                                           |
-| Item separator (`$border-subtle`) on `--bg`       | 3:1 (graphical)   | `var(--border)` on `var(--bg)`                          | ≈ 1.6:1 ⚠ — non-decorative below threshold; mitigated by heading text spacing + chevron rotation, AT-safe |
-| Chevron icon (`$icon-primary`) on `--bg`          | 3:1 (graphical)   | `var(--ink-2)` on `var(--bg)`                           | ≈ 11.4:1 ✓                                           |
-| Hover bg (`$layer-hover`) on `--bg`               | 3:1 (graphical)   | `var(--bg-1)` on `var(--bg)`                            | ≈ 1.4:1 ⚠ — hover lift is non-load-bearing affordance, AT-safe |
-| Focus outline (`$focus`) on any background        | 3:1 (graphical)   | `var(--accent)` on `var(--bg)` and `var(--bg-1)`        | ≈ 7.4:1 ✓                                            |
-| Disabled heading text                             | 3:1 (graphical)   | `var(--ink-5)` on `var(--bg)`                           | ≈ 1.7:1 ⚠ — expected for disabled, AT auto-announces |
+| Pair                                        | Min contrast (AA) | Lunaris target                                   | Status                                                                                                     |
+| ------------------------------------------- | ----------------- | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| Heading text (collapsed) on `--bg`          | 4.5:1             | `var(--ink-2)` on `var(--bg)`                    | ≈ 11.4:1 ✓                                                                                                 |
+| Heading text (expanded) on `--bg`           | 4.5:1             | `var(--ink)` on `var(--bg)`                      | ≈ 14.6:1 ✓                                                                                                 |
+| Item separator (`$border-subtle`) on `--bg` | 3:1 (graphical)   | `var(--border)` on `var(--bg)`                   | ≈ 1.6:1 ⚠ — non-decorative below threshold; mitigated by heading text spacing + chevron rotation, AT-safe |
+| Chevron icon (`$icon-primary`) on `--bg`    | 3:1 (graphical)   | `var(--ink-2)` on `var(--bg)`                    | ≈ 11.4:1 ✓                                                                                                 |
+| Hover bg (`$layer-hover`) on `--bg`         | 3:1 (graphical)   | `var(--bg-1)` on `var(--bg)`                     | ≈ 1.4:1 ⚠ — hover lift is non-load-bearing affordance, AT-safe                                            |
+| Focus outline (`$focus`) on any background  | 3:1 (graphical)   | `var(--accent)` on `var(--bg)` and `var(--bg-1)` | ≈ 7.4:1 ✓                                                                                                  |
+| Disabled heading text                       | 3:1 (graphical)   | `var(--ink-5)` on `var(--bg)`                    | ≈ 1.7:1 ⚠ — expected for disabled, AT auto-announces                                                      |
 
 **Three amber items, all Carbon-conformant patterns:**
+
 1. Item separator below 3:1 — Carbon ships this; visual rhythm + heading text spacing compensate. AT users do not consume the separator.
 2. Hover bg below 3:1 — affordance, not state-of-truth. Disclosure state is announced by `aria-expanded`.
 3. Disabled below 3:1 — non-interactive, AT-announced.
@@ -64,12 +65,12 @@ Carbon's stock theme passes WCAG 2.1 AA. Lunaris token overrides MUST preserve t
 
 Heading buttons are full-width by default (`inline-size: 100%`). Effective tap target is the heading's full rendered width × height:
 
-| Surface               | Carbon size | Heading height | Heading width      | WCAG 2.5.8 (24 px) |
-| --------------------- | ----------- | -------------- | ------------------ | ------------------ |
-| Workflows panel       | sm          | 32 px          | full panel (~280 px) | ✓ pass            |
-| Tools flyout          | sm          | 32 px          | full flyout (~240 px) | ✓ pass           |
-| Tweaks settings       | default     | 40 px          | full panel         | ✓ pass             |
-| ReportsView sections  | default     | 40 px          | full modal (~600 px) | ✓ pass            |
+| Surface              | Carbon size | Heading height | Heading width         | WCAG 2.5.8 (24 px) |
+| -------------------- | ----------- | -------------- | --------------------- | ------------------ |
+| Workflows panel      | sm          | 32 px          | full panel (~280 px)  | ✓ pass             |
+| Tools flyout         | sm          | 32 px          | full flyout (~240 px) | ✓ pass             |
+| Tweaks settings      | default     | 40 px          | full panel            | ✓ pass             |
+| ReportsView sections | default     | 40 px          | full modal (~600 px)  | ✓ pass             |
 
 WCAG 2.1 SC 2.5.5 (44 × 44 px AAA) is satisfied at default size only; sm size (32 px) does not. Documented Argos-wide deviation from AAA in Phase 7 audit.
 
@@ -96,7 +97,7 @@ Manual NVDA + VoiceOver pass on Workflows + Tools flyout confirmed unambiguous a
 
 ### Active-item announcement (nav-style accordions)
 
-Workflows / Tools accordions emphasise the "currently active" workflow category with a `class="active"` leading-border treatment. This is a *visual* affordance only — `aria-current` is NOT auto-set by Carbon, and the wrapper does not auto-set it.
+Workflows / Tools accordions emphasise the "currently active" workflow category with a `class="active"` leading-border treatment. This is a _visual_ affordance only — `aria-current` is NOT auto-set by Carbon, and the wrapper does not auto-set it.
 
 For full AT parity with sighted "you're here" affordance, consumers SHOULD set `aria-current="true"` on the matching `<AccordionItem>` heading via class spread, OR pass `aria-current` through the wrapper's class/attribute spread. Phase 9.1 wraps this as a follow-up `aria-current` prop on `<AccordionItem>` if Phase 7 audit flags it.
 
@@ -112,21 +113,21 @@ Carbon uses `motion(standard, productive)` 110 ms for the chevron rotate + body 
 
 ## Verification checklist (Phase 9.1)
 
-| Check                                | Tool                                  | Pass criterion                                                                   |
-| ------------------------------------ | ------------------------------------- | -------------------------------------------------------------------------------- |
-| WCAG 2.1 AA on each migrated surface | `@axe-core/playwright` (`AxeBuilder`) | `violations: []` with `wcag2a, wcag2aa, wcag21a, wcag21aa, best-practice`        |
-| `aria-expanded` correctness          | Playwright DOM probe                  | All headings carry `aria-expanded="true|false"` matching open state              |
-| `aria-controls` linkage              | Playwright DOM probe                  | `aria-controls` ids match body region ids                                        |
-| `role="region"` + `aria-labelledby`  | Playwright DOM probe                  | All bodies carry both, body labelled by heading                                  |
-| Tab order                            | Playwright keyboard nav               | Tab cycles through heading buttons + open-body focusable children                |
-| Space / Enter toggle                 | Playwright keyboard test              | Space and Enter on focused heading toggle expand state                           |
-| Focus ring visible                   | manual + Playwright `:focus` check    | 2-px outline visible at all densities + accents                                  |
-| Color contrast (heading text)        | chrome-devtools MCP + axe             | Collapsed ≥ 4.5:1, Expanded ≥ 4.5:1                                              |
-| Color contrast (focus ring, chevron) | chrome-devtools MCP                   | Focus ≥ 3:1, Chevron ≥ 3:1                                                       |
-| Collapsed body removal from AT tree  | manual NVDA / VoiceOver pass          | Collapsed body content not announced when traversing document                    |
-| Nested accordion AT pass             | manual NVDA / VoiceOver pass          | Tools flyout 2-level nesting unambiguous                                         |
-| Disabled item announcement           | axe + manual                          | Disabled headings announce "disabled", skipped in tab order                      |
-| Active-item `aria-current` (if added) | axe + manual                         | Active heading announces "current page" when `aria-current` is wired             |
+| Check                                 | Tool                                  | Pass criterion                                                            |
+| ------------------------------------- | ------------------------------------- | ------------------------------------------------------------------------- | --------------------------- |
+| WCAG 2.1 AA on each migrated surface  | `@axe-core/playwright` (`AxeBuilder`) | `violations: []` with `wcag2a, wcag2aa, wcag21a, wcag21aa, best-practice` |
+| `aria-expanded` correctness           | Playwright DOM probe                  | All headings carry `aria-expanded="true                                   | false"` matching open state |
+| `aria-controls` linkage               | Playwright DOM probe                  | `aria-controls` ids match body region ids                                 |
+| `role="region"` + `aria-labelledby`   | Playwright DOM probe                  | All bodies carry both, body labelled by heading                           |
+| Tab order                             | Playwright keyboard nav               | Tab cycles through heading buttons + open-body focusable children         |
+| Space / Enter toggle                  | Playwright keyboard test              | Space and Enter on focused heading toggle expand state                    |
+| Focus ring visible                    | manual + Playwright `:focus` check    | 2-px outline visible at all densities + accents                           |
+| Color contrast (heading text)         | chrome-devtools MCP + axe             | Collapsed ≥ 4.5:1, Expanded ≥ 4.5:1                                       |
+| Color contrast (focus ring, chevron)  | chrome-devtools MCP                   | Focus ≥ 3:1, Chevron ≥ 3:1                                                |
+| Collapsed body removal from AT tree   | manual NVDA / VoiceOver pass          | Collapsed body content not announced when traversing document             |
+| Nested accordion AT pass              | manual NVDA / VoiceOver pass          | Tools flyout 2-level nesting unambiguous                                  |
+| Disabled item announcement            | axe + manual                          | Disabled headings announce "disabled", skipped in tab order               |
+| Active-item `aria-current` (if added) | axe + manual                          | Active heading announces "current page" when `aria-current` is wired      |
 
 Phase 7 includes the full WCAG 2.1 AA audit for all migrated disclosure surfaces.
 

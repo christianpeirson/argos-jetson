@@ -4,12 +4,12 @@ This document maps Carbon TooltipIcon's visual treatment to Lunaris tokens. Per 
 
 ## Carbon source-of-truth files
 
-| File | Purpose |
-|---|---|
-| `node_modules/carbon-components-svelte/src/TooltipIcon/TooltipIcon.svelte` | Component template + class authority (`bx--tooltip--icon`, `bx--tooltip__trigger`, `bx--assistive-text`) |
-| `node_modules/carbon-components-svelte/src/TooltipIcon/tooltip-icon-store.js` | `activeTooltipIcon` store — warm-handoff between adjacent TooltipIcons |
-| `node_modules/carbon-components-svelte/src/Portal/PortalTooltip.svelte` | Portal mode (auto-enabled in `<Modal>` context to escape `overflow: hidden`) |
-| `node_modules/@carbon/styles/scss/components/tooltip/_tooltip.scss` | SCSS rules + token consumption |
+| File                                                                          | Purpose                                                                                                  |
+| ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `node_modules/carbon-components-svelte/src/TooltipIcon/TooltipIcon.svelte`    | Component template + class authority (`bx--tooltip--icon`, `bx--tooltip__trigger`, `bx--assistive-text`) |
+| `node_modules/carbon-components-svelte/src/TooltipIcon/tooltip-icon-store.js` | `activeTooltipIcon` store — warm-handoff between adjacent TooltipIcons                                   |
+| `node_modules/carbon-components-svelte/src/Portal/PortalTooltip.svelte`       | Portal mode (auto-enabled in `<Modal>` context to escape `overflow: hidden`)                             |
+| `node_modules/@carbon/styles/scss/components/tooltip/_tooltip.scss`           | SCSS rules + token consumption                                                                           |
 
 Upstream source mirrored at https://github.com/carbon-design-system/carbon-components-svelte/blob/v0.107.0/src/TooltipIcon/TooltipIcon.svelte.
 
@@ -18,18 +18,18 @@ Upstream source mirrored at https://github.com/carbon-design-system/carbon-compo
 Carbon's TooltipIcon renders this structure (`TooltipIcon.svelte:1-220+`):
 
 ```html
-<div class="bx--tooltip--icon" data-floating-menu-direction={direction}>
+<div class="bx--tooltip--icon" data-floating-menu-direction="{direction}">
 	<button
 		type="button"
 		class="bx--tooltip__trigger bx--tooltip--a11y bx--tooltip--icon__{direction} bx--tooltip--align-{align}"
-		aria-describedby={tooltipId}
+		aria-describedby="{tooltipId}"
 		{disabled}
 	>
 		<span class="bx--assistive-text">{tooltipText}</span>
-		<svelte:component this={icon} aria-hidden="true" {size} />
+		<svelte:component this="{icon}" aria-hidden="true" {size} />
 	</button>
 	{#if portalOpen}
-		<PortalTooltip ... />
+	<PortalTooltip ... />
 	{/if}
 </div>
 ```
@@ -40,15 +40,15 @@ The Lunaris wrapper introduces no extra DOM — it forwards directly into `Carbo
 
 These overrides live (or will live) in `src/lib/styles/lunaris-carbon-theme.scss`. **Token additions are DEFERRED** until visual diff exposes drift — matches Phase 4 PR-A discipline. The icon button is a real `<button>`, so it inherits existing button-token mappings from prior phases.
 
-| Carbon token | Lunaris value | Used by | Citation |
-|---|---|---|---|
-| `$icon-secondary` | `var(--ink-3)` | Default trigger icon glyph color | `_tooltip.scss` `.bx--tooltip__trigger > svg` |
-| `$icon-primary` (hover) | `var(--ink)` | Trigger icon hover state | `_tooltip.scss` `.bx--tooltip__trigger:hover > svg` |
-| `$icon-disabled` | `var(--ink-disabled)` | Trigger icon disabled state | `_tooltip.scss` `.bx--tooltip__trigger:disabled > svg` |
-| `$focus` | `var(--accent)` | Trigger button `:focus-visible` outline | shared with all interactive elements |
-| `$layer-01` | `var(--bg-2)` | Hover background on trigger button | inherited from Carbon button base |
-| `$background-inverse` | `var(--bg-3)` | Tooltip popover surface (when shown) | shared with chassis `<Tooltip>` mapping |
-| `$text-inverse` | `var(--ink)` | Tooltip popover text | shared with chassis `<Tooltip>` mapping |
+| Carbon token            | Lunaris value         | Used by                                 | Citation                                               |
+| ----------------------- | --------------------- | --------------------------------------- | ------------------------------------------------------ |
+| `$icon-secondary`       | `var(--ink-3)`        | Default trigger icon glyph color        | `_tooltip.scss` `.bx--tooltip__trigger > svg`          |
+| `$icon-primary` (hover) | `var(--ink)`          | Trigger icon hover state                | `_tooltip.scss` `.bx--tooltip__trigger:hover > svg`    |
+| `$icon-disabled`        | `var(--ink-disabled)` | Trigger icon disabled state             | `_tooltip.scss` `.bx--tooltip__trigger:disabled > svg` |
+| `$focus`                | `var(--accent)`       | Trigger button `:focus-visible` outline | shared with all interactive elements                   |
+| `$layer-01`             | `var(--bg-2)`         | Hover background on trigger button      | inherited from Carbon button base                      |
+| `$background-inverse`   | `var(--bg-3)`         | Tooltip popover surface (when shown)    | shared with chassis `<Tooltip>` mapping                |
+| `$text-inverse`         | `var(--ink)`          | Tooltip popover text                    | shared with chassis `<Tooltip>` mapping                |
 
 ## Typography
 
@@ -60,29 +60,29 @@ The icon glyph itself has no text — `tooltipText` is hidden in `<span class="b
 
 Carbon's `size` prop accepts `16 | 20 | 24 | 32 | (number)`. Default `16`. The chassis exposes the same scale + falls through to the default. Argos icon sizes:
 
-| Context | Recommended `size` |
-|---|---|
-| Toolbar action (matching `AgentChatToolbar` pattern) | `16` (default) |
-| Panel header control | `20` |
-| Map / canvas overlay control | `24` |
-| Statusbar / large badge button | `32` |
+| Context                                              | Recommended `size` |
+| ---------------------------------------------------- | ------------------ |
+| Toolbar action (matching `AgentChatToolbar` pattern) | `16` (default)     |
+| Panel header control                                 | `20`               |
+| Map / canvas overlay control                         | `24`               |
+| Statusbar / large badge button                       | `32`               |
 
 ## Direction + align grid
 
 12 placement combos = 4 directions × 3 align values:
 
-| Wrapper `direction` | Carbon `direction` | Visual |
-|---|---|---|
-| `'top'` | `'top'` | Tooltip above trigger |
-| `'right'` | `'right'` | Tooltip to right of trigger |
-| `'bottom'` (default) | `'bottom'` | Tooltip below trigger |
-| `'left'` | `'left'` | Tooltip to left of trigger |
+| Wrapper `direction`  | Carbon `direction` | Visual                      |
+| -------------------- | ------------------ | --------------------------- |
+| `'top'`              | `'top'`            | Tooltip above trigger       |
+| `'right'`            | `'right'`          | Tooltip to right of trigger |
+| `'bottom'` (default) | `'bottom'`         | Tooltip below trigger       |
+| `'left'`             | `'left'`           | Tooltip to left of trigger  |
 
-| Wrapper `align` | Carbon `align` | Notes |
-|---|---|---|
-| `'start'` | `'start'` | Tooltip-edge aligned to trigger-start |
-| `'center'` (default) | `'center'` | Tooltip centered on trigger — Carbon source default |
-| `'end'` | `'end'` | Tooltip-edge aligned to trigger-end |
+| Wrapper `align`      | Carbon `align` | Notes                                               |
+| -------------------- | -------------- | --------------------------------------------------- |
+| `'start'`            | `'start'`      | Tooltip-edge aligned to trigger-start               |
+| `'center'` (default) | `'center'`     | Tooltip centered on trigger — Carbon source default |
+| `'end'`              | `'end'`        | Tooltip-edge aligned to trigger-end                 |
 
 Default in chassis is `direction='bottom'` + `align='center'` (`forms/TooltipIcon.svelte:25-26`) — matches Carbon source defaults exactly (chassis `<Tooltip>` chose `align='start'` instead — different primitive, different default).
 

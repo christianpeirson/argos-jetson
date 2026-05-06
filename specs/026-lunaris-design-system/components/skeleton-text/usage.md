@@ -19,11 +19,11 @@ Carbon's `<SkeletonText>` renders **animated placeholder bars** for text content
 
 This is the **third loading-state primitive** in the Argos chassis. Together they cover:
 
-| Primitive | Phase | Visual | When |
-|---|---|---|---|
-| `<Loading>` | 6 | Centered spinner with overlay | Full-page or full-tile loading |
-| `<InlineLoading>` | 6 | Spinner + text on one line | Inline progress next to a button or label |
-| `<SkeletonText>` | **8.3** | Animated horizontal bars mimicking text | Reserving layout space for text content |
+| Primitive         | Phase   | Visual                                  | When                                      |
+| ----------------- | ------- | --------------------------------------- | ----------------------------------------- |
+| `<Loading>`       | 6       | Centered spinner with overlay           | Full-page or full-tile loading            |
+| `<InlineLoading>` | 6       | Spinner + text on one line              | Inline progress next to a button or label |
+| `<SkeletonText>`  | **8.3** | Animated horizontal bars mimicking text | Reserving layout space for text content   |
 
 ## When NOT to use
 
@@ -34,8 +34,8 @@ This is the **third loading-state primitive** in the Argos chassis. Together the
 
 ## Argos surface inventory (Phase 8.3 scope — 1 canary)
 
-| File | Line | Why migrate | PR |
-|---|---|---|---|
+| File                                                    | Line | Why migrate                                                                                                        | PR                   |
+| ------------------------------------------------------- | ---- | ------------------------------------------------------------------------------------------------------------------ | -------------------- |
 | `src/lib/components/dashboard/views/ReportsView.svelte` | ~362 | 3-row `.skeleton-row` placeholder while reports fetch — clean shape match for `<SkeletonText paragraph lines={3}>` | **Phase 8.3 canary** |
 
 The `.skeleton-row` bespoke CSS (~12 LOC including the `@keyframes pulse` rule) was deleted as dead code post-migration. Carbon's pulse animation lives in `@carbon/styles/scss/components/skeleton/_skeleton.scss`.

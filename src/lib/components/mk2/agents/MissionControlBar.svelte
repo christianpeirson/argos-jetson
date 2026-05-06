@@ -15,9 +15,7 @@
 	const attached = $derived(sessions.filter((s) => s.att).length);
 	const dead = $derived(sessions.filter((s) => s.state === 'dead').length);
 	const totalCpu = $derived(sessions.reduce((sum, s) => sum + s.cpu, 0));
-	const totalMemGb = $derived(
-		(sessions.reduce((sum, s) => sum + s.mem, 0) / 1024).toFixed(1)
-	);
+	const totalMemGb = $derived((sessions.reduce((sum, s) => sum + s.mem, 0) / 1024).toFixed(1));
 </script>
 
 <header class="mc-bar" aria-label="Mission Control">

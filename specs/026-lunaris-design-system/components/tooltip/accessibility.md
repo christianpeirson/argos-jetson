@@ -4,15 +4,15 @@ Carbon Tooltip's a11y model treats the trigger as a real `<button>` with `aria-h
 
 ## WCAG criteria covered
 
-| SC               | Criterion                                       | How the wrapper satisfies it                                                                                                        |
-| ---------------- | ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| **1.4.3** (AA)   | Contrast (Minimum)                              | Token mapping: `$text-inverse` on `$background-inverse` (≥7:1) for popover body; trigger icon `$icon-secondary` on parent surface  |
-| **1.4.13** (AA)  | Content on Hover or Focus (dismissible/persistent/hoverable) | Carbon Tooltip is dismissible (Esc closes), persistent (`leaveDelayMs=300` default), hoverable (mouse can enter popover) |
-| **2.1.1** (A)    | Keyboard                                        | Trigger is real `<button>` with `tabindex='0'` default; ENTER/SPACE toggles popover; ESC closes                                     |
-| **2.4.3** (A)    | Focus Order                                     | Trigger is in TAB order; popover content is non-focusable by default (read via `aria-describedby`)                                  |
-| **2.5.5** (AAA)  | Target Size                                     | Default Carbon trigger button is 24 × 24 px (below AAA 44 × 44, above AA 24 × 24); Argos icon-rail buttons exceed AA               |
-| **4.1.2** (A)    | Name, Role, Value                               | **`iconDescription = 'More information'` default** — set per CR fix commit `74211d8d` so trigger button always has an accessible name |
-| **4.1.3** (AA)   | Status Messages                                 | `aria-expanded` toggles on open/close; AT announces "expanded"/"collapsed" without focus shift                                       |
+| SC              | Criterion                                                    | How the wrapper satisfies it                                                                                                          |
+| --------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| **1.4.3** (AA)  | Contrast (Minimum)                                           | Token mapping: `$text-inverse` on `$background-inverse` (≥7:1) for popover body; trigger icon `$icon-secondary` on parent surface     |
+| **1.4.13** (AA) | Content on Hover or Focus (dismissible/persistent/hoverable) | Carbon Tooltip is dismissible (Esc closes), persistent (`leaveDelayMs=300` default), hoverable (mouse can enter popover)              |
+| **2.1.1** (A)   | Keyboard                                                     | Trigger is real `<button>` with `tabindex='0'` default; ENTER/SPACE toggles popover; ESC closes                                       |
+| **2.4.3** (A)   | Focus Order                                                  | Trigger is in TAB order; popover content is non-focusable by default (read via `aria-describedby`)                                    |
+| **2.5.5** (AAA) | Target Size                                                  | Default Carbon trigger button is 24 × 24 px (below AAA 44 × 44, above AA 24 × 24); Argos icon-rail buttons exceed AA                  |
+| **4.1.2** (A)   | Name, Role, Value                                            | **`iconDescription = 'More information'` default** — set per CR fix commit `74211d8d` so trigger button always has an accessible name |
+| **4.1.3** (AA)  | Status Messages                                              | `aria-expanded` toggles on open/close; AT announces "expanded"/"collapsed" without focus shift                                        |
 
 ## ARIA wiring done by Carbon
 
@@ -32,22 +32,22 @@ The PR-A pre-CR draft of `forms/Tooltip.svelte` had `iconDescription` as an unde
 
 ## Consumer obligations
 
-| Owner         | Responsibility                                                                                                  |
-| ------------- | --------------------------------------------------------------------------------------------------------------- |
-| Carbon        | `aria-haspopup`, `aria-expanded`, `aria-describedby`, `role="tooltip"`, ESC-to-close, hoverable popover         |
-| Chassis       | Default `iconDescription='More information'`; default `tabindex='0'`; bridge events to Svelte-5 callbacks       |
-| **Consumer**  | Pass a **descriptive `iconDescription`** when the default is generic; keep popover body short (≤2 sentences)    |
+| Owner        | Responsibility                                                                                               |
+| ------------ | ------------------------------------------------------------------------------------------------------------ |
+| Carbon       | `aria-haspopup`, `aria-expanded`, `aria-describedby`, `role="tooltip"`, ESC-to-close, hoverable popover      |
+| Chassis      | Default `iconDescription='More information'`; default `tabindex='0'`; bridge events to Svelte-5 callbacks    |
+| **Consumer** | Pass a **descriptive `iconDescription`** when the default is generic; keep popover body short (≤2 sentences) |
 
 ## Keyboard interactions
 
-| Key                       | Behavior                                                                                            |
-| ------------------------- | --------------------------------------------------------------------------------------------------- |
-| TAB                       | Moves focus to the trigger button (when `tabindex='0'`)                                             |
-| ENTER / SPACE on trigger  | Toggles popover open/closed                                                                         |
-| ESC (popover open)        | Closes popover, returns focus to trigger                                                            |
-| TAB inside popover        | Tooltip body is not focusable — TAB skips to next page-level focusable                              |
-| Mouse hover on trigger    | Opens after `enterDelayMs` (100 ms default)                                                         |
-| Mouse leave from trigger AND popover | Closes after `leaveDelayMs` (300 ms default)                                              |
+| Key                                  | Behavior                                                               |
+| ------------------------------------ | ---------------------------------------------------------------------- |
+| TAB                                  | Moves focus to the trigger button (when `tabindex='0'`)                |
+| ENTER / SPACE on trigger             | Toggles popover open/closed                                            |
+| ESC (popover open)                   | Closes popover, returns focus to trigger                               |
+| TAB inside popover                   | Tooltip body is not focusable — TAB skips to next page-level focusable |
+| Mouse hover on trigger               | Opens after `enterDelayMs` (100 ms default)                            |
+| Mouse leave from trigger AND popover | Closes after `leaveDelayMs` (300 ms default)                           |
 
 The chassis wrapper does NOT add custom keyboard handlers.
 
@@ -60,12 +60,12 @@ The chassis wrapper does NOT add custom keyboard handlers.
 
 ## Screen reader behavior
 
-| AT             | Behavior                                                                                            |
-| -------------- | --------------------------------------------------------------------------------------------------- |
-| NVDA           | Reads "[iconDescription] button collapsed" → on activate "expanded" → reads popover body            |
-| JAWS           | Same pattern; some versions read the popover body immediately on focus                              |
-| VoiceOver (Mac) | Reads trigger label + "tooltip" hint; popover body announced on activation                          |
-| TalkBack       | Reads trigger; double-tap activates; popover body announced                                         |
+| AT              | Behavior                                                                                 |
+| --------------- | ---------------------------------------------------------------------------------------- |
+| NVDA            | Reads "[iconDescription] button collapsed" → on activate "expanded" → reads popover body |
+| JAWS            | Same pattern; some versions read the popover body immediately on focus                   |
+| VoiceOver (Mac) | Reads trigger label + "tooltip" hint; popover body announced on activation               |
+| TalkBack        | Reads trigger; double-tap activates; popover body announced                              |
 
 **Caveat**: tooltips that contain INTERACTIVE content (links, buttons) are an a11y anti-pattern — TAB cannot reach them because the popover is not focus-trapped. PR-A canaries use plain text only.
 

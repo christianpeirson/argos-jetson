@@ -6,7 +6,7 @@
 	// inactive is outline. Lucide icons inline for instant scanability.
 	// Wraps onto two rows on narrow viewports via flex-wrap.
 
-	import { Crosshair, Disc, Flame, MapPinned,Navigation } from '@lucide/svelte';
+	import { Crosshair, Disc, Flame, MapPinned, Navigation } from '@lucide/svelte';
 
 	import {
 		overlayCentroids,

@@ -179,7 +179,7 @@ Each section: (a) what it is (b) official docs (c) Argos use today (d) industry 
 
 (a) Per-PR Dangerfile that posts comments / fails based on PR shape.
 (b) https://danger.systems/js/
-(c) `danger@13.0.7` + `dangerfile.js`. Rules: **2000-line hard cap** (raised from 1200 on 2026-04-29 to support phase-level PR bundling per memory `feedback_bulk_pr_bundling.md`; soft warn still fires at 500), cross-subsystem sprawl warning, tests-required for `src/lib/server/**`, migration-drift warning. Workflow: `danger.yml` runs `npx danger ci --failOnErrors` per PR.
+(c) `danger@13.0.7` + `dangerfile.js`. Rules: **2000-line hard cap** (raised from 1200 on 2026-04-29 to support phase-level PR bundling per memory `feedback_bulk_pr_bundling.md`; soft warn still fires at 500), cross-subsystem sprawl warning, tests-required for `src/lib/server/**`, migration-drift warning. **Format-only carve-out** (added 2026-05-06 per memory `feedback_no_admin_bypass_daily_loc_cap.md`): commits whose subject matches `^style(<scope>): prettier|format ...` are deterministic formatter output and their LOC contribution is subtracted from the cap. Mixed PRs (format + non-format commits) get per-commit subtraction; the format commits' LOC is exempt while non-format commits' LOC still counts. Reviewer can verify any exempt commit by re-running `npm run format` on the PR head — the diff must be empty. Codifying the carve-out replaces the prior practice of admin-bypassing the gate on prettier sweeps. Workflow: `danger.yml` runs `npx danger ci --failOnErrors` per PR.
 (d) Danger is the standard for "PR-shape" rules that don't fit into ESLint or commit-msg. From the docs: _"Danger runs during your CI process, and gives teams the chance to automate common code review chores."_
 (e) Argos's Dangerfile is well-engineered and load-bearing. Memory `project_danger_pr_shape_gates.md` confirms the 2000-line cap (post-2026-04-29 raise) is real and forces PR splits when bundled-phase scope still exceeds it.
 (f) Keep as-is. Consider adding a `release-notes` rule: warn if a `feat`/`fix` commit lands without a CHANGELOG entry — but semantic-release auto-generates the changelog from commit messages, so this is redundant.
@@ -266,8 +266,6 @@ Per-developer Claude PreToolUse gate via `fallow hooks install --target agent` i
 Net coverage: 2 fallow firings (pre-push + CI) instead of 3. Defense remains layered; pre-commit becomes faster.
 
 (e) Known gaps and risks:
-
-
 
 - **No LOC/file or LOC/fn threshold.** Fallow's `health` does NOT enforce line counts (verified against `fallow config-schema` 2026-05-04). LOC enforcement provided by ESLint's built-in `max-lines` + `max-lines-per-function` rules — added to `config/eslint.config.js` in the same install PR.
 - **`.svelte` dead-code is excluded** via `ignorePatterns` because fallow's ROADMAP acknowledges `export let` props are indistinguishable from utility exports without Svelte compiler semantics.

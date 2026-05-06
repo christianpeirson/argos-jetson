@@ -13,21 +13,21 @@ Carbon ships `carbon-components-svelte@0.107.0` with internal Svelte 4 syntax (`
 
 ## Public API — Props
 
-| Prop | Type | Default | Description |
-| ---- | ---- | ------- | ----------- |
-| `status` | `'active' \| 'inactive' \| 'finished' \| 'error'` | `'active'` | Visual state of the indicator. Drives icon + animation + announcements. |
-| `description` | `string \| undefined` | `undefined` | Visible text shown next to the icon. Omit for icon-only. |
-| `iconDescription` | `string \| undefined` | `undefined` | Title text for the SVG icon (screen-reader fallback when `description` is omitted). Defaults to `status` for `'error'` and `'finished'` states. |
-| `successDelay` | `number` | `1500` | Milliseconds after `status` transitions to `'finished'` before `onSuccess()` fires. |
-| `class` | `string \| undefined` | `undefined` | Extra class forwarded to the root `<div>`. |
+| Prop              | Type                                              | Default     | Description                                                                                                                                     |
+| ----------------- | ------------------------------------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `status`          | `'active' \| 'inactive' \| 'finished' \| 'error'` | `'active'`  | Visual state of the indicator. Drives icon + animation + announcements.                                                                         |
+| `description`     | `string \| undefined`                             | `undefined` | Visible text shown next to the icon. Omit for icon-only.                                                                                        |
+| `iconDescription` | `string \| undefined`                             | `undefined` | Title text for the SVG icon (screen-reader fallback when `description` is omitted). Defaults to `status` for `'error'` and `'finished'` states. |
+| `successDelay`    | `number`                                          | `1500`      | Milliseconds after `status` transitions to `'finished'` before `onSuccess()` fires.                                                             |
+| `class`           | `string \| undefined`                             | `undefined` | Extra class forwarded to the root `<div>`.                                                                                                      |
 
 ## Public API — Callback props
 
 Chassis uses Svelte 5 callback props that bridge Carbon's Svelte 4 `createEventDispatcher` events.
 
-| Callback prop | Carbon source event | Argument | Description |
-| ------------- | ------------------- | -------- | ----------- |
-| `onSuccess` | `dispatch("success")` (after `successDelay` ms when `status='finished'`) | none | Fires AFTER the success delay completes — use to dismiss the loading region or chain a follow-up action. |
+| Callback prop | Carbon source event                                                      | Argument | Description                                                                                              |
+| ------------- | ------------------------------------------------------------------------ | -------- | -------------------------------------------------------------------------------------------------------- |
+| `onSuccess`   | `dispatch("success")` (after `successDelay` ms when `status='finished'`) | none     | Fires AFTER the success delay completes — use to dismiss the loading region or chain a follow-up action. |
 
 ## Slots / children
 
@@ -37,11 +37,11 @@ None. Description is a string prop, not a slot.
 
 | Carbon prop / event | Chassis prop / callback |
 | ------------------- | ----------------------- |
-| `status` | `status` |
-| `description` | `description` |
-| `iconDescription` | `iconDescription` |
-| `successDelay` | `successDelay` |
-| `on:success` | `onSuccess: () => void` |
+| `status`            | `status`                |
+| `description`       | `description`           |
+| `iconDescription`   | `iconDescription`       |
+| `successDelay`      | `successDelay`          |
+| `on:success`        | `onSuccess: () => void` |
 
 ## Paste-ready snippets
 
@@ -79,7 +79,11 @@ None. Description is a string prop, not a slot.
 {#if saveState !== 'idle'}
 	<InlineLoading
 		status={saveState}
-		description={saveState === 'finished' ? 'Saved.' : saveState === 'error' ? 'Save failed.' : 'Saving…'}
+		description={saveState === 'finished'
+			? 'Saved.'
+			: saveState === 'error'
+				? 'Save failed.'
+				: 'Saving…'}
 		onSuccess={() => (saveState = 'idle')}
 	/>
 {/if}

@@ -86,10 +86,7 @@
 </script>
 
 <section class="screen-spectrum">
-	<SpectrumSweepBar
-		mode={displayMode}
-		onModeChange={(next) => (displayMode = next)}
-	/>
+	<SpectrumSweepBar mode={displayMode} onModeChange={(next) => (displayMode = next)} />
 	<div class="content">
 		<div class="left">
 			<div class="graph">

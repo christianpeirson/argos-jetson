@@ -59,16 +59,16 @@ Key shape:
 
 ## Lunaris token map
 
-| Carbon token | Lunaris value | Notes |
-| --- | --- | --- |
-| `$layer-accent` (track bg) | `var(--bg-2)` | One shade above `--background`; visible empty bar |
-| `$interactive` (active bar) | `var(--accent)` | Steel blue — brand-primary fill |
-| `$support-success` (finished bar) | `var(--mk2-green-fg)` (#8BBFA0) | Lunaris success palette |
-| `$support-error` (error bar) | `var(--mk2-red)` (#FF5C33) | Lunaris error palette |
-| `$text-primary` (label) | `var(--ink)` | Bright label |
-| `$text-secondary` (helper text) | `var(--ink-2)` | Muted helper / caption |
-| `label-01` type-style (label) | `var(--mk2-fs-3) / 1.4 var(--mk2-f-mono)` UPPERCASE | Geist Mono for tactical surfaces |
-| `helper-text-01` type-style | `var(--mk2-fs-2) / 1.4 var(--mk2-f-mono)` | Geist Mono small caption |
+| Carbon token                      | Lunaris value                                       | Notes                                             |
+| --------------------------------- | --------------------------------------------------- | ------------------------------------------------- |
+| `$layer-accent` (track bg)        | `var(--bg-2)`                                       | One shade above `--background`; visible empty bar |
+| `$interactive` (active bar)       | `var(--accent)`                                     | Steel blue — brand-primary fill                   |
+| `$support-success` (finished bar) | `var(--mk2-green-fg)` (#8BBFA0)                     | Lunaris success palette                           |
+| `$support-error` (error bar)      | `var(--mk2-red)` (#FF5C33)                          | Lunaris error palette                             |
+| `$text-primary` (label)           | `var(--ink)`                                        | Bright label                                      |
+| `$text-secondary` (helper text)   | `var(--ink-2)`                                      | Muted helper / caption                            |
+| `label-01` type-style (label)     | `var(--mk2-fs-3) / 1.4 var(--mk2-f-mono)` UPPERCASE | Geist Mono for tactical surfaces                  |
+| `helper-text-01` type-style       | `var(--mk2-fs-2) / 1.4 var(--mk2-f-mono)`           | Geist Mono small caption                          |
 
 Indeterminate animation respects `prefers-reduced-motion`: the sweep is disabled and the bar shows a static 30% fill at center per Carbon's stock SCSS rule.
 
@@ -78,16 +78,16 @@ Indeterminate animation respects `prefers-reduced-motion`: the sweep is disabled
 
 Carbon ships 2 sizes via `size` prop and 3 layouts via `kind` prop:
 
-| `size` | Track height | Bar height | Argos use |
-| --- | --- | --- | --- |
-| `sm` | 4 px | 4 px | Mission Control stat-tile bars (default) |
-| `md` | 8 px | 8 px | Forms / mission-critical progress |
+| `size` | Track height | Bar height | Argos use                                |
+| ------ | ------------ | ---------- | ---------------------------------------- |
+| `sm`   | 4 px         | 4 px       | Mission Control stat-tile bars (default) |
+| `md`   | 8 px         | 8 px       | Forms / mission-critical progress        |
 
-| `kind` | Label position | Helper text position | Bar position | Argos use |
-| --- | --- | --- | --- | --- |
-| `inline` | Same line as bar (left) | n/a | Right of label, fills remaining inline space | (none yet — no Argos surface) |
-| `indented` | Above bar | Below bar | Below label, full inline-size | Future: report progress, file upload |
-| `big` | Above bar (with caption) | Below bar | Below label, full inline-size, taller | (none — too prominent for current surfaces) |
+| `kind`     | Label position           | Helper text position | Bar position                                 | Argos use                                   |
+| ---------- | ------------------------ | -------------------- | -------------------------------------------- | ------------------------------------------- |
+| `inline`   | Same line as bar (left)  | n/a                  | Right of label, fills remaining inline space | (none yet — no Argos surface)               |
+| `indented` | Above bar                | Below bar            | Below label, full inline-size                | Future: report progress, file upload        |
+| `big`      | Above bar (with caption) | Below bar            | Below label, full inline-size, taller        | (none — too prominent for current surfaces) |
 
 Mission Control stat-tile bars use `kind="indented"` `size="sm"` — small bar, no inline label (label is above in the tile body).
 
@@ -139,15 +139,15 @@ Bar fill % calculation: `(value / max) * 100%`. Carbon clamps `value` to `[0, ma
 
 ## State matrix
 
-| State | Track bg | Bar bg | Bar inline-size | Status icon |
-| --- | --- | --- | --- | --- |
-| Active 0% | `var(--bg-2)` | `var(--accent)` | 0 | none |
-| Active 50% | `var(--bg-2)` | `var(--accent)` | 50% | none |
-| Active 100% | `var(--bg-2)` | `var(--accent)` | 100% | none (caller flips to `finished`) |
-| Finished | `var(--bg-2)` | `var(--mk2-green-fg)` | 100% | `<CheckmarkFilled>` 16 px in label color |
-| Error 25% | `var(--bg-2)` | `var(--mk2-red)` | 25% | `<ErrorFilled>` 16 px in `var(--mk2-red)` |
-| Indeterminate | `var(--bg-2)` | `var(--accent)` | 30% (animated sweep) | none |
-| reduced-motion indeterminate | `var(--bg-2)` | `var(--accent)` | 30% (static, centered) | none |
+| State                        | Track bg      | Bar bg                | Bar inline-size        | Status icon                               |
+| ---------------------------- | ------------- | --------------------- | ---------------------- | ----------------------------------------- |
+| Active 0%                    | `var(--bg-2)` | `var(--accent)`       | 0                      | none                                      |
+| Active 50%                   | `var(--bg-2)` | `var(--accent)`       | 50%                    | none                                      |
+| Active 100%                  | `var(--bg-2)` | `var(--accent)`       | 100%                   | none (caller flips to `finished`)         |
+| Finished                     | `var(--bg-2)` | `var(--mk2-green-fg)` | 100%                   | `<CheckmarkFilled>` 16 px in label color  |
+| Error 25%                    | `var(--bg-2)` | `var(--mk2-red)`      | 25%                    | `<ErrorFilled>` 16 px in `var(--mk2-red)` |
+| Indeterminate                | `var(--bg-2)` | `var(--accent)`       | 30% (animated sweep)   | none                                      |
+| reduced-motion indeterminate | `var(--bg-2)` | `var(--accent)`       | 30% (static, centered) | none                                      |
 
 ---
 

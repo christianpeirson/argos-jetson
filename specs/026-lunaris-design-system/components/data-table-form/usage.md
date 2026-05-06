@@ -39,12 +39,12 @@ Per Carbon `data-table/usage.mdx`:
 
 Bespoke / raw `<table>` sites that Phase 9.1 retires by migrating to `<DataTable>`:
 
-| Surface | File | Current pattern |
-| --- | --- | --- |
-| AGENTS sessions list | `src/lib/components/dashboard/views/AgentsView.svelte` | bespoke `<table>` with hand-rolled sort + selection |
-| OVERVIEW SOURCES panel | `src/lib/components/dashboard/panels/SourcesPanel.svelte` | bespoke flex grid masquerading as a table |
-| KISMET AP table | `src/lib/components/dashboard/panels/KismetPanel.svelte` | bespoke `<table>` with hand-rolled column sort |
-| GSM IMSI catcher table | `src/lib/components/dashboard/panels/GsmEvilPanel.svelte` | bespoke `<table>` with no sort |
+| Surface                | File                                                      | Current pattern                                     |
+| ---------------------- | --------------------------------------------------------- | --------------------------------------------------- |
+| AGENTS sessions list   | `src/lib/components/dashboard/views/AgentsView.svelte`    | bespoke `<table>` with hand-rolled sort + selection |
+| OVERVIEW SOURCES panel | `src/lib/components/dashboard/panels/SourcesPanel.svelte` | bespoke flex grid masquerading as a table           |
+| KISMET AP table        | `src/lib/components/dashboard/panels/KismetPanel.svelte`  | bespoke `<table>` with hand-rolled column sort      |
+| GSM IMSI catcher table | `src/lib/components/dashboard/panels/GsmEvilPanel.svelte` | bespoke `<table>` with no sort                      |
 
 Total bespoke table call sites: 4 primary + ~3 ancillary inline tables. Migration order: AGENTS first (canary, simplest schema), then SOURCES, then KISMET (largest column count), then GSM.
 

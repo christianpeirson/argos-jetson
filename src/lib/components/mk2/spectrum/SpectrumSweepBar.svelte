@@ -51,7 +51,9 @@
 	</div>
 
 	<div class="bar-actions" role="group" aria-label="Sweep actions">
-		<button type="button" class="btn primary" onclick={onSweep} disabled={isStreaming}>SWEEP</button>
+		<button type="button" class="btn primary" onclick={onSweep} disabled={isStreaming}
+			>SWEEP</button
+		>
 		<button type="button" class="btn" onclick={onHold} disabled={!isStreaming}>HOLD</button>
 		<button type="button" class="btn danger" onclick={onCapture}>CAPTURE</button>
 	</div>

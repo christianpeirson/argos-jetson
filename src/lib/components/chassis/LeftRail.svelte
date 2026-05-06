@@ -62,7 +62,9 @@
 	let isDragging = $state(false);
 
 	const slots = $derived.by(() => {
-		const known = new Map<string, PinnedTool>(allSlots.map((s): [string, PinnedTool] => [s.id, s]));
+		const known = new Map<string, PinnedTool>(
+			allSlots.map((s): [string, PinnedTool] => [s.id, s])
+		);
 		const ordered: PinnedTool[] = [];
 		for (const id of storedOrder) {
 			const s = known.get(id);
@@ -275,7 +277,9 @@
 				class="rail-btn"
 				class:active={isActive}
 				href={hrefFor(item)}
-				title="{pad2(i + 1)} {item.label}{FIXED_IDS.has(item.id) ? ' — drag to reorder' : ' — drag to reorder · right-click to unpin'}"
+				title="{pad2(i + 1)} {item.label}{FIXED_IDS.has(item.id)
+					? ' — drag to reorder'
+					: ' — drag to reorder · right-click to unpin'}"
 				aria-label={item.label}
 				aria-current={isActive ? 'page' : undefined}
 				draggable="false"

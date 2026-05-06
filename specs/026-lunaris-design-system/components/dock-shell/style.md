@@ -4,12 +4,12 @@
 
 ## Rationale for a bespoke chassis
 
-| Carbon candidate | Why wrong |
-|---|---|
-| `<Grid>` / `<Row>` / `<Column>` | Fixed grid; no dock-side prop, no hidden mode |
-| Carbon's CSS Grid utility | Same — no semantic dock concept |
-| `<Modal>` | Overlay, not in-flow layout |
-| `<SideNav>` | Edge-pinned navigation; not a generic two-panel shell |
+| Carbon candidate                | Why wrong                                             |
+| ------------------------------- | ----------------------------------------------------- |
+| `<Grid>` / `<Row>` / `<Column>` | Fixed grid; no dock-side prop, no hidden mode         |
+| Carbon's CSS Grid utility       | Same — no semantic dock concept                       |
+| `<Modal>`                       | Overlay, not in-flow layout                           |
+| `<SideNav>`                     | Edge-pinned navigation; not a generic two-panel shell |
 
 The dock-anywhere pattern is unique to engineering / monitoring tools (Grafana panels, JetBrains tool windows, VS Code activity bar). It's a long-tail layout primitive that no general-purpose UI library ships at the right level of generality.
 
@@ -41,10 +41,10 @@ Implemented via CSS grid with `grid-template-columns` / `grid-template-rows` swi
 
 ## Lunaris tokens used
 
-| Token | Role |
-|---|---|
-| `--mk2-line` | Border between primary and secondary panels (1px) |
-| `--mk2-bg` | Shell background (transparent fallback so consumer panels paint their own bg) |
+| Token        | Role                                                                          |
+| ------------ | ----------------------------------------------------------------------------- |
+| `--mk2-line` | Border between primary and secondary panels (1px)                             |
+| `--mk2-bg`   | Shell background (transparent fallback so consumer panels paint their own bg) |
 
 The shell itself is mostly transparent — primary and secondary panels paint their own backgrounds. The shell only contributes the dividing border line.
 
@@ -54,26 +54,47 @@ Mirrors the `DockLayout` and `DockOverlay` components from `docs/UI/Argos (1).zi
 
 ```jsx
 const DockLayout = ({ dock, tmux, wf, onDock }) => {
-  // ...drag coordination via window.__argosDock...
+	// ...drag coordination via window.__argosDock...
 
-  if (dock === "hidden") {
-    return <div className="ag-dock-root">{tmux}</div>;
-  }
+	if (dock === 'hidden') {
+		return <div className="ag-dock-root">{tmux}</div>;
+	}
 
-  switch (dock) {
-    case "right":
-      return <Split direction="row" sizes={[0.72, 0.28]} min={240}>{tmux}{wf}</Split>;
-    case "left":
-      return <Split direction="row" sizes={[0.28, 0.72]} min={240}>{wf}{tmux}</Split>;
-    case "top":
-      return <Split direction="column" sizes={[0.30, 0.70]} min={160}>{wf}{tmux}</Split>;
-    case "bottom":
-      return <Split direction="column" sizes={[0.70, 0.30]} min={160}>{tmux}{wf}</Split>;
-  }
+	switch (dock) {
+		case 'right':
+			return (
+				<Split direction="row" sizes={[0.72, 0.28]} min={240}>
+					{tmux}
+					{wf}
+				</Split>
+			);
+		case 'left':
+			return (
+				<Split direction="row" sizes={[0.28, 0.72]} min={240}>
+					{wf}
+					{tmux}
+				</Split>
+			);
+		case 'top':
+			return (
+				<Split direction="column" sizes={[0.3, 0.7]} min={160}>
+					{wf}
+					{tmux}
+				</Split>
+			);
+		case 'bottom':
+			return (
+				<Split direction="column" sizes={[0.7, 0.3]} min={160}>
+					{tmux}
+					{wf}
+				</Split>
+			);
+	}
 };
 ```
 
 Argos chassis maps:
+
 - `dock` prop → `data-dock` attribute on the shell root
 - React `<Split>` library → CSS grid (no resize splitter in v1; resize is a future enhancement)
 - React min/sizes props → CSS `clamp()` values (overridable via `secondarySize` prop)
@@ -91,11 +112,11 @@ Dark mode only. No prop overrides for color — all visual variation is driven b
 
 ## Sizing
 
-| Mode | Default secondary size |
-|---|---|
+| Mode                 | Default secondary size      |
+| -------------------- | --------------------------- |
 | `'left'` / `'right'` | `clamp(240px, 28vw, 480px)` |
 | `'top'` / `'bottom'` | `clamp(160px, 30vh, 400px)` |
-| `'hidden'` | n/a — primary takes 100% |
+| `'hidden'`           | n/a — primary takes 100%    |
 
 Override via `secondarySize` prop (CSS length or grid-template fragment). The shell does not store user-resized values; resizable splitters are out of v1 scope.
 

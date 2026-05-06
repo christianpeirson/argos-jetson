@@ -13,55 +13,55 @@ Carbon ships `carbon-components-svelte@0.107.0`, which is **still Svelte 4 inter
 
 ## Public API — Props
 
-| Prop                          | Type                                              | Default                          | Description                                                                                |
-| ----------------------------- | ------------------------------------------------- | -------------------------------- | ------------------------------------------------------------------------------------------ |
-| `open`                        | `boolean`                                         | `false` (`$bindable`)            | Controlled visibility. Two-way bindable.                                                   |
-| `size`                        | `'sm' \| 'md' \| 'lg'`                            | `'md'`                           | Container width. Maps to Carbon `sm \| undefined \| lg`.                                   |
-| `modalHeading`                | `string \| undefined`                             | undefined                        | Primary dialog title (`<h3>`).                                                             |
-| `modalLabel`                  | `string \| undefined`                             | undefined                        | Eyebrow above heading (`<h2>`).                                                            |
-| `modalAriaLabel`              | `string \| undefined`                             | undefined                        | Screen-reader label fallback when no visible heading exists.                               |
-| `iconDescription`             | `string`                                          | `'Close the modal'`              | aria-label for the close-X button.                                                         |
-| `passiveModal`                | `boolean`                                         | `false`                          | Hide footer button row entirely.                                                           |
-| `danger`                      | `boolean`                                         | `false`                          | Render primary button in danger red.                                                       |
-| `alert`                       | `boolean`                                         | `false`                          | Use `role="alertdialog"` for urgent attention.                                             |
-| `hasForm`                     | `boolean`                                         | `false`                          | Apply form-rhythm padding to body.                                                         |
-| `hasScrollingContent`         | `boolean`                                         | `false`                          | Make body keyboard-scrollable (tabindex 0).                                                |
-| `primaryButtonText`           | `string`                                          | `''`                             | Primary CTA label. Empty string hides primary button.                                      |
-| `primaryButtonDisabled`       | `boolean`                                         | `false`                          | Disable primary button (form-validation gate).                                             |
-| `secondaryButtonText`         | `string`                                          | `''`                             | Single secondary button label (mutually exclusive with `secondaryButtons`).                |
-| `secondaryButtons`            | `[{text:string},{text:string}] \| []`             | `[]`                             | Two-secondary-button overload. Length must be exactly 2 to activate.                       |
-| `selectorPrimaryFocus`        | `string`                                          | `'[data-modal-primary-focus]'`   | CSS selector for the element to focus on open.                                             |
-| `preventCloseOnClickOutside`  | `boolean`                                         | `false`                          | Suppress outside-click dismissal (force explicit choice).                                  |
-| `shouldSubmitOnEnter`         | `boolean`                                         | `true`                           | Submit form on Enter inside modal.                                                         |
-| `id`                          | `string \| undefined`                             | undefined                        | Container DOM id.                                                                          |
-| `class`                       | `string \| undefined`                             | undefined                        | Extra class forwarded to Carbon's outer wrapper.                                           |
+| Prop                         | Type                                  | Default                        | Description                                                                 |
+| ---------------------------- | ------------------------------------- | ------------------------------ | --------------------------------------------------------------------------- |
+| `open`                       | `boolean`                             | `false` (`$bindable`)          | Controlled visibility. Two-way bindable.                                    |
+| `size`                       | `'sm' \| 'md' \| 'lg'`                | `'md'`                         | Container width. Maps to Carbon `sm \| undefined \| lg`.                    |
+| `modalHeading`               | `string \| undefined`                 | undefined                      | Primary dialog title (`<h3>`).                                              |
+| `modalLabel`                 | `string \| undefined`                 | undefined                      | Eyebrow above heading (`<h2>`).                                             |
+| `modalAriaLabel`             | `string \| undefined`                 | undefined                      | Screen-reader label fallback when no visible heading exists.                |
+| `iconDescription`            | `string`                              | `'Close the modal'`            | aria-label for the close-X button.                                          |
+| `passiveModal`               | `boolean`                             | `false`                        | Hide footer button row entirely.                                            |
+| `danger`                     | `boolean`                             | `false`                        | Render primary button in danger red.                                        |
+| `alert`                      | `boolean`                             | `false`                        | Use `role="alertdialog"` for urgent attention.                              |
+| `hasForm`                    | `boolean`                             | `false`                        | Apply form-rhythm padding to body.                                          |
+| `hasScrollingContent`        | `boolean`                             | `false`                        | Make body keyboard-scrollable (tabindex 0).                                 |
+| `primaryButtonText`          | `string`                              | `''`                           | Primary CTA label. Empty string hides primary button.                       |
+| `primaryButtonDisabled`      | `boolean`                             | `false`                        | Disable primary button (form-validation gate).                              |
+| `secondaryButtonText`        | `string`                              | `''`                           | Single secondary button label (mutually exclusive with `secondaryButtons`). |
+| `secondaryButtons`           | `[{text:string},{text:string}] \| []` | `[]`                           | Two-secondary-button overload. Length must be exactly 2 to activate.        |
+| `selectorPrimaryFocus`       | `string`                              | `'[data-modal-primary-focus]'` | CSS selector for the element to focus on open.                              |
+| `preventCloseOnClickOutside` | `boolean`                             | `false`                        | Suppress outside-click dismissal (force explicit choice).                   |
+| `shouldSubmitOnEnter`        | `boolean`                             | `true`                         | Submit form on Enter inside modal.                                          |
+| `id`                         | `string \| undefined`                 | undefined                      | Container DOM id.                                                           |
+| `class`                      | `string \| undefined`                 | undefined                      | Extra class forwarded to Carbon's outer wrapper.                            |
 
 ## Public API — Callback props
 
 Chassis uses Svelte 5 callback props that bridge Carbon's Svelte 4 `createEventDispatcher` events.
 
-| Callback prop       | Carbon source event                                    | Argument                                                  | Description                                                       |
-| ------------------- | ------------------------------------------------------ | --------------------------------------------------------- | ----------------------------------------------------------------- |
-| `onClose`           | `dispatch("close", { trigger })`                       | `'escape-key' \| 'outside-click' \| 'close-button'`       | Fired on dismissal. Argument identifies dismissal source.         |
-| `onSubmit`          | `dispatch("submit")`                                   | none                                                      | Fired on primary button click OR Enter (when `shouldSubmitOnEnter`).|
-| `onClickSecondary`  | `dispatch("click:button--secondary", { text })`        | `text?: string` (the button label that was clicked)       | Fired on either secondary button. Use `text` to disambiguate.     |
+| Callback prop      | Carbon source event                             | Argument                                            | Description                                                          |
+| ------------------ | ----------------------------------------------- | --------------------------------------------------- | -------------------------------------------------------------------- |
+| `onClose`          | `dispatch("close", { trigger })`                | `'escape-key' \| 'outside-click' \| 'close-button'` | Fired on dismissal. Argument identifies dismissal source.            |
+| `onSubmit`         | `dispatch("submit")`                            | none                                                | Fired on primary button click OR Enter (when `shouldSubmitOnEnter`). |
+| `onClickSecondary` | `dispatch("click:button--secondary", { text })` | `text?: string` (the button label that was clicked) | Fired on either secondary button. Use `text` to disambiguate.        |
 
 ## Slots / children
 
-| Slot       | Type                  | Description                                                                                |
-| ---------- | --------------------- | ------------------------------------------------------------------------------------------ |
-| `children` | `Snippet \| undefined`| Body content rendered inside `bx--modal-content`. Use Svelte 5 snippet `{@render}` syntax. |
+| Slot       | Type                   | Description                                                                                |
+| ---------- | ---------------------- | ------------------------------------------------------------------------------------------ |
+| `children` | `Snippet \| undefined` | Body content rendered inside `bx--modal-content`. Use Svelte 5 snippet `{@render}` syntax. |
 
 ## Carbon → chassis API mapping
 
-| Carbon prop / event                    | Chassis prop / callback                                |
-| -------------------------------------- | ------------------------------------------------------ |
-| `bind:open`                            | `bind:open` (forwarded directly via `$bindable`)       |
-| `size: 'xs' \| 'sm' \| 'md' \| 'lg'`   | `size: 'sm' \| 'md' \| 'lg'` (no xs; md = undefined)   |
-| `on:close`                             | `onClose: (trigger) => void`                           |
-| `on:submit`                            | `onSubmit: () => void`                                 |
-| `on:click:button--secondary`           | `onClickSecondary: (text?) => void`                    |
-| Default slot                           | `children` snippet                                     |
+| Carbon prop / event                  | Chassis prop / callback                              |
+| ------------------------------------ | ---------------------------------------------------- |
+| `bind:open`                          | `bind:open` (forwarded directly via `$bindable`)     |
+| `size: 'xs' \| 'sm' \| 'md' \| 'lg'` | `size: 'sm' \| 'md' \| 'lg'` (no xs; md = undefined) |
+| `on:close`                           | `onClose: (trigger) => void`                         |
+| `on:submit`                          | `onSubmit: () => void`                               |
+| `on:click:button--secondary`         | `onClickSecondary: (text?) => void`                  |
+| Default slot                         | `children` snippet                                   |
 
 ## Paste-ready snippets
 

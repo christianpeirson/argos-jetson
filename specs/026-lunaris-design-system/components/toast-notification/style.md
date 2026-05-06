@@ -4,11 +4,11 @@ This document maps Carbon ToastNotification's visual treatment to Lunaris tokens
 
 ## Carbon source-of-truth files
 
-| File                                                                            | Purpose                                                                                            |
-| ------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| `node_modules/carbon-components-svelte/src/Notification/ToastNotification.svelte` | Component template + class authority (`bx--toast-notification`, `bx--toast-notification__title`)   |
-| `node_modules/@carbon/styles/scss/components/notification/_notification.scss`   | SCSS rules + token consumption (shared with InlineNotification + ActionableNotification)           |
-| `node_modules/@carbon/styles/scss/components/notification/_tokens.scss`         | Per-kind status tokens (`$support-error-inverse`, `$support-warning-inverse`, etc.)                |
+| File                                                                              | Purpose                                                                                          |
+| --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `node_modules/carbon-components-svelte/src/Notification/ToastNotification.svelte` | Component template + class authority (`bx--toast-notification`, `bx--toast-notification__title`) |
+| `node_modules/@carbon/styles/scss/components/notification/_notification.scss`     | SCSS rules + token consumption (shared with InlineNotification + ActionableNotification)         |
+| `node_modules/@carbon/styles/scss/components/notification/_tokens.scss`           | Per-kind status tokens (`$support-error-inverse`, `$support-warning-inverse`, etc.)              |
 
 Upstream source mirrored at `https://github.com/carbon-design-system/carbon-components-svelte/blob/v0.107.0/src/Notification/ToastNotification.svelte`.
 
@@ -35,17 +35,17 @@ The Lunaris wrapper adds NO extra DOM — it forwards directly into `CarbonToast
 
 These overrides live (or will live) in `src/lib/styles/lunaris-carbon-theme.scss`. **Token additions are deferred** until the chrome-devtools visual diff exposes drift.
 
-| Carbon token                | Lunaris value                | Used by                                       | Citation                                                      |
-| --------------------------- | ---------------------------- | --------------------------------------------- | ------------------------------------------------------------- |
-| `$background-inverse`       | `var(--bg-3)`                | High-contrast toast surface (default)         | `_notification.scss` `.bx--toast-notification`                |
-| `$layer-01`                 | `var(--bg-2)`                | Low-contrast toast surface (`lowContrast`)    | `_notification.scss` `.bx--toast-notification--low-contrast`  |
-| `$text-inverse`             | `var(--ink)`                 | Title + subtitle text on default surface      | shared with InlineNotification                                |
-| `$text-primary`             | `var(--ink)`                 | Title + subtitle on low-contrast surface      | shared                                                        |
-| `$support-error-inverse`    | `var(--red)`                 | Left bar + icon for `kind="error"`            | `_tokens.scss` per-kind                                       |
-| `$support-warning-inverse`  | `var(--amber)`               | Left bar + icon for `kind="warning|warning-alt"` | `_tokens.scss`                                              |
-| `$support-success-inverse`  | `var(--green)`               | Left bar + icon for `kind="success"`          | `_tokens.scss`                                                |
-| `$support-info-inverse`     | `var(--blue)`                | Left bar + icon for `kind="info|info-square"` | `_tokens.scss`                                                |
-| `$focus`                    | `var(--accent)`              | Close-button `:focus` outline                 | shared with all interactive elements                          |
+| Carbon token               | Lunaris value   | Used by                                    | Citation                                                     |
+| -------------------------- | --------------- | ------------------------------------------ | ------------------------------------------------------------ | -------------- |
+| `$background-inverse`      | `var(--bg-3)`   | High-contrast toast surface (default)      | `_notification.scss` `.bx--toast-notification`               |
+| `$layer-01`                | `var(--bg-2)`   | Low-contrast toast surface (`lowContrast`) | `_notification.scss` `.bx--toast-notification--low-contrast` |
+| `$text-inverse`            | `var(--ink)`    | Title + subtitle text on default surface   | shared with InlineNotification                               |
+| `$text-primary`            | `var(--ink)`    | Title + subtitle on low-contrast surface   | shared                                                       |
+| `$support-error-inverse`   | `var(--red)`    | Left bar + icon for `kind="error"`         | `_tokens.scss` per-kind                                      |
+| `$support-warning-inverse` | `var(--amber)`  | Left bar + icon for `kind="warning         | warning-alt"`                                                | `_tokens.scss` |
+| `$support-success-inverse` | `var(--green)`  | Left bar + icon for `kind="success"`       | `_tokens.scss`                                               |
+| `$support-info-inverse`    | `var(--blue)`   | Left bar + icon for `kind="info            | info-square"`                                                | `_tokens.scss` |
+| `$focus`                   | `var(--accent)` | Close-button `:focus` outline              | shared with all interactive elements                         |
 
 ## Typography
 
@@ -55,14 +55,14 @@ Carbon's title uses `$heading-compact-01` (14 px / 18 px line-height / 600 weigh
 
 Carbon offers six `kind` values + two boolean modifiers. The chassis wrapper exposes all six kinds:
 
-| Wrapper `kind`    | Carbon `kind`    | Visual                                            |
-| ----------------- | ---------------- | ------------------------------------------------- |
-| `'error'`         | `'error'`        | Red left bar + ErrorFilled icon (default)         |
-| `'warning'`       | `'warning'`      | Amber bar + WarningAltFilled icon                 |
-| `'warning-alt'`   | `'warning-alt'`  | Amber bar + WarningAlt icon (alt glyph)           |
-| `'success'`       | `'success'`      | Green bar + CheckmarkFilled icon                  |
-| `'info'`          | `'info'`         | Blue bar + Information icon                       |
-| `'info-square'`   | `'info-square'`  | Blue bar + InformationSquareFilled icon           |
+| Wrapper `kind`  | Carbon `kind`   | Visual                                    |
+| --------------- | --------------- | ----------------------------------------- |
+| `'error'`       | `'error'`       | Red left bar + ErrorFilled icon (default) |
+| `'warning'`     | `'warning'`     | Amber bar + WarningAltFilled icon         |
+| `'warning-alt'` | `'warning-alt'` | Amber bar + WarningAlt icon (alt glyph)   |
+| `'success'`     | `'success'`     | Green bar + CheckmarkFilled icon          |
+| `'info'`        | `'info'`        | Blue bar + Information icon               |
+| `'info-square'` | `'info-square'` | Blue bar + InformationSquareFilled icon   |
 
 Modifiers:
 

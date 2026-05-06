@@ -13,29 +13,29 @@ Carbon ships `carbon-components-svelte@0.107.0`, which is **still Svelte 4 inter
 
 ## Public API — `<ToastNotification>` component
 
-| Prop                     | Type                                                                              | Default                | Description                                                                |
-| ------------------------ | --------------------------------------------------------------------------------- | ---------------------- | -------------------------------------------------------------------------- |
-| `open`                   | `boolean` (bindable)                                                              | `true`                 | Toast visibility. Two-way bindable.                                        |
-| `kind`                   | `'error' \| 'info' \| 'info-square' \| 'success' \| 'warning' \| 'warning-alt'` | `'error'`              | Status kind. Drives left-bar color + icon glyph + default role.            |
-| `title`                  | `string`                                                                          | `''`                   | Headline text (rendered as `<h3>`).                                        |
-| `subtitle`               | `string`                                                                          | `''`                   | Secondary text below title.                                                |
-| `caption`                | `string`                                                                          | `''`                   | Tertiary text (e.g. timestamp). Smallest type.                             |
-| `lowContrast`            | `boolean`                                                                         | `false`                | Swap dark inverse surface for low-contrast layer.                          |
-| `timeout`                | `number` (ms)                                                                     | `0`                    | Auto-dismiss after N ms. `0` = sticky (manual close only).                 |
-| `role`                   | `string`                                                                          | derived from `kind`    | Override the auto-derived ARIA role.                                       |
-| `hideCloseButton`        | `boolean`                                                                         | `false`                | Hide the close (×) button.                                                 |
-| `fullWidth`              | `boolean`                                                                         | `false`                | Stretch to 100% of parent width.                                           |
-| `statusIconDescription`  | `string`                                                                          | `` `${kind} icon` ``   | Alt-text for the status icon (a11y).                                       |
-| `closeButtonDescription` | `string`                                                                          | `'Close notification'` | aria-label for the close button.                                           |
-| `class`                  | `string`                                                                          | `undefined`            | Extra class forwarded to Carbon's outer div.                               |
+| Prop                     | Type                                                                            | Default                | Description                                                     |
+| ------------------------ | ------------------------------------------------------------------------------- | ---------------------- | --------------------------------------------------------------- |
+| `open`                   | `boolean` (bindable)                                                            | `true`                 | Toast visibility. Two-way bindable.                             |
+| `kind`                   | `'error' \| 'info' \| 'info-square' \| 'success' \| 'warning' \| 'warning-alt'` | `'error'`              | Status kind. Drives left-bar color + icon glyph + default role. |
+| `title`                  | `string`                                                                        | `''`                   | Headline text (rendered as `<h3>`).                             |
+| `subtitle`               | `string`                                                                        | `''`                   | Secondary text below title.                                     |
+| `caption`                | `string`                                                                        | `''`                   | Tertiary text (e.g. timestamp). Smallest type.                  |
+| `lowContrast`            | `boolean`                                                                       | `false`                | Swap dark inverse surface for low-contrast layer.               |
+| `timeout`                | `number` (ms)                                                                   | `0`                    | Auto-dismiss after N ms. `0` = sticky (manual close only).      |
+| `role`                   | `string`                                                                        | derived from `kind`    | Override the auto-derived ARIA role.                            |
+| `hideCloseButton`        | `boolean`                                                                       | `false`                | Hide the close (×) button.                                      |
+| `fullWidth`              | `boolean`                                                                       | `false`                | Stretch to 100% of parent width.                                |
+| `statusIconDescription`  | `string`                                                                        | `` `${kind} icon` ``   | Alt-text for the status icon (a11y).                            |
+| `closeButtonDescription` | `string`                                                                        | `'Close notification'` | aria-label for the close button.                                |
+| `class`                  | `string`                                                                        | `undefined`            | Extra class forwarded to Carbon's outer div.                    |
 
 ## Events / callback props
 
 Chassis uses Svelte-5 callback props that bridge Carbon's Svelte-4 event dispatcher.
 
-| Callback prop | Args                      | Maps to Carbon event                       | Notes                                           |
-| ------------- | ------------------------- | ------------------------------------------ | ----------------------------------------------- |
-| `onClose`     | `(fromTimeout: boolean)`  | `on:close` `{ detail: { timeout } }`       | `fromTimeout=true` when auto-dismissed by timer |
+| Callback prop | Args                     | Maps to Carbon event                 | Notes                                           |
+| ------------- | ------------------------ | ------------------------------------ | ----------------------------------------------- |
+| `onClose`     | `(fromTimeout: boolean)` | `on:close` `{ detail: { timeout } }` | `fromTimeout=true` when auto-dismissed by timer |
 
 ## Slots
 
@@ -43,11 +43,11 @@ Carbon ToastNotification exposes one default slot for additional body content be
 
 ## Carbon → chassis API mapping
 
-| Carbon API                         | Chassis equivalent                 | Notes                                   |
-| ---------------------------------- | ---------------------------------- | --------------------------------------- |
-| `bind:open`                        | `bind:open` (preserved)            | Same shape                              |
-| `on:close={(e) => ... e.detail.timeout}` | `onClose={(fromTimeout) => ...}` | Detail flattened                        |
-| `notificationType`                 | not exposed                        | Lunaris uses only the toast pattern     |
+| Carbon API                               | Chassis equivalent               | Notes                               |
+| ---------------------------------------- | -------------------------------- | ----------------------------------- |
+| `bind:open`                              | `bind:open` (preserved)          | Same shape                          |
+| `on:close={(e) => ... e.detail.timeout}` | `onClose={(fromTimeout) => ...}` | Detail flattened                    |
+| `notificationType`                       | not exposed                      | Lunaris uses only the toast pattern |
 
 ## Toast STORE API — `$lib/stores/toast.svelte`
 
@@ -62,16 +62,16 @@ toast.info('GPS lock acquired');
 toast.warning('HackRF temperature elevated', { caption: '63°C — throttling soon' });
 
 const id = toast.error('Long-running issue', { timeout: 0 });
-toast.dismiss(id);  // imperative dismiss
+toast.dismiss(id); // imperative dismiss
 ```
 
-| Method                                          | Returns       | Notes                                                  |
-| ----------------------------------------------- | ------------- | ------------------------------------------------------ |
-| `toast.error(title, opts?)`                     | `string` (id) | `kind="error"` → `role="alert"`                        |
-| `toast.success(title, opts?)`                   | `string`      | `kind="success"` → `role="status"`                     |
-| `toast.info(title, opts?)`                      | `string`      | `kind="info"` → `role="status"`                        |
-| `toast.warning(title, opts?)`                   | `string`      | `kind="warning"` → `role="alert"`                      |
-| `toast.dismiss(id)`                             | `void`        | Imperative removal (no-op if id not found)             |
+| Method                        | Returns       | Notes                                      |
+| ----------------------------- | ------------- | ------------------------------------------ |
+| `toast.error(title, opts?)`   | `string` (id) | `kind="error"` → `role="alert"`            |
+| `toast.success(title, opts?)` | `string`      | `kind="success"` → `role="status"`         |
+| `toast.info(title, opts?)`    | `string`      | `kind="info"` → `role="status"`            |
+| `toast.warning(title, opts?)` | `string`      | `kind="warning"` → `role="alert"`          |
+| `toast.dismiss(id)`           | `void`        | Imperative removal (no-op if id not found) |
 
 `ToastOpts = { subtitle?, caption?, timeout? }`. Default timeout `4000` ms (`toast.svelte.ts:18`).
 
@@ -82,7 +82,7 @@ Mount `<ToastRegion />` exactly once at the root layout:
 ```svelte
 <!-- src/routes/+layout.svelte -->
 <script>
-  import ToastRegion from '$lib/components/chassis/ToastRegion.svelte';
+	import ToastRegion from '$lib/components/chassis/ToastRegion.svelte';
 </script>
 
 <slot />
@@ -97,15 +97,15 @@ Region position is fixed (`bottom: 1rem; right: 1rem; z-index: 9000` — `ToastR
 
 ```svelte
 <script lang="ts">
-  import ToastNotification from '$lib/components/chassis/forms/ToastNotification.svelte';
-  let open = $state(true);
+	import ToastNotification from '$lib/components/chassis/forms/ToastNotification.svelte';
+	let open = $state(true);
 </script>
 
 <ToastNotification
-  bind:open
-  kind="error"
-  title="Save failed"
-  subtitle="Could not write to /etc/argos.conf"
+	bind:open
+	kind="error"
+	title="Save failed"
+	subtitle="Could not write to /etc/argos.conf"
 />
 ```
 
@@ -113,11 +113,11 @@ Region position is fixed (`bottom: 1rem; right: 1rem; z-index: 9000` — `ToastR
 
 ```svelte
 <ToastNotification
-  kind="info"
-  title="Sweep complete"
-  subtitle="Captured 142 signals across 700–900 MHz"
-  caption={new Date().toLocaleTimeString()}
-  timeout={6000}
+	kind="info"
+	title="Sweep complete"
+	subtitle="Captured 142 signals across 700–900 MHz"
+	caption={new Date().toLocaleTimeString()}
+	timeout={6000}
 />
 ```
 
@@ -125,11 +125,11 @@ Region position is fixed (`bottom: 1rem; right: 1rem; z-index: 9000` — `ToastR
 
 ```svelte
 <ToastNotification
-  kind="warning"
-  title="GPS lock lost"
-  subtitle="Falling back to last known position"
-  fullWidth
-  hideCloseButton
+	kind="warning"
+	title="GPS lock lost"
+	subtitle="Falling back to last known position"
+	fullWidth
+	hideCloseButton
 />
 ```
 

@@ -8,7 +8,8 @@
 		countTools,
 		type ToolPillarName,
 		type ToolsCatalog,
-		toolsCatalog	} from '$lib/data/tools-catalog';
+		toolsCatalog
+	} from '$lib/data/tools-catalog';
 
 	interface Props {
 		open: boolean;
@@ -48,12 +49,7 @@
 </script>
 
 {#if open}
-	<div
-		class="th-flyout"
-		role="dialog"
-		aria-modal="true"
-		aria-label="Tools catalog"
-	>
+	<div class="th-flyout" role="dialog" aria-modal="true" aria-label="Tools catalog">
 		<header class="th-head">
 			<div class="th-title">
 				<span class="th-tag">TLS-09</span>
@@ -69,7 +65,12 @@
 				bind:value={query}
 				aria-label="Search tools"
 			/>
-			<button type="button" class="th-close" onclick={onClose} aria-label="Close tools catalog">
+			<button
+				type="button"
+				class="th-close"
+				onclick={onClose}
+				aria-label="Close tools catalog"
+			>
 				×
 			</button>
 		</header>
@@ -96,7 +97,9 @@
 										{#each sub.children as item (item.id)}
 											{#if 'group' in item && item.group}
 												<li class="th-group">
-													<header class="th-group-head">{item.name}</header>
+													<header class="th-group-head">
+														{item.name}
+													</header>
 													<ul class="th-group-list" role="list">
 														{#each item.children as tool (tool.id)}
 															{@render toolRow(tool)}

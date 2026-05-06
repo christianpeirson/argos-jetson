@@ -32,13 +32,13 @@ Per Carbon `content-switcher/usage.mdx`:
 
 Bespoke segmented-toggle sites Phase 9.1 retires by migrating to `<ContentSwitcher>`:
 
-| Surface                            | File                                                              | Current pattern                                            |
-| ---------------------------------- | ----------------------------------------------------------------- | ---------------------------------------------------------- |
-| AGENTS filter tabs (4 segments)    | `src/lib/components/dashboard/views/AgentsView.svelte`            | bespoke `<button class="seg">` group with manual aria-pressed |
-| AGENTS view-mode toggle (3)        | `src/lib/components/dashboard/views/AgentsView.svelte`            | bespoke icon button group                                  |
-| SPECTRUM mode toggle (3)           | `src/lib/components/dashboard/panels/SpectrumControls.svelte`     | bespoke `<select>` (mis-pattern — should be segmented)     |
-| FilterBar quick-filter chips       | `src/lib/components/dashboard/panels/FilterBar.svelte`            | bespoke `.seg-group` with hand-rolled selected state       |
-| ReportsView export-format toggle   | `src/lib/components/dashboard/views/ReportsView.svelte`           | radio-input fallback                                       |
+| Surface                          | File                                                          | Current pattern                                               |
+| -------------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------- |
+| AGENTS filter tabs (4 segments)  | `src/lib/components/dashboard/views/AgentsView.svelte`        | bespoke `<button class="seg">` group with manual aria-pressed |
+| AGENTS view-mode toggle (3)      | `src/lib/components/dashboard/views/AgentsView.svelte`        | bespoke icon button group                                     |
+| SPECTRUM mode toggle (3)         | `src/lib/components/dashboard/panels/SpectrumControls.svelte` | bespoke `<select>` (mis-pattern — should be segmented)        |
+| FilterBar quick-filter chips     | `src/lib/components/dashboard/panels/FilterBar.svelte`        | bespoke `.seg-group` with hand-rolled selected state          |
+| ReportsView export-format toggle | `src/lib/components/dashboard/views/ReportsView.svelte`       | radio-input fallback                                          |
 
 Total bespoke segmented sites: ~5-7. Migration order: SPECTRUM mode (highest visibility) → AGENTS filter → AGENTS view-mode → FilterBar → ReportsView.
 

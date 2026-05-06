@@ -6,19 +6,19 @@ The `<RfRangeReadout>` chassis at `src/lib/components/chassis/forms/RfRangeReado
 
 ```typescript
 interface Props {
-  label: string;          // REQUIRED — uppercase parameter name (LNA / VGA / START / etc.)
-  value: string | number; // REQUIRED — current value, displayed verbatim in mono
-  unit?: string;          // Optional unit suffix (MHz / kHz / dB / etc.); omitted for OFF / ON / N/A states
-  class?: string;         // Optional consumer styling hook
+	label: string; // REQUIRED — uppercase parameter name (LNA / VGA / START / etc.)
+	value: string | number; // REQUIRED — current value, displayed verbatim in mono
+	unit?: string; // Optional unit suffix (MHz / kHz / dB / etc.); omitted for OFF / ON / N/A states
+	class?: string; // Optional consumer styling hook
 }
 ```
 
-| Prop | Type | Default | Description |
-|---|---|---|---|
-| `label` | `string` | **REQUIRED** | Parameter name. Component applies `text-transform: uppercase` |
-| `value` | `string \| number` | **REQUIRED** | Displayed verbatim; consumer formats numerics (e.g., `(hz/1e6).toFixed(3)`) |
-| `unit` | `string?` | `undefined` | Suffix shown after value in dimmer ink-4 token. Omit for non-numeric states like `OFF` |
-| `class` | `string?` | `undefined` | Pass-through for layout customisation by consumer |
+| Prop    | Type               | Default      | Description                                                                            |
+| ------- | ------------------ | ------------ | -------------------------------------------------------------------------------------- |
+| `label` | `string`           | **REQUIRED** | Parameter name. Component applies `text-transform: uppercase`                          |
+| `value` | `string \| number` | **REQUIRED** | Displayed verbatim; consumer formats numerics (e.g., `(hz/1e6).toFixed(3)`)            |
+| `unit`  | `string?`          | `undefined`  | Suffix shown after value in dimmer ink-4 token. Omit for non-numeric states like `OFF` |
+| `class` | `string?`          | `undefined`  | Pass-through for layout customisation by consumer                                      |
 
 ## Implementation discipline
 

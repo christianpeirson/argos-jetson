@@ -4,11 +4,11 @@ Carbon SkeletonText is a **purely visual placeholder** — it has no inherent ac
 
 ## WCAG criteria covered
 
-| SC | Criterion | How the wrapper + consumer satisfy it |
-|---|---|---|
-| **1.4.11** (AA) | Non-text Contrast | Skeleton bar token mapping: `$skeleton-background` (`var(--bg-2)`) on parent surface (≥3:1 against adjacent color — non-text UI component contrast) |
-| **2.3.3** (AAA) | Animation from Interactions | Carbon SCSS includes `@media (prefers-reduced-motion: reduce) { animation: none; }` — pulse stops, static bars shown |
-| **4.1.3** (AA) | Status Messages | `aria-busy="true"` on the wrapper announces "loading" to AT without focus shift |
+| SC              | Criterion                   | How the wrapper + consumer satisfy it                                                                                                               |
+| --------------- | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **1.4.11** (AA) | Non-text Contrast           | Skeleton bar token mapping: `$skeleton-background` (`var(--bg-2)`) on parent surface (≥3:1 against adjacent color — non-text UI component contrast) |
+| **2.3.3** (AAA) | Animation from Interactions | Carbon SCSS includes `@media (prefers-reduced-motion: reduce) { animation: none; }` — pulse stops, static bars shown                                |
+| **4.1.3** (AA)  | Status Messages             | `aria-busy="true"` on the wrapper announces "loading" to AT without focus shift                                                                     |
 
 ## ARIA wiring done by Carbon
 
@@ -32,17 +32,17 @@ Every SkeletonText consumer MUST wrap the skeleton in a region with loading sema
 
 Required wrapper attrs:
 
-| Attr | Purpose |
-|---|---|
-| `aria-busy="true"` | Tells AT "this region is updating" — AT may pause re-announcement of stale content |
-| `aria-label` (or `aria-labelledby`) | Names the loading region — "Loading reports" / "Loading user list" / etc. |
+| Attr                                | Purpose                                                                            |
+| ----------------------------------- | ---------------------------------------------------------------------------------- |
+| `aria-busy="true"`                  | Tells AT "this region is updating" — AT may pause re-announcement of stale content |
+| `aria-label` (or `aria-labelledby`) | Names the loading region — "Loading reports" / "Loading user list" / etc.          |
 
 Optional but recommended:
 
-| Attr | Purpose |
-|---|---|
-| `role="status"` | Marks region as live; AT announces label on appearance + content on completion |
-| `aria-live="polite"` | Tells AT to announce changes when idle (default for `role="status"`) |
+| Attr                 | Purpose                                                                        |
+| -------------------- | ------------------------------------------------------------------------------ |
+| `role="status"`      | Marks region as live; AT announces label on appearance + content on completion |
+| `aria-live="polite"` | Tells AT to announce changes when idle (default for `role="status"`)           |
 
 For the ReportsView canary, the existing `<div class="grid-skeleton" aria-busy="true" aria-label="Loading reports">` wrapper meets the minimum baseline. Phase 7 a11y audit may upgrade with `role="status"` if AT testing reveals announcement timing issues.
 
@@ -59,10 +59,10 @@ Better: trust consumers to provide the wrapper, document the pattern in `usage.m
 
 ## Consumer obligations
 
-| Owner | Responsibility |
-|---|---|
-| Carbon | Render silent `<p class="bx--skeleton__text">` bars with deterministic widths; pulse animation with reduced-motion support |
-| Chassis | Forward props; intentionally drop event listeners (skeletons are non-interactive) |
+| Owner        | Responsibility                                                                                                                                               |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Carbon       | Render silent `<p class="bx--skeleton__text">` bars with deterministic widths; pulse animation with reduced-motion support                                   |
+| Chassis      | Forward props; intentionally drop event listeners (skeletons are non-interactive)                                                                            |
 | **Consumer** | Wrap SkeletonText in a region with `aria-busy="true"` + `aria-label` (or `role="status"` + `aria-labelledby`); flip wrapper attrs OFF when loading completes |
 
 ## Keyboard interactions
@@ -75,12 +75,12 @@ NONE. SkeletonText has no focusable elements. When loading completes and real co
 
 ## Screen reader behavior
 
-| AT | Behavior |
-|---|---|
-| NVDA | On `<div aria-busy="true" aria-label="Loading reports">` enter: "Loading reports busy". Re-announces "Loading reports" if `aria-busy` stays `true` for >5 s. On `aria-busy="false"` flip + content swap: announces new content per region's `aria-live` setting (default polite) |
-| JAWS | Similar to NVDA. Some versions silently honour `aria-busy` (no announcement); rely on `role="status"` for explicit announcement |
-| VoiceOver (Mac) | On region enter: "Loading reports". On `aria-busy` flip: announces content change |
-| TalkBack | Similar; reads `aria-label` on focus, announces content on completion |
+| AT              | Behavior                                                                                                                                                                                                                                                                         |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| NVDA            | On `<div aria-busy="true" aria-label="Loading reports">` enter: "Loading reports busy". Re-announces "Loading reports" if `aria-busy` stays `true` for >5 s. On `aria-busy="false"` flip + content swap: announces new content per region's `aria-live` setting (default polite) |
+| JAWS            | Similar to NVDA. Some versions silently honour `aria-busy` (no announcement); rely on `role="status"` for explicit announcement                                                                                                                                                  |
+| VoiceOver (Mac) | On region enter: "Loading reports". On `aria-busy` flip: announces content change                                                                                                                                                                                                |
+| TalkBack        | Similar; reads `aria-label` on focus, announces content on completion                                                                                                                                                                                                            |
 
 **Caveat**: AT behaviour around `aria-busy` is INCONSISTENT across versions and screen readers. For critical loading states, prefer `role="status"` + `aria-live="polite"` + actual text content (e.g. `<p>Loading reports...</p>` next to the skeleton).
 

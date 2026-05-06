@@ -15,26 +15,26 @@ The Argos `Accordion` is a Svelte 5 (runes) wrapper that delegates to Carbon's `
 ```ts
 // Outer <Accordion> wrapper props
 interface AccordionProps {
-	size?: 'sm' | 'xl' | undefined;          // undefined = default 40px
-	align?: 'start' | 'end';                 // default 'end' (Carbon default)
-	disabled?: boolean;                       // disable all items
-	skeleton?: boolean;                       // render <AccordionSkeleton>
+	size?: 'sm' | 'xl' | undefined; // undefined = default 40px
+	align?: 'start' | 'end'; // default 'end' (Carbon default)
+	disabled?: boolean; // disable all items
+	skeleton?: boolean; // render <AccordionSkeleton>
 	id?: string;
-	class?: string;                           // forwards to outer <ul>
+	class?: string; // forwards to outer <ul>
 	children?: Snippet;
 }
 
 // Inner <AccordionItem> wrapper props
 interface AccordionItemProps {
-	title?: string;                           // visible heading text (or use `title` slot)
-	open?: boolean;                           // bindable via $bindable() — default false
+	title?: string; // visible heading text (or use `title` slot)
+	open?: boolean; // bindable via $bindable() — default false
 	disabled?: boolean;
-	iconDescription?: string;                 // chevron AT description; default "Expand/Collapse"
+	iconDescription?: string; // chevron AT description; default "Expand/Collapse"
 	id?: string;
-	class?: string;                           // forwards to <li> for active-item emphasis
-	onToggle?: (open: boolean) => void;       // typed callback — replaces Carbon's CustomEvent<{ open }>
-	children?: Snippet;                       // body content
-	titleSlot?: Snippet;                      // rich title (icon + label) when string title is too thin
+	class?: string; // forwards to <li> for active-item emphasis
+	onToggle?: (open: boolean) => void; // typed callback — replaces Carbon's CustomEvent<{ open }>
+	children?: Snippet; // body content
+	titleSlot?: Snippet; // rich title (icon + label) when string title is too thin
 }
 ```
 
@@ -101,7 +101,7 @@ The `<AccordionItem>` is wrapped (because `open` needs `$bindable()` + `onToggle
 
 	// Map of categoryId → open state, all start collapsed except the active one
 	const openMap = $state<Record<string, boolean>>(
-		Object.fromEntries(categories.map((c) => [c.id, c.id === activeCat])),
+		Object.fromEntries(categories.map((c) => [c.id, c.id === activeCat]))
 	);
 </script>
 
@@ -124,7 +124,7 @@ The hand-rolled `aria-expanded` + `aria-controls` + chevron animation goes away 
 
 ### Single-select coordination (rare)
 
-If a surface needs *only one item open at a time*, the consumer wires the close-others logic:
+If a surface needs _only one item open at a time_, the consumer wires the close-others logic:
 
 ```svelte
 <script lang="ts">
@@ -209,12 +209,12 @@ Lunaris tokens flow through automatically.
 
 Per audit on 2026-05-04:
 
-| File                                                              | Site description                       | Variant                |
-| ----------------------------------------------------------------- | -------------------------------------- | ---------------------- |
-| `src/lib/components/dashboard/panels/WorkflowsPanel.svelte`       | category groups (RECON / GSM-SDR / …)  | sm + start + tactical  |
-| `src/lib/components/dashboard/overlays/ToolsFlyout.svelte`        | tool sub-categories                    | sm + start + tactical  |
-| `src/lib/components/dashboard/views/ReportsView.svelte`           | mission report sections                | default + end          |
-| `src/lib/components/mk2/Tweaks.svelte`                            | advanced settings sections             | default + end          |
+| File                                                        | Site description                      | Variant               |
+| ----------------------------------------------------------- | ------------------------------------- | --------------------- |
+| `src/lib/components/dashboard/panels/WorkflowsPanel.svelte` | category groups (RECON / GSM-SDR / …) | sm + start + tactical |
+| `src/lib/components/dashboard/overlays/ToolsFlyout.svelte`  | tool sub-categories                   | sm + start + tactical |
+| `src/lib/components/dashboard/views/ReportsView.svelte`     | mission report sections               | default + end         |
+| `src/lib/components/mk2/Tweaks.svelte`                      | advanced settings sections            | default + end         |
 
 Total: ~4 sites. Migration order: Workflows panel first (highest visibility, biggest payoff) → Tools flyout → Tweaks → ReportsView.
 

@@ -4,10 +4,10 @@ This document maps Carbon Loading's visual treatment to Lunaris tokens. Per spec
 
 ## Carbon source-of-truth files
 
-| File | Purpose |
-| ---- | ------- |
+| File                                                                                                        | Purpose                                                                                                                                                                                      |
+| ----------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `https://github.com/carbon-design-system/carbon-components-svelte/blob/v0.107.0/src/Loading/Loading.svelte` | Component template + class authority (`bx--loading`, `bx--loading-overlay`, `bx--loading--small`, `bx--loading--stop`, `bx--loading__svg`, `bx--loading__background`, `bx--loading__stroke`) |
-| `node_modules/@carbon/styles/scss/components/loading/_loading.scss` | SCSS rules + token consumption (spinner color, size, animation timing) |
+| `node_modules/@carbon/styles/scss/components/loading/_loading.scss`                                         | SCSS rules + token consumption (spinner color, size, animation timing)                                                                                                                       |
 
 ## Anatomy
 
@@ -39,11 +39,11 @@ The Lunaris wrapper introduces no extra DOM — direct passthrough.
 
 These overrides live in `src/lib/styles/lunaris-carbon-theme.scss`. Token additions are deferred to whichever PR's chrome-devtools visual diff first exposes drift; do not edit the theme file unless the diff fails.
 
-| Carbon token | Lunaris value | Used by | Citation |
-| ------------ | ------------- | ------- | -------- |
-| `$interactive` | `var(--accent)` | Active spinner stroke color | `_loading.scss` |
-| `$icon-secondary` | `var(--ink-3)` | Background ring (small variant) | `_loading.scss` |
-| `$overlay` | `rgba(0, 0, 0, 0.5)` (Lunaris dark scrim) | `bx--loading-overlay` background | `_loading.scss` |
+| Carbon token      | Lunaris value                             | Used by                          | Citation        |
+| ----------------- | ----------------------------------------- | -------------------------------- | --------------- |
+| `$interactive`    | `var(--accent)`                           | Active spinner stroke color      | `_loading.scss` |
+| `$icon-secondary` | `var(--ink-3)`                            | Background ring (small variant)  | `_loading.scss` |
+| `$overlay`        | `rgba(0, 0, 0, 0.5)` (Lunaris dark scrim) | `bx--loading-overlay` background | `_loading.scss` |
 
 ## Typography
 
@@ -53,17 +53,17 @@ Loading carries no visible text (the `description` prop becomes the SVG `<title>
 
 Carbon offers two sizes:
 
-| Argos `small` prop | Carbon class | Spinner radius |
-| ------------------ | ------------ | -------------- |
-| `false` (default) | `bx--loading` | 44 (large, ~44px diameter) |
-| `true` | `bx--loading--small` | 42 + background ring (small, ~24px diameter) |
+| Argos `small` prop | Carbon class         | Spinner radius                               |
+| ------------------ | -------------------- | -------------------------------------------- |
+| `false` (default)  | `bx--loading`        | 44 (large, ~44px diameter)                   |
+| `true`             | `bx--loading--small` | 42 + background ring (small, ~24px diameter) |
 
 Two render modes:
 
-| Argos `withOverlay` prop | Carbon class | UX |
-| ------------------------ | ------------ | -- |
-| `true` (default) | `bx--loading-overlay` | Semi-transparent backdrop blocks interaction; spinner centered |
-| `false` | (no overlay div) | Inline spinner only; flex flow respects parent layout |
+| Argos `withOverlay` prop | Carbon class          | UX                                                             |
+| ------------------------ | --------------------- | -------------------------------------------------------------- |
+| `true` (default)         | `bx--loading-overlay` | Semi-transparent backdrop blocks interaction; spinner centered |
+| `false`                  | (no overlay div)      | Inline spinner only; flex flow respects parent layout          |
 
 ## What the wrapper adds
 

@@ -58,20 +58,20 @@ Key shape:
 
 ## Lunaris token map
 
-| Carbon token | Lunaris value | Notes |
-| --- | --- | --- |
-| `$layer` (table body bg) | `var(--card)` (#1A1A1A) | Single-shade card surface |
-| `$layer-accent` (header bg) | `var(--bg-2)` (oklch +1) | One shade brighter than body for header contrast |
-| `$layer-hover` (row hover) | `var(--card-hover)` | ~5% lighten of `--card` |
-| `$layer-selected` (selected row) | `var(--card-selected)` | Accent-tinted card; uses `var(--accent)` at 12% alpha |
-| `$border-subtle` (row separator) | `var(--border)` (#2E2E2E) | 1 px |
-| `$border-strong` (toolbar bottom) | `var(--ink-5)` | Toolbar/table boundary |
-| `$text-primary` (header text) | `var(--ink)` | Bright headers; UPPERCASE per Lunaris column-label convention |
-| `$text-secondary` (cell text) | `var(--ink-2)` | Slightly muted body text |
-| `$icon-primary` (sort arrow) | `var(--ink-2)` → `var(--accent)` on active sort | Accent-color flip when column is the active sort |
-| `$focus` (focus ring) | `var(--accent)` | 2 px outline outside `<th>` button or row checkbox |
-| `heading-compact-01` | `var(--mk2-fs-2) / 1.4 var(--mk2-f-mono)` UPPERCASE letter-spacing 1.2 | Fira Code, tactical-mono headers |
-| `body-compact-01` | `var(--mk2-fs-3) / 1.5 var(--mk2-f-mono)` | Fira Code 12px for IPs / metrics / IDs |
+| Carbon token                      | Lunaris value                                                          | Notes                                                         |
+| --------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------- |
+| `$layer` (table body bg)          | `var(--card)` (#1A1A1A)                                                | Single-shade card surface                                     |
+| `$layer-accent` (header bg)       | `var(--bg-2)` (oklch +1)                                               | One shade brighter than body for header contrast              |
+| `$layer-hover` (row hover)        | `var(--card-hover)`                                                    | ~5% lighten of `--card`                                       |
+| `$layer-selected` (selected row)  | `var(--card-selected)`                                                 | Accent-tinted card; uses `var(--accent)` at 12% alpha         |
+| `$border-subtle` (row separator)  | `var(--border)` (#2E2E2E)                                              | 1 px                                                          |
+| `$border-strong` (toolbar bottom) | `var(--ink-5)`                                                         | Toolbar/table boundary                                        |
+| `$text-primary` (header text)     | `var(--ink)`                                                           | Bright headers; UPPERCASE per Lunaris column-label convention |
+| `$text-secondary` (cell text)     | `var(--ink-2)`                                                         | Slightly muted body text                                      |
+| `$icon-primary` (sort arrow)      | `var(--ink-2)` → `var(--accent)` on active sort                        | Accent-color flip when column is the active sort              |
+| `$focus` (focus ring)             | `var(--accent)`                                                        | 2 px outline outside `<th>` button or row checkbox            |
+| `heading-compact-01`              | `var(--mk2-fs-2) / 1.4 var(--mk2-f-mono)` UPPERCASE letter-spacing 1.2 | Fira Code, tactical-mono headers                              |
+| `body-compact-01`                 | `var(--mk2-fs-3) / 1.5 var(--mk2-f-mono)`                              | Fira Code 12px for IPs / metrics / IDs                        |
 
 ---
 
@@ -79,12 +79,12 @@ Key shape:
 
 Carbon ships 4 density tiers via `size` prop. Lunaris remaps row-block-size:
 
-| Carbon `size` | Carbon row height | Lunaris remap | Argos use |
-| --- | --- | --- | --- |
-| `compact` | 24 px | 24 px | OVERVIEW SOURCES sidebar |
-| `short` | 32 px | 32 px | AGENTS, KISMET (default) |
-| `medium` | 48 px | 40 px | (none — too tall for tactical) |
-| `tall` | 64 px | 56 px | (none) |
+| Carbon `size` | Carbon row height | Lunaris remap | Argos use                      |
+| ------------- | ----------------- | ------------- | ------------------------------ |
+| `compact`     | 24 px             | 24 px         | OVERVIEW SOURCES sidebar       |
+| `short`       | 32 px             | 32 px         | AGENTS, KISMET (default)       |
+| `medium`      | 48 px             | 40 px         | (none — too tall for tactical) |
+| `tall`        | 64 px             | 56 px         | (none)                         |
 
 `compact` is the WCAG 2.5.8 floor for tap targets — see `accessibility.md`.
 
@@ -104,11 +104,11 @@ The `<Toolbar>` row sits above the `<table>`, separated by a 1px `var(--border)`
 
 Carbon renders an arrow icon (`<ChevronUp>`) inside the `<th>` `<button>`. Three states:
 
-| State | Icon | `aria-sort` | Lunaris color |
-| --- | --- | --- | --- |
-| Unsorted | hidden (visible on hover only) | `none` | n/a |
-| Ascending | `↑` | `ascending` | `var(--accent)` |
-| Descending | `↓` (rotated 180°) | `descending` | `var(--accent)` |
+| State      | Icon                           | `aria-sort`  | Lunaris color   |
+| ---------- | ------------------------------ | ------------ | --------------- |
+| Unsorted   | hidden (visible on hover only) | `none`       | n/a             |
+| Ascending  | `↑`                            | `ascending`  | `var(--accent)` |
+| Descending | `↓` (rotated 180°)             | `descending` | `var(--accent)` |
 
 Sort affordance has its own focus ring (2 px outline outside the `<button>` bounds, NOT outside the `<th>`).
 
@@ -135,13 +135,13 @@ When `batchSelection={true}`:
 
 ## State matrix
 
-| State | Row bg | Row text | Border-block-end | Notes |
-| --- | --- | --- | --- | --- |
-| Default | `var(--card)` | `var(--ink-2)` | 1 px `var(--border)` | |
-| Hover | `var(--card-hover)` | `var(--ink-2)` | 1 px `var(--border)` | Cursor changes only if `onRowClick` set |
-| Selected | `var(--card-selected)` | `var(--ink)` | 1 px `var(--border)` | Plus 2 px `var(--accent)` inset-inline-start |
-| Active sort header | `var(--bg-2)` | `var(--accent)` | 1 px `var(--border)` | Arrow visible |
-| Disabled (when `loading=true`) | dimmed via `opacity: 0.5` | unchanged | unchanged | `pointer-events: none` |
+| State                          | Row bg                    | Row text        | Border-block-end     | Notes                                        |
+| ------------------------------ | ------------------------- | --------------- | -------------------- | -------------------------------------------- |
+| Default                        | `var(--card)`             | `var(--ink-2)`  | 1 px `var(--border)` |                                              |
+| Hover                          | `var(--card-hover)`       | `var(--ink-2)`  | 1 px `var(--border)` | Cursor changes only if `onRowClick` set      |
+| Selected                       | `var(--card-selected)`    | `var(--ink)`    | 1 px `var(--border)` | Plus 2 px `var(--accent)` inset-inline-start |
+| Active sort header             | `var(--bg-2)`             | `var(--accent)` | 1 px `var(--border)` | Arrow visible                                |
+| Disabled (when `loading=true`) | dimmed via `opacity: 0.5` | unchanged       | unchanged            | `pointer-events: none`                       |
 
 ---
 

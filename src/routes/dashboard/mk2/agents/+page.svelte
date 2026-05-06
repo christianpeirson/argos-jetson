@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onDestroy,onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 
 	import DockShell, { type DockMode } from '$lib/components/chassis/DockShell.svelte';
 	import MissionControlBar from '$lib/components/mk2/agents/MissionControlBar.svelte';
@@ -10,15 +10,10 @@
 	import WorkflowsPanel from '$lib/components/mk2/agents/WorkflowsPanel.svelte';
 	import {
 		type TmuxSessionsState,
-		tmuxSessionsStore	} from '$lib/stores/dashboard/tmux-sessions-store';
-	import {
-		type WorkflowsState,
-		workflowsStore	} from '$lib/stores/dashboard/workflows-store';
-	import {
-		filterSessions,
-		type SessionFilter,
-		type SessionViewMode
-	} from '$lib/types/agents';
+		tmuxSessionsStore
+	} from '$lib/stores/dashboard/tmux-sessions-store';
+	import { type WorkflowsState, workflowsStore } from '$lib/stores/dashboard/workflows-store';
+	import { filterSessions, type SessionFilter, type SessionViewMode } from '$lib/types/agents';
 
 	let filter = $state<SessionFilter>('ALL');
 	let viewMode = $state<SessionViewMode>('grid');
@@ -53,7 +48,7 @@
 
 	const visibleSessions = $derived(filterSessions(sessions.sessions, filter));
 	const selectedSession = $derived(
-		selectedId ? sessions.sessions.find((s) => s.id === selectedId) ?? null : null
+		selectedId ? (sessions.sessions.find((s) => s.id === selectedId) ?? null) : null
 	);
 
 	function handleOpen(id: string): void {
@@ -62,10 +57,7 @@
 </script>
 
 <div class="agents-page">
-	<MissionControlBar
-		sessions={sessions.sessions}
-		onRefresh={() => tmuxSessionsStore.refresh()}
-	/>
+	<MissionControlBar sessions={sessions.sessions} onRefresh={() => tmuxSessionsStore.refresh()} />
 
 	<div class="agents-toolbar">
 		<SessionFilterTabs value={filter} onChange={(next) => (filter = next)} />
@@ -90,7 +82,10 @@
 								/>
 							</div>
 							<div class="split-detail">
-								<SessionDetailPanel session={selectedSession} onAttach={handleOpen} />
+								<SessionDetailPanel
+									session={selectedSession}
+									onAttach={handleOpen}
+								/>
 							</div>
 						</div>
 					{/if}

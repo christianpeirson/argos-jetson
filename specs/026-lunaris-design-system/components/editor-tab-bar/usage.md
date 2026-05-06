@@ -12,17 +12,17 @@ Use `<EditorTabBar>` when the surface needs:
 
 ## When NOT to use
 
-| Need | Use instead |
-|---|---|
+| Need                                                   | Use instead                                                  |
+| ------------------------------------------------------ | ------------------------------------------------------------ |
 | Tabs without close (settings/dashboard sub-navigation) | `<Tabs>` (`chassis/forms/Tabs.svelte`) — wraps Carbon's Tabs |
-| Vertical navigation with sub-items | `<DrawerTabs>` (`chassis/drawer-tabs/`) |
-| Switching between tool families | `<ToolsFlyout>` |
-| Single panel with empty/loading/error states | `<PanelStatus>` |
+| Vertical navigation with sub-items                     | `<DrawerTabs>` (`chassis/drawer-tabs/`)                      |
+| Switching between tool families                        | `<ToolsFlyout>`                                              |
+| Single panel with empty/loading/error states           | `<PanelStatus>`                                              |
 
 ## Consumers
 
-| Site | Status |
-|---|---|
+| Site                                                     | Status                                |
+| -------------------------------------------------------- | ------------------------------------- |
 | `dashboard/TerminalPanel.svelte` (terminal session tabs) | **Migrated** in Phase 8.6 (this spec) |
 
 Adding a consumer requires updating this table.
@@ -31,16 +31,16 @@ Adding a consumer requires updating this table.
 
 Per Argos architecture rule (`Components must handle: Empty / Loading / Default / Active / Error / Success / Disabled / Disconnected`):
 
-| State | Treatment |
-|---|---|
-| **Empty** | Consumer renders the chassis with `tabs={[]}` — bar collapses to just the `trailing` snippet (e.g. "+ new"). No tabs visible |
-| **Loading** | Consumer wraps `<EditorTabBar>` in a parent skeleton; chassis itself has no intrinsic loading state |
-| **Default** | One or more tabs, exactly one with `id === activeId` |
-| **Active** | Active tab carries `aria-selected="true"` + `tabindex="0"` + `--lunaris-tab-active` style |
-| **Error** | Per-tab error indication is consumer's responsibility (icon snippet on the tab title) — chassis stays state-agnostic |
-| **Success** | Same as Default; success indication via consumer-provided `icon` |
-| **Disabled** | Whole-bar disable: consumer sets `class="opacity-50 pointer-events-none"` on the chassis |
-| **Disconnected** | Same as Disabled — consumer's responsibility |
+| State            | Treatment                                                                                                                    |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| **Empty**        | Consumer renders the chassis with `tabs={[]}` — bar collapses to just the `trailing` snippet (e.g. "+ new"). No tabs visible |
+| **Loading**      | Consumer wraps `<EditorTabBar>` in a parent skeleton; chassis itself has no intrinsic loading state                          |
+| **Default**      | One or more tabs, exactly one with `id === activeId`                                                                         |
+| **Active**       | Active tab carries `aria-selected="true"` + `tabindex="0"` + `--lunaris-tab-active` style                                    |
+| **Error**        | Per-tab error indication is consumer's responsibility (icon snippet on the tab title) — chassis stays state-agnostic         |
+| **Success**      | Same as Default; success indication via consumer-provided `icon`                                                             |
+| **Disabled**     | Whole-bar disable: consumer sets `class="opacity-50 pointer-events-none"` on the chassis                                     |
+| **Disconnected** | Same as Disabled — consumer's responsibility                                                                                 |
 
 ## Common pitfalls
 

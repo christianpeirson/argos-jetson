@@ -146,9 +146,9 @@ Lunaris tokens flow through automatically.
 
 Phase 9.1 introduces the chassis only. Call-site migration lands in 9.1l:
 
-| Phase | File | Sites |
-| --- | --- | --- |
-| 9.1l | `src/lib/components/dashboard/views/MissionControlView.svelte` | CPU TOTAL bar + MEM TOTAL bar (2 sites) |
+| Phase | File                                                           | Sites                                   |
+| ----- | -------------------------------------------------------------- | --------------------------------------- |
+| 9.1l  | `src/lib/components/dashboard/views/MissionControlView.svelte` | CPU TOTAL bar + MEM TOTAL bar (2 sites) |
 
 A single small sub-phase for ProgressBar; the chassis is also stocked for future report-progress / file-upload surfaces.
 

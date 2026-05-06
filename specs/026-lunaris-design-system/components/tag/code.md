@@ -174,12 +174,12 @@ Lunaris tokens flow through automatically.
 
 Phase 9.1 introduces the chassis only. Call-site migrations land in 9.1h-9.1k:
 
-| Phase | File | Sites |
-| --- | --- | --- |
-| 9.1h | `src/lib/components/dashboard/views/AgentsView.svelte` | status pills (4 kinds × N sessions) |
-| 9.1i | `src/lib/components/dashboard/panels/SourcesPanel.svelte` | source-state pills (4 kinds × N sources) |
-| 9.1j | `src/lib/components/dashboard/views/WorkflowsView.svelte` | category labels |
-| 9.1k | `src/lib/components/dashboard/panels/KismetPanel.svelte` | filter chips (filter variant) |
+| Phase | File                                                      | Sites                                    |
+| ----- | --------------------------------------------------------- | ---------------------------------------- |
+| 9.1h  | `src/lib/components/dashboard/views/AgentsView.svelte`    | status pills (4 kinds × N sessions)      |
+| 9.1i  | `src/lib/components/dashboard/panels/SourcesPanel.svelte` | source-state pills (4 kinds × N sources) |
+| 9.1j  | `src/lib/components/dashboard/views/WorkflowsView.svelte` | category labels                          |
+| 9.1k  | `src/lib/components/dashboard/panels/KismetPanel.svelte`  | filter chips (filter variant)            |
 
 Each sub-phase is its own atomic commit inside the Phase 9 daily PR.
 

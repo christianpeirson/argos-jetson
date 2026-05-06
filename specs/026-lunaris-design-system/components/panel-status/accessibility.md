@@ -4,16 +4,16 @@ PanelStatus is a **status-region container** that uses ARIA live-region semantic
 
 ## WCAG criteria covered
 
-| SC | Criterion | How the chassis satisfies it |
-|---|---|---|
-| **1.4.3** (AA) | Contrast (Minimum) | Title color tokens chosen for ≥4.5:1 contrast on Lunaris dark backgrounds: `var(--foreground-muted)` (loading/empty), `var(--destructive)` (error/disconnected), `var(--muted-foreground)` (disabled). Detail text always uses `var(--muted-foreground)` (≥4.5:1) |
-| **1.4.13** (AA) | Content on Hover or Focus | N/A — PanelStatus has no hover-revealed content |
-| **2.1.1** (A) | Keyboard | Retry button is real `<button type="button">`; ENTER/SPACE activates `onRetry`. `action` snippet is consumer's responsibility |
-| **2.3.3** (AAA) | Animation from Interactions | `@media (prefers-reduced-motion: reduce)` stops the loading spinner. Static circle when motion-reduction is requested |
-| **2.4.3** (A) | Focus Order | Retry button is in TAB order by default (button is natively focusable) |
-| **2.5.5** (AAA) | Target Size | Retry button: 6+11+6 = 23px height × min 64px width. Meets AA (24×24) at most browser zoom levels; below AAA (44×44) for compact toolbar contexts. For touch surfaces, consumers should pass `class` prop to override sizing |
-| **4.1.2** (A) | Name, Role, Value | `title` REQUIRED in TypeScript Props. Retry button has accessible name from `retryLabel` (default `'RETRY'`). Spinner has `aria-hidden="true"` (decorative only) |
-| **4.1.3** (AA) | Status Messages | `role="status"` + `aria-live="polite"` on outer div: AT announces title + detail when state changes, without focus shift. `aria-busy="true"` on `state="loading"` tells AT the region is updating |
+| SC              | Criterion                   | How the chassis satisfies it                                                                                                                                                                                                                                      |
+| --------------- | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **1.4.3** (AA)  | Contrast (Minimum)          | Title color tokens chosen for ≥4.5:1 contrast on Lunaris dark backgrounds: `var(--foreground-muted)` (loading/empty), `var(--destructive)` (error/disconnected), `var(--muted-foreground)` (disabled). Detail text always uses `var(--muted-foreground)` (≥4.5:1) |
+| **1.4.13** (AA) | Content on Hover or Focus   | N/A — PanelStatus has no hover-revealed content                                                                                                                                                                                                                   |
+| **2.1.1** (A)   | Keyboard                    | Retry button is real `<button type="button">`; ENTER/SPACE activates `onRetry`. `action` snippet is consumer's responsibility                                                                                                                                     |
+| **2.3.3** (AAA) | Animation from Interactions | `@media (prefers-reduced-motion: reduce)` stops the loading spinner. Static circle when motion-reduction is requested                                                                                                                                             |
+| **2.4.3** (A)   | Focus Order                 | Retry button is in TAB order by default (button is natively focusable)                                                                                                                                                                                            |
+| **2.5.5** (AAA) | Target Size                 | Retry button: 6+11+6 = 23px height × min 64px width. Meets AA (24×24) at most browser zoom levels; below AAA (44×44) for compact toolbar contexts. For touch surfaces, consumers should pass `class` prop to override sizing                                      |
+| **4.1.2** (A)   | Name, Role, Value           | `title` REQUIRED in TypeScript Props. Retry button has accessible name from `retryLabel` (default `'RETRY'`). Spinner has `aria-hidden="true"` (decorative only)                                                                                                  |
+| **4.1.3** (AA)  | Status Messages             | `role="status"` + `aria-live="polite"` on outer div: AT announces title + detail when state changes, without focus shift. `aria-busy="true"` on `state="loading"` tells AT the region is updating                                                                 |
 
 ## ARIA wiring done by the chassis
 
@@ -22,7 +22,11 @@ PanelStatus is a **status-region container** that uses ARIA live-region semantic
 	class="panel-status panel-status--{state}"
 	role="status"
 	aria-live="polite"
-	aria-busy={state === 'loading'}
+	aria-busy="{state"
+	=""
+	=""
+	="loading"
+	}
 >
 	<!-- icon OR spinner: aria-hidden="true" (decorative) -->
 	<!-- title: visible, AT reads via live region -->
@@ -46,7 +50,7 @@ Same rationale as `<TooltipIcon>`'s `tooltipText`: a status region with no title
 ```typescript
 interface Props {
 	state: PanelStatusState;
-	title: string;  // REQUIRED — no fallback
+	title: string; // REQUIRED — no fallback
 	// ...
 }
 ```
@@ -55,18 +59,18 @@ A status region without a title violates WCAG 4.1.3 ("AT must know what's loadin
 
 ## Consumer obligations
 
-| Owner | Responsibility |
-|---|---|
-| Chassis | `role="status"`, `aria-live="polite"`, `aria-busy` toggle, retry button keyboard support, reduced-motion compliance |
+| Owner        | Responsibility                                                                                                                                                                                        |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Chassis      | `role="status"`, `aria-live="polite"`, `aria-busy` toggle, retry button keyboard support, reduced-motion compliance                                                                                   |
 | **Consumer** | Pass DESCRIPTIVE `title` (e.g. `'WIRESHARK UNAVAILABLE'` not `'Status'`); set `state` reactively when underlying condition changes; for touch surfaces, override retry button sizing via `class` prop |
 
 ## Keyboard interactions
 
-| Key | Behavior |
-|---|---|
-| TAB | Moves focus to retry button (if rendered) |
-| ENTER / SPACE on retry button | Activates `onRetry` callback |
-| TAB inside `action` snippet | Whatever the snippet provides (consumer's responsibility) |
+| Key                           | Behavior                                                  |
+| ----------------------------- | --------------------------------------------------------- |
+| TAB                           | Moves focus to retry button (if rendered)                 |
+| ENTER / SPACE on retry button | Activates `onRetry` callback                              |
+| TAB inside `action` snippet   | Whatever the snippet provides (consumer's responsibility) |
 
 The chassis adds NO custom keyboard handlers beyond what the retry button natively does.
 
@@ -78,12 +82,12 @@ The chassis adds NO custom keyboard handlers beyond what the retry button native
 
 ## Screen reader behavior
 
-| AT | Behavior on state transition |
-|---|---|
-| NVDA | Announces "title detail" (live region polite). Re-announces on state change |
-| JAWS | Same pattern; some versions silently honor live regions on rapid transitions |
+| AT              | Behavior on state transition                                                            |
+| --------------- | --------------------------------------------------------------------------------------- |
+| NVDA            | Announces "title detail" (live region polite). Re-announces on state change             |
+| JAWS            | Same pattern; some versions silently honor live regions on rapid transitions            |
 | VoiceOver (Mac) | Announces "title detail" + "RETRY button" if `onRetry` provided and no `action` snippet |
-| TalkBack | Announces title + detail; retry button focusable via swipe |
+| TalkBack        | Announces title + detail; retry button focusable via swipe                              |
 
 **Caveat**: rapid state transitions (>1 per second) may cause AT to skip announcements (live region debouncing). For UX with frequent transitions (e.g. real-time status indicators), consider `aria-live="off"` + manual announcement via a separate `<div role="status">` that updates less frequently.
 

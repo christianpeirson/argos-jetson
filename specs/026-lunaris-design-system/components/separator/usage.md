@@ -12,19 +12,19 @@ Use `<Separator>` for:
 
 ## When NOT to use
 
-| Need | Use instead |
-|---|---|
-| Interactive resize handle | The hand-rolled pattern at `dashboard/PanelContainer.svelte:112` (with `tabindex` + `aria-valuenow`) — separators meant to be dragged are a different APG pattern |
-| Visual grouping where margin/padding suffices | Just use spacing — don't add a separator if the layout already implies separation |
-| Decoration-only line | A plain `<hr>` or styled `<div>` — `Separator` adds an a11y role for screen-reader users navigating section structure |
-| Border between items in a list | Use `border-bottom` on the list items — separators are for sibling-block dividers, not table-row borders |
+| Need                                          | Use instead                                                                                                                                                       |
+| --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Interactive resize handle                     | The hand-rolled pattern at `dashboard/PanelContainer.svelte:112` (with `tabindex` + `aria-valuenow`) — separators meant to be dragged are a different APG pattern |
+| Visual grouping where margin/padding suffices | Just use spacing — don't add a separator if the layout already implies separation                                                                                 |
+| Decoration-only line                          | A plain `<hr>` or styled `<div>` — `Separator` adds an a11y role for screen-reader users navigating section structure                                             |
+| Border between items in a list                | Use `border-bottom` on the list items — separators are for sibling-block dividers, not table-row borders                                                          |
 
 ## Consumers
 
-| Site | Status |
-|---|---|
+| Site                                                        | Status                                |
+| ----------------------------------------------------------- | ------------------------------------- |
 | `dashboard/globalprotect/GpConfigView.svelte` (2 instances) | **Migrated** in Phase 8.7 (this spec) |
-| `dashboard/tak/TakConfigView.svelte` (6 instances) | **Migrated** in Phase 8.7 (this spec) |
+| `dashboard/tak/TakConfigView.svelte` (6 instances)          | **Migrated** in Phase 8.7 (this spec) |
 
 Adding a consumer requires updating this table.
 
@@ -32,10 +32,10 @@ Adding a consumer requires updating this table.
 
 Separator has only one state — rendered. No empty/loading/error variants (it's a passive visual primitive).
 
-| Prop | Effect |
-|---|---|
-| `orientation="horizontal"` (default) | 1px tall, full width |
-| `orientation="vertical"` | 1px wide, full height (consumer must constrain height via flex-parent) |
+| Prop                                 | Effect                                                                 |
+| ------------------------------------ | ---------------------------------------------------------------------- |
+| `orientation="horizontal"` (default) | 1px tall, full width                                                   |
+| `orientation="vertical"`             | 1px wide, full height (consumer must constrain height via flex-parent) |
 
 ## Common pitfalls
 

@@ -24,30 +24,30 @@ Inline status indicator that announces "in-progress / done / error" within an ex
 
 ## Argos surface inventory (Phase 6)
 
-| File | Site | Cohort | Migration PR |
-| ---- | ---- | ------ | ------------ |
-| `src/lib/components/dashboard/panels/overview/SystemInfoCard.svelte` | line 164 | "Loading..." status text in metric panel while `systemInfo` is `null` | **Phase 6** |
-| `src/lib/components/chassis/WeatherPanel.svelte` | lines 62-64 | "FETCHING METAR…" loading-state branch (1 of 5 panel state branches) | **Phase 6** |
+| File                                                                 | Site        | Cohort                                                                | Migration PR |
+| -------------------------------------------------------------------- | ----------- | --------------------------------------------------------------------- | ------------ |
+| `src/lib/components/dashboard/panels/overview/SystemInfoCard.svelte` | line 164    | "Loading..." status text in metric panel while `systemInfo` is `null` | **Phase 6**  |
+| `src/lib/components/chassis/WeatherPanel.svelte`                     | lines 62-64 | "FETCHING METAR…" loading-state branch (1 of 5 panel state branches)  | **Phase 6**  |
 
 **Total InlineLoading cohort: 2 files / 2 sites shipped.**
 
 ### Deferred (NOT migrated to InlineLoading)
 
-| File | Reason |
-| ---- | ------ |
-| `src/lib/components/dashboard/views/ReportsView.svelte:364` (grid-skeleton) | Multi-row content-skeleton (3 `.skeleton-row` divs with CSS animation) — wrong shape for InlineLoading's status-text + small-spinner pattern. Future `SkeletonText` chassis. |
-| `src/routes/dashboard/mk2/agents/+page.svelte:30` (placeholder eyebrow + title + body) | Full-tile panel-status placeholder — fits `PanelStatus` chassis (Phase 4 follow-up sub-phase A). |
-| `src/lib/components/chassis/WeatherPanel.svelte` other state branches (`disabled` / `error` / `empty` / `disconnected`) | Same panel-status pattern — fit `PanelStatus` chassis. Phase 6 migrates ONLY the `loading` branch. |
+| File                                                                                                                    | Reason                                                                                                                                                                       |
+| ----------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/components/dashboard/views/ReportsView.svelte:364` (grid-skeleton)                                             | Multi-row content-skeleton (3 `.skeleton-row` divs with CSS animation) — wrong shape for InlineLoading's status-text + small-spinner pattern. Future `SkeletonText` chassis. |
+| `src/routes/dashboard/mk2/agents/+page.svelte:30` (placeholder eyebrow + title + body)                                  | Full-tile panel-status placeholder — fits `PanelStatus` chassis (Phase 4 follow-up sub-phase A).                                                                             |
+| `src/lib/components/chassis/WeatherPanel.svelte` other state branches (`disabled` / `error` / `empty` / `disconnected`) | Same panel-status pattern — fit `PanelStatus` chassis. Phase 6 migrates ONLY the `loading` branch.                                                                           |
 
 ## State machine
 
 InlineLoading's `status` prop drives 4 visual states:
 
-| `status` | Visual | Use case |
-| -------- | ------ | -------- |
-| `'active'` (default) | Animated small spinner + description | In-flight operation |
-| `'inactive'` | Stopped spinner + description | Paused or idle (rarely used) |
-| `'finished'` | Green checkmark + description; fires `onSuccess()` after `successDelay` ms | Completed successfully |
-| `'error'` | Red X + description | Failed |
+| `status`             | Visual                                                                     | Use case                     |
+| -------------------- | -------------------------------------------------------------------------- | ---------------------------- |
+| `'active'` (default) | Animated small spinner + description                                       | In-flight operation          |
+| `'inactive'`         | Stopped spinner + description                                              | Paused or idle (rarely used) |
+| `'finished'`         | Green checkmark + description; fires `onSuccess()` after `successDelay` ms | Completed successfully       |
+| `'error'`            | Red X + description                                                        | Failed                       |
 
 Phase 6 consumers use only `'active'` (the default — neither SystemInfoCard nor WeatherPanel has a finished/error state for the loading itself).
