@@ -280,7 +280,7 @@ export class DatabaseCleanupService {
 		return { before: before.size, after: after.size, saved };
 	}
 
-	// Singleton chain fallow can't trace. Called via src/routes/api/db/cleanup/+server.ts:79 (via db.getCleanupService()).
+	// Singleton chain fallow can't trace. Called via src/routes/api/db/cleanup/+server.ts:78 (via db.getCleanupService()).
 	/** Analyze database and update statistics */
 	// fallow-ignore-next-line unused-class-member
 	analyze() {

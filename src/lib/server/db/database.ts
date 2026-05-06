@@ -93,7 +93,7 @@ export class RFDatabase {
 	 * code path that depends on a migrated schema (new columns/indexes/tables)
 	 * should `await db.ready()` first.
 	 */
-	// globalThis chain fallow can't trace. Called via getRFDatabaseReady() at database.ts:382 and kismet-signal-source.ts:188.
+	// globalThis chain fallow can't trace. Called via await db.ready() at database.ts:390 (inside getRFDatabaseReady) and src/lib/server/services/rf/kismet-signal-source.ts:188.
 	// fallow-ignore-next-line unused-class-member
 	ready(): Promise<void> {
 		return this.initPromise;
