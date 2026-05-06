@@ -22,9 +22,10 @@ export interface SourceStatus {
 	health: SourceHealth;
 }
 
-export const SOURCE_STATE_TAG_KIND: Record<SourceState, 'green' | 'cool-gray' | 'magenta' | 'red'> = {
-	LIVE: 'green',
-	IDLE: 'cool-gray',
-	DEG: 'magenta',
-	OFFLINE: 'red'
-};
+export const SOURCE_STATE_TAG_KIND: Record<SourceState, 'green' | 'cool-gray' | 'magenta' | 'red'> =
+	{
+		LIVE: 'green',
+		IDLE: 'cool-gray',
+		DEG: 'magenta',
+		OFFLINE: 'red'
+	};

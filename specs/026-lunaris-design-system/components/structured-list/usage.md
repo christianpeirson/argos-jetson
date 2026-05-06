@@ -33,13 +33,13 @@ Per Carbon `structured-list/usage.mdx`:
 
 Bespoke key/value detail-pane sites Phase 9.1 retires by migrating to `<StructuredList>`:
 
-| Surface                 | File                                                         | Current pattern                                            |
-| ----------------------- | ------------------------------------------------------------ | ---------------------------------------------------------- |
-| Event detail dialog     | `src/lib/components/dashboard/dialogs/EventDetailDialog.svelte` | bespoke `<dl>` + `<dt>` / `<dd>` with hand-rolled spacing  |
-| IMSI inspector pane     | `src/lib/components/dashboard/panels/ImsiInspector.svelte`   | bespoke `.kv-row` flex grid                                |
-| AP detail pane          | `src/lib/components/dashboard/panels/ApDetail.svelte`        | bespoke `<dl>` + dot-leaders                               |
-| Session detail pane     | `src/lib/components/dashboard/panels/SessionDetail.svelte`   | bespoke `.detail-row` flex grid                            |
-| Mission summary modal   | `src/lib/components/dashboard/views/ReportsView.svelte`      | bespoke `<table>` (mis-pattern — not tabular data)         |
+| Surface               | File                                                            | Current pattern                                           |
+| --------------------- | --------------------------------------------------------------- | --------------------------------------------------------- |
+| Event detail dialog   | `src/lib/components/dashboard/dialogs/EventDetailDialog.svelte` | bespoke `<dl>` + `<dt>` / `<dd>` with hand-rolled spacing |
+| IMSI inspector pane   | `src/lib/components/dashboard/panels/ImsiInspector.svelte`      | bespoke `.kv-row` flex grid                               |
+| AP detail pane        | `src/lib/components/dashboard/panels/ApDetail.svelte`           | bespoke `<dl>` + dot-leaders                              |
+| Session detail pane   | `src/lib/components/dashboard/panels/SessionDetail.svelte`      | bespoke `.detail-row` flex grid                           |
+| Mission summary modal | `src/lib/components/dashboard/views/ReportsView.svelte`         | bespoke `<table>` (mis-pattern — not tabular data)        |
 
 Total bespoke key/value sites: ~6-9. Migration order: Event detail (highest visibility) → IMSI inspector → AP detail → session detail → mission summary.
 

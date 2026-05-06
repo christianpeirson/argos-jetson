@@ -10,37 +10,46 @@ Carbon ships no Separator primitive. The visual treatment is trivial (1px line i
 
 ```typescript
 interface Props {
-  orientation?: 'horizontal' | 'vertical';
-  class?: string;
+	orientation?: 'horizontal' | 'vertical';
+	class?: string;
 }
 ```
 
-| Prop | Type | Default | Description |
-|---|---|---|---|
-| `orientation` | `'horizontal' \| 'vertical'` | `'horizontal'` | Drives `aria-orientation` and the CSS sizing variant |
-| `class` | `string` | `undefined` | Extra class on the outer `<div>` for one-off overrides |
+| Prop          | Type                         | Default        | Description                                            |
+| ------------- | ---------------------------- | -------------- | ------------------------------------------------------ |
+| `orientation` | `'horizontal' \| 'vertical'` | `'horizontal'` | Drives `aria-orientation` and the CSS sizing variant   |
+| `class`       | `string`                     | `undefined`    | Extra class on the outer `<div>` for one-off overrides |
 
 ## Internal wiring
 
 ```svelte
 <script lang="ts">
-  interface Props {
-    orientation?: 'horizontal' | 'vertical';
-    class?: string;
-  }
-  let { orientation = 'horizontal', class: extraClass = '' }: Props = $props();
+	interface Props {
+		orientation?: 'horizontal' | 'vertical';
+		class?: string;
+	}
+	let { orientation = 'horizontal', class: extraClass = '' }: Props = $props();
 </script>
 
 <div
-  role="separator"
-  aria-orientation={orientation}
-  class="separator separator--{orientation} {extraClass}"
+	role="separator"
+	aria-orientation={orientation}
+	class="separator separator--{orientation} {extraClass}"
 ></div>
 
 <style>
-  .separator { background: var(--border); flex-shrink: 0; }
-  .separator--horizontal { height: 1px; width: 100%; }
-  .separator--vertical { width: 1px; height: 100%; }
+	.separator {
+		background: var(--border);
+		flex-shrink: 0;
+	}
+	.separator--horizontal {
+		height: 1px;
+		width: 100%;
+	}
+	.separator--vertical {
+		width: 1px;
+		height: 100%;
+	}
 </style>
 ```
 
@@ -60,9 +69,9 @@ N/A — no Carbon primitive to map from.
 
 ```svelte
 <div class="flex h-8 items-center gap-2">
-  <span>Left</span>
-  <Separator orientation="vertical" />
-  <span>Right</span>
+	<span>Left</span>
+	<Separator orientation="vertical" />
+	<span>Right</span>
 </div>
 ```
 
@@ -72,7 +81,9 @@ N/A — no Carbon primitive to map from.
 <Separator class="my-strong-divider" />
 
 <style>
-  :global(.my-strong-divider) { background: var(--foreground); }
+	:global(.my-strong-divider) {
+		background: var(--foreground);
+	}
 </style>
 ```
 

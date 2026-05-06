@@ -26,47 +26,47 @@ Carbon ships `carbon-components-svelte@0.107.0`, which is **still Svelte 4 inter
 
 ## Public API — `<Tooltip>` component
 
-| Prop              | Type                                            | Default              | Description                                                                |
-| ----------------- | ----------------------------------------------- | -------------------- | -------------------------------------------------------------------------- |
-| `open`            | `boolean` (bindable)                            | `false`              | Tooltip popover visibility. Two-way bindable.                              |
-| `direction`       | `'top' \| 'right' \| 'bottom' \| 'left'`        | `'bottom'`           | Popover placement relative to trigger.                                     |
-| `align`           | `'start' \| 'center' \| 'end'`                  | `'start'`            | Alignment of popover edge to trigger.                                      |
-| `hideIcon`        | `boolean`                                       | `false`              | Hide the default info icon (use external trigger via `triggerText`).       |
-| `iconDescription` | `string`                                        | `'More information'` | a11y label for the trigger button (WCAG 4.1.2).                            |
-| `triggerText`     | `string`                                        | `''`                 | Visible label rendered next to (or as) the trigger.                        |
-| `enterDelayMs`    | `number`                                        | `100`                | Delay before tooltip opens on hover.                                       |
-| `leaveDelayMs`    | `number`                                        | `300`                | Delay before tooltip closes after hover ends.                              |
-| `tabindex`        | `number \| string`                              | `'0'`                | TAB order index for the trigger button.                                    |
-| `tooltipId`       | `string`                                        | auto-generated       | DOM id for the popover (used for `aria-describedby`).                      |
-| `triggerId`       | `string`                                        | auto-generated       | DOM id for the trigger button.                                             |
-| `class`           | `string`                                        | `undefined`          | Extra class forwarded to Carbon's outer wrapper.                           |
+| Prop              | Type                                     | Default              | Description                                                          |
+| ----------------- | ---------------------------------------- | -------------------- | -------------------------------------------------------------------- |
+| `open`            | `boolean` (bindable)                     | `false`              | Tooltip popover visibility. Two-way bindable.                        |
+| `direction`       | `'top' \| 'right' \| 'bottom' \| 'left'` | `'bottom'`           | Popover placement relative to trigger.                               |
+| `align`           | `'start' \| 'center' \| 'end'`           | `'start'`            | Alignment of popover edge to trigger.                                |
+| `hideIcon`        | `boolean`                                | `false`              | Hide the default info icon (use external trigger via `triggerText`). |
+| `iconDescription` | `string`                                 | `'More information'` | a11y label for the trigger button (WCAG 4.1.2).                      |
+| `triggerText`     | `string`                                 | `''`                 | Visible label rendered next to (or as) the trigger.                  |
+| `enterDelayMs`    | `number`                                 | `100`                | Delay before tooltip opens on hover.                                 |
+| `leaveDelayMs`    | `number`                                 | `300`                | Delay before tooltip closes after hover ends.                        |
+| `tabindex`        | `number \| string`                       | `'0'`                | TAB order index for the trigger button.                              |
+| `tooltipId`       | `string`                                 | auto-generated       | DOM id for the popover (used for `aria-describedby`).                |
+| `triggerId`       | `string`                                 | auto-generated       | DOM id for the trigger button.                                       |
+| `class`           | `string`                                 | `undefined`          | Extra class forwarded to Carbon's outer wrapper.                     |
 
 ## Events / callback props
 
 Chassis uses Svelte-5 callback props that bridge Carbon's Svelte-4 event dispatcher.
 
-| Callback prop | Args  | Maps to Carbon event | Notes                                          |
-| ------------- | ----- | -------------------- | ---------------------------------------------- |
-| `onOpen`      | `()`  | `on:open`            | Fires when popover opens (hover/focus/click)   |
-| `onClose`     | `()`  | `on:close`           | Fires when popover closes (blur/escape/leave)  |
+| Callback prop | Args | Maps to Carbon event | Notes                                         |
+| ------------- | ---- | -------------------- | --------------------------------------------- |
+| `onOpen`      | `()` | `on:open`            | Fires when popover opens (hover/focus/click)  |
+| `onClose`     | `()` | `on:close`           | Fires when popover closes (blur/escape/leave) |
 
 ## Slots
 
-| Slot       | Type                  | Description                                              |
-| ---------- | --------------------- | -------------------------------------------------------- |
-| `children` | `Snippet` (default)   | Tooltip body content. Plain text or rich markup.         |
+| Slot       | Type                | Description                                      |
+| ---------- | ------------------- | ------------------------------------------------ |
+| `children` | `Snippet` (default) | Tooltip body content. Plain text or rich markup. |
 
 Carbon also exposes named slots `triggerText` and `icon` for trigger customization. The chassis wrapper does NOT forward those — use the `triggerText` and `hideIcon` props instead. If a tier-2 site needs custom trigger markup, add named-slot snippet forwarding in the wrapper.
 
 ## Carbon → chassis API mapping
 
-| Carbon API                            | Chassis equivalent                | Notes                                  |
-| ------------------------------------- | --------------------------------- | -------------------------------------- |
-| `bind:open`                           | `bind:open` (preserved)           | Same shape                             |
-| `on:open={() => ...}`                 | `onOpen={() => ...}`              | Callback prop                          |
-| `on:close={() => ...}`                | `onClose={() => ...}`             | Callback prop                          |
-| `<svelte:fragment slot="triggerText">` | `triggerText="..."` prop          | Plain string only in PR-A              |
-| `<svelte:fragment slot="icon">`       | not exposed                       | Use `hideIcon={true}` + external icon  |
+| Carbon API                             | Chassis equivalent       | Notes                                 |
+| -------------------------------------- | ------------------------ | ------------------------------------- |
+| `bind:open`                            | `bind:open` (preserved)  | Same shape                            |
+| `on:open={() => ...}`                  | `onOpen={() => ...}`     | Callback prop                         |
+| `on:close={() => ...}`                 | `onClose={() => ...}`    | Callback prop                         |
+| `<svelte:fragment slot="triggerText">` | `triggerText="..."` prop | Plain string only in PR-A             |
+| `<svelte:fragment slot="icon">`        | not exposed              | Use `hideIcon={true}` + external icon |
 
 ## Paste-ready snippets
 
@@ -74,12 +74,10 @@ Carbon also exposes named slots `triggerText` and `icon` for trigger customizati
 
 ```svelte
 <script lang="ts">
-  import Tooltip from '$lib/components/chassis/forms/Tooltip.svelte';
+	import Tooltip from '$lib/components/chassis/forms/Tooltip.svelte';
 </script>
 
-<Tooltip>
-  Bluetooth scanner samples 2.4 GHz every 250 ms when active.
-</Tooltip>
+<Tooltip>Bluetooth scanner samples 2.4 GHz every 250 ms when active.</Tooltip>
 ```
 
 This renders an info icon; on hover/focus, the tooltip body opens below.
@@ -88,8 +86,8 @@ This renders an info icon; on hover/focus, the tooltip body opens below.
 
 ```svelte
 <Tooltip triggerText="What is BlueDragon?">
-  BlueDragon is the BLE/BT classic scanner stack — wraps `bluetoothctl` plus a custom
-  HCI sniffer. See the bluetooth tab for live device captures.
+	BlueDragon is the BLE/BT classic scanner stack — wraps `bluetoothctl` plus a custom HCI sniffer.
+	See the bluetooth tab for live device captures.
 </Tooltip>
 ```
 
@@ -97,7 +95,7 @@ This renders an info icon; on hover/focus, the tooltip body opens below.
 
 ```svelte
 <Tooltip direction="top" align="center" triggerText="HackRF status">
-  Green = streaming. Amber = idle. Red = USB device removed.
+	Green = streaming. Amber = idle. Red = USB device removed.
 </Tooltip>
 ```
 
@@ -105,7 +103,7 @@ This renders an info icon; on hover/focus, the tooltip body opens below.
 
 ```svelte
 <Tooltip hideIcon iconDescription="Refresh status info" triggerText="Refresh">
-  Re-scans Bluetooth + Wi-Fi adapters via `nmcli`. Takes ~2 seconds.
+	Re-scans Bluetooth + Wi-Fi adapters via `nmcli`. Takes ~2 seconds.
 </Tooltip>
 ```
 
@@ -115,11 +113,15 @@ When `hideIcon={true}`, the `iconDescription` becomes the accessible name of the
 
 ```svelte
 <script lang="ts">
-  let isOpen = $state(false);
+	let isOpen = $state(false);
 </script>
 
-<Tooltip bind:open={isOpen} onOpen={() => console.log('opened')} onClose={() => console.log('closed')}>
-  Bound state.
+<Tooltip
+	bind:open={isOpen}
+	onOpen={() => console.log('opened')}
+	onClose={() => console.log('closed')}
+>
+	Bound state.
 </Tooltip>
 
 <button onclick={() => (isOpen = !isOpen)}>Toggle externally</button>

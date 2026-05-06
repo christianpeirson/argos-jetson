@@ -4,6 +4,7 @@
 **Last updated:** 2026-05-04
 **Carbon mirror:** `docs/carbon-website/src/pages/components/Tile/accessibility.mdx`
 **Carbon sources:**
+
 - <https://github.com/carbon-design-system/carbon-components-svelte/blob/v0.107.0/src/Tile/Tile.svelte>
 - <https://github.com/carbon-design-system/carbon-components-svelte/blob/v0.107.0/src/Tile/ClickableTile.svelte>
 
@@ -52,15 +53,15 @@ Per Carbon Tile accessibility patterns (Tile.svelte + ClickableTile.svelte sourc
 
 Carbon's stock theme passes WCAG 2.1 AA. Lunaris token overrides MUST preserve those ratios.
 
-| Pair | Min contrast (AA) | Lunaris target | Status |
-| --- | --- | --- | --- |
-| Tile bg vs page bg | 3:1 (graphical) | `var(--card)` (#1A) on `var(--background)` (#11) | ≈ 1.3:1 ⚠ — **Lunaris adds 1 px border to compensate** |
-| Tile border vs page bg | 3:1 (graphical) | `var(--border)` (#2E) on `var(--background)` (#11) | ≈ 2.0:1 ⚠ — **falls short; rely on focus ring + content contrast** |
-| Tile content text on tile | 4.5:1 | `var(--ink)` on `var(--card)` | ≈ 13.4:1 ✓ |
-| Hover bg on page | 3:1 (graphical) | `var(--card-hover)` on `var(--background)` | ≈ 1.5:1 ⚠ — **only-clickable surfaces; AT announces "link/button"** |
-| Focus outline | 3:1 (graphical) | `var(--accent)` on `var(--card)` | ≈ 6.8:1 ✓ |
-| Chevron (active hover) | 3:1 (graphical) | `var(--accent)` on `var(--card-hover)` | ≈ 7.0:1 ✓ |
-| Chevron (default) | 3:1 (graphical) | `var(--ink-3)` on `var(--card)` | ≈ 4.2:1 ✓ |
+| Pair                      | Min contrast (AA) | Lunaris target                                     | Status                                                               |
+| ------------------------- | ----------------- | -------------------------------------------------- | -------------------------------------------------------------------- |
+| Tile bg vs page bg        | 3:1 (graphical)   | `var(--card)` (#1A) on `var(--background)` (#11)   | ≈ 1.3:1 ⚠ — **Lunaris adds 1 px border to compensate**              |
+| Tile border vs page bg    | 3:1 (graphical)   | `var(--border)` (#2E) on `var(--background)` (#11) | ≈ 2.0:1 ⚠ — **falls short; rely on focus ring + content contrast**  |
+| Tile content text on tile | 4.5:1             | `var(--ink)` on `var(--card)`                      | ≈ 13.4:1 ✓                                                           |
+| Hover bg on page          | 3:1 (graphical)   | `var(--card-hover)` on `var(--background)`         | ≈ 1.5:1 ⚠ — **only-clickable surfaces; AT announces "link/button"** |
+| Focus outline             | 3:1 (graphical)   | `var(--accent)` on `var(--card)`                   | ≈ 6.8:1 ✓                                                            |
+| Chevron (active hover)    | 3:1 (graphical)   | `var(--accent)` on `var(--card-hover)`             | ≈ 7.0:1 ✓                                                            |
+| Chevron (default)         | 3:1 (graphical)   | `var(--ink-3)` on `var(--card)`                    | ≈ 4.2:1 ✓                                                            |
 
 **Two amber flags**: tile-bg vs page-bg and hover-bg vs page-bg. These are Argos-wide deviations from the strict 3:1 graphical floor for non-text UI components. Mitigations:
 
@@ -78,11 +79,11 @@ Documented as Phase 7 audit deviation. Acceptable per WCAG 1.4.11 SC reasoning (
 
 Tiles are large containers; tap target is the entire tile area. Always above the 24 × 24 px floor.
 
-| Surface | Min size | WCAG 2.5.8 (24 px) | WCAG 2.5.5 (44 px AAA) |
-| --- | --- | --- | --- |
-| Mission Control stat tile | ≈ 200 × 96 px | ✓ pass | ✓ pass |
-| AGENTS session card | ≈ 280 × 140 px | ✓ pass | ✓ pass |
-| Workflows category card | ≈ 240 × 120 px | ✓ pass | ✓ pass |
+| Surface                   | Min size       | WCAG 2.5.8 (24 px) | WCAG 2.5.5 (44 px AAA) |
+| ------------------------- | -------------- | ------------------ | ---------------------- |
+| Mission Control stat tile | ≈ 200 × 96 px  | ✓ pass             | ✓ pass                 |
+| AGENTS session card       | ≈ 280 × 140 px | ✓ pass             | ✓ pass                 |
+| Workflows category card   | ≈ 240 × 120 px | ✓ pass             | ✓ pass                 |
 
 ### Accessible name source
 
@@ -127,20 +128,20 @@ If `flex-direction: row-reverse` or `grid-auto-flow: column` are used, Tab order
 
 ## Verification checklist (Phase 9.1)
 
-| Check | Tool | Pass criterion |
-| --- | --- | --- |
-| WCAG 2.1 AA on canary route | `@axe-core/playwright` (`AxeBuilder`) | `violations: []` with `wcag2a, wcag2aa, wcag21a, wcag21aa, best-practice` tags (border-contrast deviation logged separately) |
-| `<Tile>` has no role / aria-* attributes | Playwright DOM audit | Outer `<div>` has no a11y attributes |
-| `<ClickableTile href>` renders `<a href>` | Playwright DOM audit | Element is `<a>` with `href` set |
-| `<ClickableTile>` (no href) renders `<button>` | Playwright DOM audit | Element is `<button type="button">` |
-| Tab order visits clickable tiles only | Playwright keyboard nav | Stat tiles skipped; session cards + category cards each get one stop |
-| Enter activates ClickableTile | Playwright keyboard test | `await page.keyboard.press('Enter')` triggers `onClick` / nav |
-| Space activates ClickableTile (button mode) | Playwright keyboard test | `await page.keyboard.press(' ')` triggers `onClick` for non-href tiles |
-| Focus ring visible | manual + Playwright `:focus` check | 2 px inset outline visible on every clickable tile |
-| Hover state visible | manual visual check | Background + border + chevron all change on hover |
-| Disabled tile has aria-disabled | Playwright DOM audit | `aria-disabled="true"` + `tabindex="-1"` |
-| Chevron is decorative | Playwright DOM audit | Chevron icon has `aria-hidden="true"` |
-| Color contrast (focus, content, chevron) | chrome-devtools MCP + axe | Focus ≥ 3:1, content ≥ 4.5:1, chevron ≥ 3:1 |
+| Check                                          | Tool                                  | Pass criterion                                                                                                               |
+| ---------------------------------------------- | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| WCAG 2.1 AA on canary route                    | `@axe-core/playwright` (`AxeBuilder`) | `violations: []` with `wcag2a, wcag2aa, wcag21a, wcag21aa, best-practice` tags (border-contrast deviation logged separately) |
+| `<Tile>` has no role / aria-\* attributes      | Playwright DOM audit                  | Outer `<div>` has no a11y attributes                                                                                         |
+| `<ClickableTile href>` renders `<a href>`      | Playwright DOM audit                  | Element is `<a>` with `href` set                                                                                             |
+| `<ClickableTile>` (no href) renders `<button>` | Playwright DOM audit                  | Element is `<button type="button">`                                                                                          |
+| Tab order visits clickable tiles only          | Playwright keyboard nav               | Stat tiles skipped; session cards + category cards each get one stop                                                         |
+| Enter activates ClickableTile                  | Playwright keyboard test              | `await page.keyboard.press('Enter')` triggers `onClick` / nav                                                                |
+| Space activates ClickableTile (button mode)    | Playwright keyboard test              | `await page.keyboard.press(' ')` triggers `onClick` for non-href tiles                                                       |
+| Focus ring visible                             | manual + Playwright `:focus` check    | 2 px inset outline visible on every clickable tile                                                                           |
+| Hover state visible                            | manual visual check                   | Background + border + chevron all change on hover                                                                            |
+| Disabled tile has aria-disabled                | Playwright DOM audit                  | `aria-disabled="true"` + `tabindex="-1"`                                                                                     |
+| Chevron is decorative                          | Playwright DOM audit                  | Chevron icon has `aria-hidden="true"`                                                                                        |
+| Color contrast (focus, content, chevron)       | chrome-devtools MCP + axe             | Focus ≥ 3:1, content ≥ 4.5:1, chevron ≥ 3:1                                                                                  |
 
 Phase 7-style audit re-run for the migrated tiles in 9.1e-9.1g.
 
@@ -151,8 +152,8 @@ Phase 7-style audit re-run for the migrated tiles in 9.1e-9.1g.
 - Carbon Tile a11y mdx: `docs/carbon-website/src/pages/components/Tile/accessibility.mdx`
 - Carbon Tile SCSS: `docs/carbon-design-system/packages/styles/scss/components/tile/_tile.scss`
 - Carbon Svelte sources:
-  - <https://github.com/carbon-design-system/carbon-components-svelte/blob/v0.107.0/src/Tile/Tile.svelte>
-  - <https://github.com/carbon-design-system/carbon-components-svelte/blob/v0.107.0/src/Tile/ClickableTile.svelte>
+    - <https://github.com/carbon-design-system/carbon-components-svelte/blob/v0.107.0/src/Tile/Tile.svelte>
+    - <https://github.com/carbon-design-system/carbon-components-svelte/blob/v0.107.0/src/Tile/ClickableTile.svelte>
 - WCAG 2.1: <https://www.w3.org/TR/WCAG21/>
 - WCAG 2.2 SC 2.5.8 Target Size (Minimum): <https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html>
 - WCAG 1.4.11 Non-text Contrast: <https://www.w3.org/WAI/WCAG21/Understanding/non-text-contrast.html>

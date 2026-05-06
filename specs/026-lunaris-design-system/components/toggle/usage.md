@@ -12,29 +12,29 @@ Use `<Toggle>` for:
 
 ## When NOT to use
 
-| Need | Use instead |
-|---|---|
-| A multi-value choice (3+ options) | `<Tabs>` or `<RadioButtonGroup>` |
-| A binary BUT one value is "the default and rarely changes" | `<Checkbox>` (lighter visual weight) |
-| A button that triggers an action (start / stop) | A regular `<button>`, not a Toggle |
-| A draggable slider over a range | (no Argos primitive yet — out of spec-026 scope) |
+| Need                                                       | Use instead                                      |
+| ---------------------------------------------------------- | ------------------------------------------------ |
+| A multi-value choice (3+ options)                          | `<Tabs>` or `<RadioButtonGroup>`                 |
+| A binary BUT one value is "the default and rarely changes" | `<Checkbox>` (lighter visual weight)             |
+| A button that triggers an action (start / stop)            | A regular `<button>`, not a Toggle               |
+| A draggable slider over a range                            | (no Argos primitive yet — out of spec-026 scope) |
 
 ## Consumers
 
-| Site | Status |
-|---|---|
+| Site                                                        | Status                                                       |
+| ----------------------------------------------------------- | ------------------------------------------------------------ |
 | `dashboard/tak/TakServerForm.svelte` ("Connect on startup") | **Migrated** in Phase 8.7 (this spec) — was bits-ui `Switch` |
 
 Adding a consumer requires updating this table.
 
 ## States
 
-| State | Treatment |
-|---|---|
-| **Off** (`toggled={false}`) | Carbon's neutral track + thumb at left |
-| **On** (`toggled={true}`) | Carbon's accent track + thumb at right (uses `var(--primary)` via Lunaris theme) |
-| **Disabled** | Reduced opacity + `cursor: not-allowed`; Carbon disables click + keyboard |
-| **Focus-visible** | Carbon's standard focus ring on the track |
+| State                       | Treatment                                                                        |
+| --------------------------- | -------------------------------------------------------------------------------- |
+| **Off** (`toggled={false}`) | Carbon's neutral track + thumb at left                                           |
+| **On** (`toggled={true}`)   | Carbon's accent track + thumb at right (uses `var(--primary)` via Lunaris theme) |
+| **Disabled**                | Reduced opacity + `cursor: not-allowed`; Carbon disables click + keyboard        |
+| **Focus-visible**           | Carbon's standard focus ring on the track                                        |
 
 ## Common pitfalls
 

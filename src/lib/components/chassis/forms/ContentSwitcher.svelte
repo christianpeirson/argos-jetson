@@ -30,12 +30,7 @@
 	}
 </script>
 
-<CarbonContentSwitcher
-	bind:selectedIndex
-	{size}
-	class={extraClass}
-	on:change={handleChange}
->
+<CarbonContentSwitcher bind:selectedIndex {size} class={extraClass} on:change={handleChange}>
 	{#each options as option (option.text)}
 		<Switch text={option.text} disabled={option.disabled ?? false} />
 	{/each}

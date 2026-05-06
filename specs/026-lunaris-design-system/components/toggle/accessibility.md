@@ -9,17 +9,17 @@
 
 ```html
 <div class="bx--form-item">
-  <label id="<auto>" class="bx--label">{labelText}</label>
-  <button
-    type="button"
-    class="bx--toggle__button"
-    role="switch"
-    aria-checked={toggled}
-    aria-labelledby="<auto>"
-    [aria-disabled={disabled}]
-  >
-    <span aria-hidden="true">{labelA OR labelB}</span>
-  </button>
+	<label id="<auto>" class="bx--label">{labelText}</label>
+	<button
+		type="button"
+		class="bx--toggle__button"
+		role="switch"
+		aria-checked="{toggled}"
+		aria-labelledby="<auto>"
+		[aria-disabled="{disabled}]"
+	>
+		<span aria-hidden="true">{labelA OR labelB}</span>
+	</button>
 </div>
 ```
 
@@ -33,25 +33,25 @@ Key wiring decisions:
 
 ## WCAG criteria covered
 
-| SC | Criterion | How Carbon satisfies it |
-|---|---|---|
-| **1.4.3** (AA) | Contrast (Minimum) | Carbon's `$interactive` token chosen for ≥ 4.5:1 contrast against the page background. Lunaris re-binds to `var(--primary)` (steel blue #A8B8E0) which meets AA on `var(--background)` (#111111) |
-| **1.4.11** (AA) | Non-text Contrast | Track + thumb meet 3:1 against the surrounding surface |
-| **2.1.1** (A) | Keyboard | Native `<button>`; Enter/Space toggle |
-| **2.1.2** (A) | No Keyboard Trap | Tab key exits normally |
-| **2.4.7** (AA) | Focus Visible | Carbon's `2px` focus ring on the track |
-| **2.5.5** (AAA partial) | Target Size | `48×24px` (default) or `32×16px` (sm). Default passes AA 24×24; sm size below AAA 44×44 — acceptable for compact toolbar contexts |
-| **4.1.2** (A) | Name, Role, Value | `role="switch"` + `aria-labelledby` (label) + `aria-checked` (value) |
-| **4.1.3** (AA) | Status Messages | N/A — toggles don't fire live messages. The new state is encoded in `aria-checked` which AT re-announces on focus |
+| SC                      | Criterion          | How Carbon satisfies it                                                                                                                                                                          |
+| ----------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **1.4.3** (AA)          | Contrast (Minimum) | Carbon's `$interactive` token chosen for ≥ 4.5:1 contrast against the page background. Lunaris re-binds to `var(--primary)` (steel blue #A8B8E0) which meets AA on `var(--background)` (#111111) |
+| **1.4.11** (AA)         | Non-text Contrast  | Track + thumb meet 3:1 against the surrounding surface                                                                                                                                           |
+| **2.1.1** (A)           | Keyboard           | Native `<button>`; Enter/Space toggle                                                                                                                                                            |
+| **2.1.2** (A)           | No Keyboard Trap   | Tab key exits normally                                                                                                                                                                           |
+| **2.4.7** (AA)          | Focus Visible      | Carbon's `2px` focus ring on the track                                                                                                                                                           |
+| **2.5.5** (AAA partial) | Target Size        | `48×24px` (default) or `32×16px` (sm). Default passes AA 24×24; sm size below AAA 44×44 — acceptable for compact toolbar contexts                                                                |
+| **4.1.2** (A)           | Name, Role, Value  | `role="switch"` + `aria-labelledby` (label) + `aria-checked` (value)                                                                                                                             |
+| **4.1.3** (AA)          | Status Messages    | N/A — toggles don't fire live messages. The new state is encoded in `aria-checked` which AT re-announces on focus                                                                                |
 
 ## Keyboard interactions
 
-| Key | Behavior |
-|---|---|
-| Tab | Move focus into the toggle |
-| Shift+Tab | Move focus backwards |
+| Key                     | Behavior                         |
+| ----------------------- | -------------------------------- |
+| Tab                     | Move focus into the toggle       |
+| Shift+Tab               | Move focus backwards             |
 | Enter / Space on toggle | Flip `toggled`; `onToggle` fires |
-| Tab again | Exit the toggle |
+| Tab again               | Exit the toggle                  |
 
 No custom keyboard handlers — all behaviour is native `<button>` semantics.
 
@@ -62,12 +62,12 @@ No custom keyboard handlers — all behaviour is native `<button>` semantics.
 
 ## Screen reader behavior
 
-| AT | Behavior |
-|---|---|
-| NVDA | "Connect on startup, switch, off." Press Space → "on". |
-| JAWS | Same pattern with "switch, off / on" announcement |
-| VoiceOver (Mac) | "Connect on startup, switch button, off." |
-| TalkBack | Same pattern; toggle state announced as "switch, off / on" |
+| AT              | Behavior                                                   |
+| --------------- | ---------------------------------------------------------- |
+| NVDA            | "Connect on startup, switch, off." Press Space → "on".     |
+| JAWS            | Same pattern with "switch, off / on" announcement          |
+| VoiceOver (Mac) | "Connect on startup, switch button, off."                  |
+| TalkBack        | Same pattern; toggle state announced as "switch, off / on" |
 
 ## Why `labelText` is REQUIRED (not optional)
 
@@ -75,10 +75,10 @@ Same rationale as `<Checkbox>`'s `labelText` and `<PanelStatus>`'s `title`: a to
 
 ## Consumer obligations
 
-| Owner | Responsibility |
-|---|---|
-| Carbon | `role="switch"`, `aria-checked`, `aria-labelledby`, focus ring, keyboard activation |
-| Chassis | TypeScript-enforced `labelText`, Svelte 5 callback bridge, prop forwarding |
+| Owner        | Responsibility                                                                                                                                                                                            |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Carbon       | `role="switch"`, `aria-checked`, `aria-labelledby`, focus ring, keyboard activation                                                                                                                       |
+| Chassis      | TypeScript-enforced `labelText`, Svelte 5 callback bridge, prop forwarding                                                                                                                                |
 | **Consumer** | Pass DESCRIPTIVE `labelText` (e.g. `'Connect on startup'` not `'Toggle'`); flip `toggled` reactively when underlying state changes; for icon-only contexts use `hideLabel` rather than dropping the label |
 
 ## Common a11y pitfalls

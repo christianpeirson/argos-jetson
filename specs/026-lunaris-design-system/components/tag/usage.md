@@ -38,36 +38,36 @@ Per Carbon `tag/usage.mdx`:
 
 Carbon ships 12 kind values:
 
-| `kind` | Carbon intent | Argos use |
-| --- | --- | --- |
-| `red` | error / critical | DEAD, ERROR, CRASHED |
-| `magenta` | sensitive / restricted | (rarely used; reserved) |
-| `purple` | special / promo | (reserved) |
-| `blue` | informational / primary | ACTIVE, ATTACHED |
-| `cyan` | information / secondary | PASSIVE, IDLE |
-| `teal` | success-adjacent | (paired with green for category mix) |
-| `green` | success / healthy | HEALTHY, OK |
-| `gray` | neutral / default | NOT-INSTALLED, UNKNOWN |
-| `cool-gray` | neutral cool | secondary metadata |
-| `warm-gray` | neutral warm | (rarely used) |
-| `high-contrast` | high-emphasis neutral | HOT (Lunaris repurpose for high-vis) |
-| `outline` | bordered transparent | filter-chip mode for KISMET filters |
+| `kind`          | Carbon intent           | Argos use                            |
+| --------------- | ----------------------- | ------------------------------------ |
+| `red`           | error / critical        | DEAD, ERROR, CRASHED                 |
+| `magenta`       | sensitive / restricted  | (rarely used; reserved)              |
+| `purple`        | special / promo         | (reserved)                           |
+| `blue`          | informational / primary | ACTIVE, ATTACHED                     |
+| `cyan`          | information / secondary | PASSIVE, IDLE                        |
+| `teal`          | success-adjacent        | (paired with green for category mix) |
+| `green`         | success / healthy       | HEALTHY, OK                          |
+| `gray`          | neutral / default       | NOT-INSTALLED, UNKNOWN               |
+| `cool-gray`     | neutral cool            | secondary metadata                   |
+| `warm-gray`     | neutral warm            | (rarely used)                        |
+| `high-contrast` | high-emphasis neutral   | HOT (Lunaris repurpose for high-vis) |
+| `outline`       | bordered transparent    | filter-chip mode for KISMET filters  |
 
 **Argos status palette mapping** (lockdown):
 
-| Argos status | `kind` | Reasoning |
-| --- | --- | --- |
-| ACTIVE | `blue` | Live + primary |
-| PAUSED | `warm-gray` | Suspended but recoverable |
-| IDLE | `cyan` | Available but quiet |
-| DEAD | `red` | Crashed / unrecoverable |
-| ATTACHED | `blue` | Hardware connected + primary |
-| HOT | `high-contrast` | High-vis: hardware in active use |
-| PASSIVE | `cyan` | Hardware connected but not transmitting |
-| NOT-INSTALLED | `gray` | Hardware/software absent |
-| HEALTHY | `green` | OK |
-| WARNING | `warm-gray` (paired with amber border via custom CSS) | Soft warn — use `kind="warm-gray"` + Lunaris CSS adds `var(--mk2-amber)` border |
-| ERROR | `red` | Hard error |
+| Argos status  | `kind`                                                | Reasoning                                                                       |
+| ------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------- |
+| ACTIVE        | `blue`                                                | Live + primary                                                                  |
+| PAUSED        | `warm-gray`                                           | Suspended but recoverable                                                       |
+| IDLE          | `cyan`                                                | Available but quiet                                                             |
+| DEAD          | `red`                                                 | Crashed / unrecoverable                                                         |
+| ATTACHED      | `blue`                                                | Hardware connected + primary                                                    |
+| HOT           | `high-contrast`                                       | High-vis: hardware in active use                                                |
+| PASSIVE       | `cyan`                                                | Hardware connected but not transmitting                                         |
+| NOT-INSTALLED | `gray`                                                | Hardware/software absent                                                        |
+| HEALTHY       | `green`                                               | OK                                                                              |
+| WARNING       | `warm-gray` (paired with amber border via custom CSS) | Soft warn — use `kind="warm-gray"` + Lunaris CSS adds `var(--mk2-amber)` border |
+| ERROR         | `red`                                                 | Hard error                                                                      |
 
 Locked in `tokens.md`; do not deviate per surface.
 
@@ -82,14 +82,14 @@ Carbon ships 2 sizes:
 
 Bespoke `.chip` / `.status-pill` / hand-rolled tag sites that Phase 9.1 retires:
 
-| Surface | File | Current pattern | Variant |
-| --- | --- | --- | --- |
-| AGENTS status pills | `src/lib/components/dashboard/views/AgentsView.svelte` | bespoke `.status-{kind}` divs | `Tag` |
-| OVERVIEW SOURCES state | `src/lib/components/dashboard/panels/SourcesPanel.svelte` | bespoke `.source-state-pill` | `Tag` |
-| Workflows category labels | `src/lib/components/dashboard/views/WorkflowsView.svelte` | bespoke `.cat-label` | `Tag` |
-| KISMET filter chips | `src/lib/components/dashboard/panels/KismetPanel.svelte` | bespoke `.filter-chip` with X | `Tag filter` |
-| GSM IMSI hot-flag | `src/lib/components/dashboard/panels/GsmEvilPanel.svelte` | bespoke `.imsi-hot` red dot + text | `Tag kind="red"` |
-| Toast metadata chips | `src/lib/components/chassis/feedback/Toast.svelte` | n/a (does not use chips) | (no migration) |
+| Surface                   | File                                                      | Current pattern                    | Variant          |
+| ------------------------- | --------------------------------------------------------- | ---------------------------------- | ---------------- |
+| AGENTS status pills       | `src/lib/components/dashboard/views/AgentsView.svelte`    | bespoke `.status-{kind}` divs      | `Tag`            |
+| OVERVIEW SOURCES state    | `src/lib/components/dashboard/panels/SourcesPanel.svelte` | bespoke `.source-state-pill`       | `Tag`            |
+| Workflows category labels | `src/lib/components/dashboard/views/WorkflowsView.svelte` | bespoke `.cat-label`               | `Tag`            |
+| KISMET filter chips       | `src/lib/components/dashboard/panels/KismetPanel.svelte`  | bespoke `.filter-chip` with X      | `Tag filter`     |
+| GSM IMSI hot-flag         | `src/lib/components/dashboard/panels/GsmEvilPanel.svelte` | bespoke `.imsi-hot` red dot + text | `Tag kind="red"` |
+| Toast metadata chips      | `src/lib/components/chassis/feedback/Toast.svelte`        | n/a (does not use chips)           | (no migration)   |
 
 Total bespoke tag call sites: ~30+ (high-traffic primitive). Migration in batches of 5-8 per sub-phase.
 

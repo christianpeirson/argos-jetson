@@ -23,8 +23,16 @@
 			? [
 					{ id: 'cmd', field: 'CMD', value: session.cmd },
 					{ id: 'last', field: 'LAST ACTIVITY', value: session.last },
-					{ id: 'wp', field: 'WINDOWS · PANES', value: `${session.windows} · ${session.panes}` },
-					{ id: 'cpu-mem', field: 'CPU · MEM', value: `${session.cpu}% · ${session.mem} MB` },
+					{
+						id: 'wp',
+						field: 'WINDOWS · PANES',
+						value: `${session.windows} · ${session.panes}`
+					},
+					{
+						id: 'cpu-mem',
+						field: 'CPU · MEM',
+						value: `${session.cpu}% · ${session.mem} MB`
+					},
 					{ id: 'tags', field: 'TAGS', value: session.tags.join(', ') || '—' },
 					{ id: 'att', field: 'ATTACHED', value: session.att ? 'yes' : 'no' }
 				]
@@ -59,10 +67,22 @@
 		<div class="detail-preview">{session.preview}</div>
 
 		<div class="detail-grid">
-			<div class="metric"><dt>CPU</dt><dd>{session.cpu}%</dd></div>
-			<div class="metric"><dt>MEM</dt><dd>{session.mem}M</dd></div>
-			<div class="metric"><dt>WINDOWS</dt><dd>{session.windows}</dd></div>
-			<div class="metric"><dt>PANES</dt><dd>{session.panes}</dd></div>
+			<div class="metric">
+				<dt>CPU</dt>
+				<dd>{session.cpu}%</dd>
+			</div>
+			<div class="metric">
+				<dt>MEM</dt>
+				<dd>{session.mem}M</dd>
+			</div>
+			<div class="metric">
+				<dt>WINDOWS</dt>
+				<dd>{session.windows}</dd>
+			</div>
+			<div class="metric">
+				<dt>PANES</dt>
+				<dd>{session.panes}</dd>
+			</div>
 		</div>
 
 		<div class="detail-list">
@@ -70,9 +90,24 @@
 		</div>
 
 		<div class="detail-actions" role="group" aria-label="Session actions">
-			<button type="button" class="btn ghost" onclick={() => onDetach?.(session.id)} disabled={isDead || !session.att}>DETACH</button>
-			<button type="button" class="btn ghost" onclick={() => onRename?.(session.id)} disabled={isDead}>RENAME</button>
-			<button type="button" class="btn danger" onclick={() => onKill?.(session.id)} disabled={isDead}>KILL</button>
+			<button
+				type="button"
+				class="btn ghost"
+				onclick={() => onDetach?.(session.id)}
+				disabled={isDead || !session.att}>DETACH</button
+			>
+			<button
+				type="button"
+				class="btn ghost"
+				onclick={() => onRename?.(session.id)}
+				disabled={isDead}>RENAME</button
+			>
+			<button
+				type="button"
+				class="btn danger"
+				onclick={() => onKill?.(session.id)}
+				disabled={isDead}>KILL</button
+			>
 		</div>
 	</section>
 {:else}
@@ -105,10 +140,18 @@
 		display: inline-block;
 	}
 
-	.dot--active { background: var(--mk2-green); }
-	.dot--paused { background: var(--mk2-amber); }
-	.dot--idle { background: var(--mk2-ink-4); }
-	.dot--dead { background: var(--mk2-red); }
+	.dot--active {
+		background: var(--mk2-green);
+	}
+	.dot--paused {
+		background: var(--mk2-amber);
+	}
+	.dot--idle {
+		background: var(--mk2-ink-4);
+	}
+	.dot--dead {
+		background: var(--mk2-red);
+	}
 
 	.detail-id {
 		font-size: var(--mk2-fs-3);

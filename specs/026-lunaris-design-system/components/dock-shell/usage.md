@@ -19,20 +19,20 @@ This is the layout shell that wraps the AGENTS screen's TMUX session grid + Work
 
 ## When NOT to use
 
-| Pattern | Why not | Right primitive |
-|---|---|---|
-| Fixed two-pane split (no re-docking) | Over-engineered; just use a `<Split>` or grid | `ResizableBottomPanel.svelte` or bespoke flex |
-| Three-or-more-panel layout | Beyond scope; forces nested DockShells with messy z-index | Build a custom panel manager |
-| Modal overlay or popover | Wrong primitive; DockShell is for in-flow layout | `<Modal>` (chassis 4) or popover |
+| Pattern                                                        | Why not                                                                             | Right primitive                                        |
+| -------------------------------------------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| Fixed two-pane split (no re-docking)                           | Over-engineered; just use a `<Split>` or grid                                       | `ResizableBottomPanel.svelte` or bespoke flex          |
+| Three-or-more-panel layout                                     | Beyond scope; forces nested DockShells with messy z-index                           | Build a custom panel manager                           |
+| Modal overlay or popover                                       | Wrong primitive; DockShell is for in-flow layout                                    | `<Modal>` (chassis 4) or popover                       |
 | Dragging the secondary panel between dock zones (drag-drop UX) | DockShell ships dock-mode prop only; drag coordination is consumer's responsibility | Consumer manages pointer events + calls `onDockChange` |
 
 DockShell deliberately does **not** ship drag-and-drop coordination in v1. The design archive coordinates drag via a `window.__argosDock` global. Bringing that into Svelte cleanly takes a context store. v1 ships layout + dock-state prop only; drag UX layers on in 9.3 if user testing shows it's needed.
 
 ## Argos surface inventory (Phase 9.2 — chassis only)
 
-| Site | Phase | Status |
-|---|---|---|
-| `routes/dashboard/mk2/agents/+page.svelte` (AGENTS Mission Control: TMUX grid + Workflows panel) | 9.3 | Sole consumer; ships in 9.3 |
+| Site                                                                                             | Phase | Status                      |
+| ------------------------------------------------------------------------------------------------ | ----- | --------------------------- |
+| `routes/dashboard/mk2/agents/+page.svelte` (AGENTS Mission Control: TMUX grid + Workflows panel) | 9.3   | Sole consumer; ships in 9.3 |
 
 The chassis ships in 9.2 to be ready for 9.3's full AGENTS rebuild.
 
@@ -40,22 +40,19 @@ The chassis ships in 9.2 to be ready for 9.3's full AGENTS rebuild.
 
 ```svelte
 <script lang="ts">
-  import DockShell from '$lib/components/chassis/DockShell.svelte';
-  import type { DockMode } from '$lib/components/chassis/DockShell.svelte';
+	import DockShell from '$lib/components/chassis/DockShell.svelte';
+	import type { DockMode } from '$lib/components/chassis/DockShell.svelte';
 
-  let dock: DockMode = $state('right');
+	let dock: DockMode = $state('right');
 </script>
 
 <DockShell {dock}>
-  {#snippet primary()}
-    <SessionGrid />
-  {/snippet}
-  {#snippet secondary()}
-    <WorkflowsPanel
-      {dock}
-      onDock={(next) => (dock = next)}
-    />
-  {/snippet}
+	{#snippet primary()}
+		<SessionGrid />
+	{/snippet}
+	{#snippet secondary()}
+		<WorkflowsPanel {dock} onDock={(next) => (dock = next)} />
+	{/snippet}
 </DockShell>
 ```
 
@@ -68,8 +65,8 @@ DockShell does NOT persist state itself. The consumer reads/writes localStorage 
 A typical consumer pattern with `useLocalStorage`-style helper:
 
 ```svelte
-import { localStorageRune } from '$lib/utils/local-storage.svelte';
-const dockMode = localStorageRune('argos.wf-dock', 'right' as DockMode);
+import {localStorageRune} from '$lib/utils/local-storage.svelte'; const dockMode = localStorageRune('argos.wf-dock',
+'right' as DockMode);
 ```
 
 (Substitute Argos's actual local-storage rune helper at the time 9.3 lands — the reference here is illustrative.)
@@ -77,6 +74,7 @@ const dockMode = localStorageRune('argos.wf-dock', 'right' as DockMode);
 ## Sizing
 
 DockShell uses CSS grid with two tracks. Default split:
+
 - Horizontal docks (left/right): primary `1fr`, secondary `clamp(240px, 28vw, 480px)`
 - Vertical docks (top/bottom): primary `1fr`, secondary `clamp(160px, 30vh, 400px)`
 

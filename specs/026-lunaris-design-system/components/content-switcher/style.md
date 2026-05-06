@@ -58,17 +58,17 @@ Key shape:
 
 ## Lunaris token map
 
-| Carbon token                      | Lunaris value                             | Notes                                                                |
-| --------------------------------- | ----------------------------------------- | -------------------------------------------------------------------- |
-| `$layer` (segment bg, unselected) | `var(--bg-2)` (#1A1A1A)                   | Same as card surface — switcher sits flush on a panel                |
-| `$layer-hover`                    | `var(--bg-3)` (#222)                      | Slight lift on hover-unselected                                      |
-| `$layer-selected-inverse`         | `var(--ink)` (#E8E8E8)                    | Selected segment fill (inverted)                                     |
-| `$text-secondary` (unselected fg) | `var(--ink-2)`                            | Slightly muted vs full ink — switcher labels are aux nav             |
-| `$text-inverse` (selected fg)     | `var(--bg)` (#111111)                     | Inverse — page bg punched through selected fill                      |
-| `$border-strong` (group border)   | `var(--ink-3)` 1 px                       | Higher contrast than `--border` for outline visibility               |
-| `$focus` (focus ring)             | `var(--accent)`                           | 2-px outline outside segment, swappable per `data-accent`            |
-| `$text-disabled`                  | `var(--ink-5)`                            | Most-muted ink                                                       |
-| `body-compact-01` type-style      | `var(--mk2-fs-3) / 1.4 var(--mk2-f-mono)` | Geist Mono UPPERCASE for tactical surfaces; sans for prose contexts  |
+| Carbon token                      | Lunaris value                             | Notes                                                               |
+| --------------------------------- | ----------------------------------------- | ------------------------------------------------------------------- |
+| `$layer` (segment bg, unselected) | `var(--bg-2)` (#1A1A1A)                   | Same as card surface — switcher sits flush on a panel               |
+| `$layer-hover`                    | `var(--bg-3)` (#222)                      | Slight lift on hover-unselected                                     |
+| `$layer-selected-inverse`         | `var(--ink)` (#E8E8E8)                    | Selected segment fill (inverted)                                    |
+| `$text-secondary` (unselected fg) | `var(--ink-2)`                            | Slightly muted vs full ink — switcher labels are aux nav            |
+| `$text-inverse` (selected fg)     | `var(--bg)` (#111111)                     | Inverse — page bg punched through selected fill                     |
+| `$border-strong` (group border)   | `var(--ink-3)` 1 px                       | Higher contrast than `--border` for outline visibility              |
+| `$focus` (focus ring)             | `var(--accent)`                           | 2-px outline outside segment, swappable per `data-accent`           |
+| `$text-disabled`                  | `var(--ink-5)`                            | Most-muted ink                                                      |
+| `body-compact-01` type-style      | `var(--mk2-fs-3) / 1.4 var(--mk2-f-mono)` | Geist Mono UPPERCASE for tactical surfaces; sans for prose contexts |
 
 ---
 
@@ -76,13 +76,13 @@ Key shape:
 
 Carbon ships three sizes via `size` prop: `"sm"` / undefined (default) / `"xl"`. Lunaris adopts all three.
 
-| Argos surface                | Density | Carbon size | Height  | Label text                                                |
-| ---------------------------- | ------- | ----------- | ------- | --------------------------------------------------------- |
-| SPECTRUM mode toggle         | compact | `"sm"`      | 24 px   | `code-compact-01` UPPER mono (PEAK / AVG / LIVE)          |
-| AGENTS filter tabs           | normal  | default     | 32 px   | `body-compact-01` UPPER mono (ALL / ACTIVE / IDLE / DEAD) |
-| AGENTS view-mode toggle      | normal  | default     | 32 px   | icon-only — `iconDescription` for AT (GRID / LIST / SPLIT) |
-| FilterBar quick-filter chips | compact | `"sm"`      | 24 px   | `code-compact-01` UPPER mono                              |
-| ReportsView export-format    | normal  | default     | 32 px   | `body-compact-01` mixed-case (PDF / CSV / JSON)           |
+| Argos surface                | Density | Carbon size | Height | Label text                                                 |
+| ---------------------------- | ------- | ----------- | ------ | ---------------------------------------------------------- |
+| SPECTRUM mode toggle         | compact | `"sm"`      | 24 px  | `code-compact-01` UPPER mono (PEAK / AVG / LIVE)           |
+| AGENTS filter tabs           | normal  | default     | 32 px  | `body-compact-01` UPPER mono (ALL / ACTIVE / IDLE / DEAD)  |
+| AGENTS view-mode toggle      | normal  | default     | 32 px  | icon-only — `iconDescription` for AT (GRID / LIST / SPLIT) |
+| FilterBar quick-filter chips | compact | `"sm"`      | 24 px  | `code-compact-01` UPPER mono                               |
+| ReportsView export-format    | normal  | default     | 32 px  | `body-compact-01` mixed-case (PDF / CSV / JSON)            |
 
 Touch-target compliance is achieved at all sizes by full-width segment hitboxes — see `accessibility.md` for WCAG 2.5.8 reasoning.
 
@@ -100,15 +100,15 @@ Touch-target compliance is achieved at all sizes by full-width segment hitboxes 
 
 Per Carbon `content-switcher/style.mdx` confirmed against source SCSS:
 
-| State                  | Border (Lunaris)                           | Fill (Lunaris)            | Label color                  |
-| ---------------------- | ------------------------------------------ | ------------------------- | ---------------------------- |
-| Default unselected     | `var(--ink-3)` 1 px (group)                | `var(--bg-2)`             | `var(--ink-2)`               |
-| Hover unselected       | unchanged                                  | `var(--bg-3)`             | `var(--ink)`                 |
-| Selected               | unchanged (group)                          | `var(--ink)`              | `var(--bg)`                  |
-| Focus (any)            | + 2-px ring `var(--accent)` outside segment | unchanged                 | unchanged                    |
-| Disabled (whole)       | `var(--ink-5)` 1 px                        | `var(--bg-2)` 50 % opacity | `var(--ink-5)`               |
-| Disabled (one segment) | `var(--ink-5)` 1 px                        | `var(--bg-2)` 50 % opacity | `var(--ink-5)`               |
-| Invalid                | n/a — ContentSwitcher has no invalid state per Carbon | n/a                       | n/a                          |
+| State                  | Border (Lunaris)                                      | Fill (Lunaris)             | Label color    |
+| ---------------------- | ----------------------------------------------------- | -------------------------- | -------------- |
+| Default unselected     | `var(--ink-3)` 1 px (group)                           | `var(--bg-2)`              | `var(--ink-2)` |
+| Hover unselected       | unchanged                                             | `var(--bg-3)`              | `var(--ink)`   |
+| Selected               | unchanged (group)                                     | `var(--ink)`               | `var(--bg)`    |
+| Focus (any)            | + 2-px ring `var(--accent)` outside segment           | unchanged                  | unchanged      |
+| Disabled (whole)       | `var(--ink-5)` 1 px                                   | `var(--bg-2)` 50 % opacity | `var(--ink-5)` |
+| Disabled (one segment) | `var(--ink-5)` 1 px                                   | `var(--bg-2)` 50 % opacity | `var(--ink-5)` |
+| Invalid                | n/a — ContentSwitcher has no invalid state per Carbon | n/a                        | n/a            |
 
 ---
 

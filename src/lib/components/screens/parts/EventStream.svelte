@@ -32,7 +32,12 @@
 		<ul role="list" class="rows">
 			{#each eventBuffer.events as evt (evt.id)}
 				<li>
-					<button type="button" class="row" data-level={evt.level} onclick={() => open(evt)}>
+					<button
+						type="button"
+						class="row"
+						data-level={evt.level}
+						onclick={() => open(evt)}
+					>
 						<span class="time">{timeLabel(evt.timestamp)}</span>
 						<span class="level">{evt.level.toUpperCase()}</span>
 						<span class="src">{evt.source}</span>

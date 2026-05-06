@@ -11,10 +11,7 @@
 </script>
 
 <script lang="ts">
-	import {
-		Accordion as CarbonAccordion,
-		AccordionItem
-	} from 'carbon-components-svelte';
+	import { Accordion as CarbonAccordion, AccordionItem } from 'carbon-components-svelte';
 
 	interface Props {
 		items: AccordionItemDef[];

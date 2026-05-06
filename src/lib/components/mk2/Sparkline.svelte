@@ -70,6 +70,11 @@
 	{#if fill && geometry.area}
 		<path d={geometry.area} fill={color} opacity="0.12"></path>
 	{/if}
-	<path d={geometry.line} stroke={color} stroke-width="1" fill="none" vector-effect="non-scaling-stroke"
+	<path
+		d={geometry.line}
+		stroke={color}
+		stroke-width="1"
+		fill="none"
+		vector-effect="non-scaling-stroke"
 	></path>
 </svg>

@@ -103,7 +103,10 @@ interface Props {
 	</thead>
 	<tbody>
 		{#each sortedSessions as session (session.id)}
-			<tr class:selected={selectedId === session.id} onclick={() => (selectedId = session.id)}>
+			<tr
+				class:selected={selectedId === session.id}
+				onclick={() => (selectedId = session.id)}
+			>
 				<td>{session.pid}</td>
 				<td><Tag kind={statusKind(session.status)}>{session.status}</Tag></td>
 				<td>{formatTime(session.started)}</td>
@@ -211,12 +214,12 @@ Lunaris tokens flow through automatically.
 
 Phase 9.1 introduces the chassis only. Call-site migrations land in 9.1a-9.1d:
 
-| Phase | File | Site |
-| --- | --- | --- |
-| 9.1a | `src/lib/components/dashboard/views/AgentsView.svelte` | sessions list (canary, ~80 LOC bespoke table) |
-| 9.1b | `src/lib/components/dashboard/panels/SourcesPanel.svelte` | OVERVIEW SOURCES (~120 LOC bespoke flex grid) |
-| 9.1c | `src/lib/components/dashboard/panels/KismetPanel.svelte` | AP table (~200 LOC, largest column count) |
-| 9.1d | `src/lib/components/dashboard/panels/GsmEvilPanel.svelte` | IMSI table (~90 LOC) |
+| Phase | File                                                      | Site                                          |
+| ----- | --------------------------------------------------------- | --------------------------------------------- |
+| 9.1a  | `src/lib/components/dashboard/views/AgentsView.svelte`    | sessions list (canary, ~80 LOC bespoke table) |
+| 9.1b  | `src/lib/components/dashboard/panels/SourcesPanel.svelte` | OVERVIEW SOURCES (~120 LOC bespoke flex grid) |
+| 9.1c  | `src/lib/components/dashboard/panels/KismetPanel.svelte`  | AP table (~200 LOC, largest column count)     |
+| 9.1d  | `src/lib/components/dashboard/panels/GsmEvilPanel.svelte` | IMSI table (~90 LOC)                          |
 
 Migration order: AGENTS first (simplest schema, canary). Each sub-phase is its own atomic commit inside the Phase 9 daily PR.
 

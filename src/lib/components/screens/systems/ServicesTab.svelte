@@ -106,12 +106,17 @@
 	{:else}
 		<table class="svc-table">
 			<thead>
-				<tr><th class="dot-col"></th><th>UNIT</th><th>STATE</th><th>PORT</th><th>PID</th></tr>
+				<tr
+					><th class="dot-col"></th><th>UNIT</th><th>STATE</th><th>PORT</th><th>PID</th
+					></tr
+				>
 			</thead>
 			<tbody>
 				{#each services as svc (svc.name)}
 					<tr>
-						<td class="dot-col"><Dot kind={dotKind(svc.status)} label={svc.status} /></td>
+						<td class="dot-col"
+							><Dot kind={dotKind(svc.status)} label={svc.status} /></td
+						>
 						<td class="mono name">{svc.name}</td>
 						<td class="mono state state-{svc.status}">{svc.status.toUpperCase()}</td>
 						<td class="mono">{svc.port}</td>

@@ -8,8 +8,4 @@ function isSystemsTab(v: unknown): v is SystemsTab {
 	return typeof v === 'string' && (KNOWN as ReadonlySet<string>).has(v);
 }
 
-export const systemsTabStore = lsState<SystemsTab>(
-	'argos.mk2.systems.tab',
-	'host',
-	isSystemsTab
-);
+export const systemsTabStore = lsState<SystemsTab>('argos.mk2.systems.tab', 'host', isSystemsTab);

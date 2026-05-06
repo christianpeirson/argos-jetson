@@ -14,14 +14,14 @@ The Argos `StructuredList` is a Svelte 5 (runes) wrapper that delegates to Carbo
 
 ```ts
 interface Props {
-	selection?: boolean;          // turns on selectable-row mode
-	condensed?: boolean;          // 8 px block padding instead of 16 px
-	flush?: boolean;              // remove outer container padding (use inside cards)
+	selection?: boolean; // turns on selectable-row mode
+	condensed?: boolean; // 8 px block padding instead of 16 px
+	flush?: boolean; // remove outer container padding (use inside cards)
 	selected?: string | undefined; // bindable via $bindable() — selection mode only; matches <StructuredListInput value>
 	id?: string;
-	class?: string;               // forwards to Carbon outer div for Lunaris skins
+	class?: string; // forwards to Carbon outer div for Lunaris skins
 	onSelectionChange?: (value: string) => void;
-	children?: Snippet;           // <StructuredListHead> + <StructuredListBody>
+	children?: Snippet; // <StructuredListHead> + <StructuredListBody>
 }
 ```
 
@@ -47,7 +47,7 @@ export {
 	StructuredListBody,
 	StructuredListRow,
 	StructuredListCell,
-	StructuredListInput,
+	StructuredListInput
 } from 'carbon-components-svelte';
 ```
 
@@ -86,7 +86,7 @@ export {
 		StructuredList,
 		StructuredListBody,
 		StructuredListRow,
-		StructuredListCell,
+		StructuredListCell
 	} from '$lib/components/chassis/data';
 
 	let { event } = $props<{ event: ArgosEvent }>();
@@ -149,7 +149,7 @@ The bespoke `<dl>` + `<dt>` / `<dd>` is replaced with Carbon's div-based structu
 		StructuredListBody,
 		StructuredListRow,
 		StructuredListCell,
-		StructuredListInput,
+		StructuredListInput
 	} from '$lib/components/chassis/data';
 
 	let pinnedImsi = $state<string | undefined>(undefined);
@@ -189,7 +189,12 @@ For surfaces needing Carbon-specific features the adapter does not expose (custo
 
 ```svelte
 <script lang="ts">
-	import { StructuredList, StructuredListBody, StructuredListRow, StructuredListCell } from 'carbon-components-svelte';
+	import {
+		StructuredList,
+		StructuredListBody,
+		StructuredListRow,
+		StructuredListCell
+	} from 'carbon-components-svelte';
 </script>
 
 <StructuredList>
@@ -221,13 +226,13 @@ Lunaris tokens flow through automatically.
 
 Per audit on 2026-05-04:
 
-| File                                                           | Site description                                       | Mode                          |
-| -------------------------------------------------------------- | ------------------------------------------------------ | ----------------------------- |
-| `src/lib/components/dashboard/dialogs/EventDetailDialog.svelte` | event detail KV list                                  | read-only, condensed, flush   |
-| `src/lib/components/dashboard/panels/ImsiInspector.svelte`     | IMSI list (pin selection)                              | selectable, condensed         |
-| `src/lib/components/dashboard/panels/ApDetail.svelte`          | AP detail KV list                                      | read-only, condensed, flush   |
-| `src/lib/components/dashboard/panels/SessionDetail.svelte`     | session detail KV list                                 | read-only, condensed, flush   |
-| `src/lib/components/dashboard/views/ReportsView.svelte`        | mission summary modal table → 3-col StructuredList     | read-only, default density    |
+| File                                                            | Site description                                   | Mode                        |
+| --------------------------------------------------------------- | -------------------------------------------------- | --------------------------- |
+| `src/lib/components/dashboard/dialogs/EventDetailDialog.svelte` | event detail KV list                               | read-only, condensed, flush |
+| `src/lib/components/dashboard/panels/ImsiInspector.svelte`      | IMSI list (pin selection)                          | selectable, condensed       |
+| `src/lib/components/dashboard/panels/ApDetail.svelte`           | AP detail KV list                                  | read-only, condensed, flush |
+| `src/lib/components/dashboard/panels/SessionDetail.svelte`      | session detail KV list                             | read-only, condensed, flush |
+| `src/lib/components/dashboard/views/ReportsView.svelte`         | mission summary modal table → 3-col StructuredList | read-only, default density  |
 
 Total: ~5 sites in Phase 9.1; 1-4 sites deferred (BluetoothPanel detail, hardware-detail surfaces) until follow-up audit.
 

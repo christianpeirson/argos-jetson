@@ -26,14 +26,14 @@ Block-level spinner indicating an in-flight operation that prevents user interac
 
 Phase 6 ships the chassis wrapper. **No consumer migrations in this PR** — the existing "overlay-style" loading patterns in Argos all fit the deferred PanelStatus chassis (Phase 4 follow-up sub-phase A) or the future SkeletonText chassis. `Loading.svelte` is available for ad-hoc consumer needs going forward; the wrapper costs ~22 LOC and unblocks immediate adoption when a real overlay-spinner use case lands.
 
-| File | Site count | Variant | Migration PR |
-| ---- | ---------- | ------- | ------------ |
-| _(none in Phase 6)_ | 0 | n/a | n/a |
+| File                | Site count | Variant | Migration PR |
+| ------------------- | ---------- | ------- | ------------ |
+| _(none in Phase 6)_ | 0          | n/a     | n/a          |
 
 ### Deferred to future sub-phases
 
-| File | Reason |
-| ---- | ------ |
+| File                                                                        | Reason                                                                                                |
+| --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
 | `src/lib/components/dashboard/views/ReportsView.svelte:364` (grid-skeleton) | Multi-row content placeholder — wrong shape for `<Loading>`'s spinner. Future `SkeletonText` chassis. |
-| `src/routes/dashboard/mk2/agents/+page.svelte:30` | Full-tile panel-status placeholder. Future `PanelStatus` chassis (Phase 4 follow-up sub-phase A). |
-| `src/lib/components/chassis/WeatherPanel.svelte` non-loading state branches | Same panel-status pattern. Same target. |
+| `src/routes/dashboard/mk2/agents/+page.svelte:30`                           | Full-tile panel-status placeholder. Future `PanelStatus` chassis (Phase 4 follow-up sub-phase A).     |
+| `src/lib/components/chassis/WeatherPanel.svelte` non-loading state branches | Same panel-status pattern. Same target.                                                               |

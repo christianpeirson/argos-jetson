@@ -5,6 +5,7 @@
 **Implementation files (target):** `src/lib/components/chassis/data/Tile.svelte` AND `src/lib/components/chassis/data/ClickableTile.svelte`
 **Carbon components:** `<Tile>` and `<ClickableTile>` from `carbon-components-svelte` v0.107.0+
 **Carbon sources:**
+
 - <https://github.com/carbon-design-system/carbon-components-svelte/blob/v0.107.0/src/Tile/Tile.svelte>
 - <https://github.com/carbon-design-system/carbon-components-svelte/blob/v0.107.0/src/Tile/ClickableTile.svelte>
 
@@ -184,11 +185,11 @@ These compose into a deferred chassis pair (`SelectableTile.svelte`, `RadioTileG
 
 Phase 9.1 introduces the chassis pair only. Call-site migrations land in 9.1e-9.1g:
 
-| Phase | File | Site | Variant |
-| --- | --- | --- | --- |
-| 9.1e | `src/lib/components/dashboard/views/MissionControlView.svelte` | 4 stat tiles (CPU, MEM, TEMP, UPTIME) | `Tile` |
-| 9.1f | `src/lib/components/dashboard/views/AgentsView.svelte` | session cards (grid view) | `ClickableTile` |
-| 9.1g | `src/lib/components/dashboard/views/WorkflowsView.svelte` | category cards | `ClickableTile` |
+| Phase | File                                                           | Site                                  | Variant         |
+| ----- | -------------------------------------------------------------- | ------------------------------------- | --------------- |
+| 9.1e  | `src/lib/components/dashboard/views/MissionControlView.svelte` | 4 stat tiles (CPU, MEM, TEMP, UPTIME) | `Tile`          |
+| 9.1f  | `src/lib/components/dashboard/views/AgentsView.svelte`         | session cards (grid view)             | `ClickableTile` |
+| 9.1g  | `src/lib/components/dashboard/views/WorkflowsView.svelte`      | category cards                        | `ClickableTile` |
 
 Each sub-phase is its own atomic commit inside the Phase 9 daily PR.
 
@@ -206,8 +207,8 @@ Each sub-phase is its own atomic commit inside the Phase 9 daily PR.
 
 - Carbon Svelte component reference: <https://svelte.carbondesignsystem.com/?path=/docs/components-tile--default>
 - Carbon Svelte sources:
-  - <https://github.com/carbon-design-system/carbon-components-svelte/blob/v0.107.0/src/Tile/Tile.svelte>
-  - <https://github.com/carbon-design-system/carbon-components-svelte/blob/v0.107.0/src/Tile/ClickableTile.svelte>
+    - <https://github.com/carbon-design-system/carbon-components-svelte/blob/v0.107.0/src/Tile/Tile.svelte>
+    - <https://github.com/carbon-design-system/carbon-components-svelte/blob/v0.107.0/src/Tile/ClickableTile.svelte>
 - Carbon Svelte type defs: `node_modules/carbon-components-svelte/types/Tile/`
 - Carbon SCSS source: `docs/carbon-design-system/packages/styles/scss/components/tile/_tile.scss`
 - Argos current bespoke (canary): `src/lib/components/dashboard/views/MissionControlView.svelte`

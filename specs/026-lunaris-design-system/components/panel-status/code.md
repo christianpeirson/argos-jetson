@@ -14,27 +14,27 @@ PanelStatus is the FIRST genuinely-bespoke chassis primitive in spec-026 (every 
 type PanelStatusState = 'loading' | 'error' | 'empty' | 'disconnected' | 'disabled';
 
 interface Props {
-	state: PanelStatusState;       // REQUIRED
-	title: string;                  // REQUIRED
+	state: PanelStatusState; // REQUIRED
+	title: string; // REQUIRED
 	detail?: string;
 	icon?: Snippet;
 	onRetry?: () => void;
-	retryLabel?: string;            // Default: 'RETRY'
+	retryLabel?: string; // Default: 'RETRY'
 	action?: Snippet;
 	class?: string;
 }
 ```
 
-| Prop | Type | Default | Description |
-|---|---|---|---|
-| `state` | `PanelStatusState` | **REQUIRED** | One of 5 state-machine values. Drives spinner, color, retry-button visibility |
-| `title` | `string` | **REQUIRED** | Short uppercase label (e.g. `'CONNECTING...'`, `'ERROR LOADING REPORTS'`) |
-| `detail` | `string` | `undefined` | Supporting explanation. Hidden if omitted. Max width 32ch |
-| `icon` | `Snippet` | `undefined` | Custom icon OVERRIDES intrinsic spinner. Useful for `state="error"` with a warning glyph |
-| `onRetry` | `() => void` | `undefined` | Click handler for retry button. Button only renders if `state === 'error' \|\| 'disconnected'` AND `action` is NOT passed |
-| `retryLabel` | `string` | `'RETRY'` | Button text. Override for context-specific labels like `'START CAPTURE'`, `'RECONNECT'` |
-| `action` | `Snippet` | `undefined` | Custom action area. OVERRIDES `onRetry` button. Use for icon-decorated buttons or non-retry actions |
-| `class` | `string` | `undefined` | Extra class on outer `<div>` |
+| Prop         | Type               | Default      | Description                                                                                                               |
+| ------------ | ------------------ | ------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| `state`      | `PanelStatusState` | **REQUIRED** | One of 5 state-machine values. Drives spinner, color, retry-button visibility                                             |
+| `title`      | `string`           | **REQUIRED** | Short uppercase label (e.g. `'CONNECTING...'`, `'ERROR LOADING REPORTS'`)                                                 |
+| `detail`     | `string`           | `undefined`  | Supporting explanation. Hidden if omitted. Max width 32ch                                                                 |
+| `icon`       | `Snippet`          | `undefined`  | Custom icon OVERRIDES intrinsic spinner. Useful for `state="error"` with a warning glyph                                  |
+| `onRetry`    | `() => void`       | `undefined`  | Click handler for retry button. Button only renders if `state === 'error' \|\| 'disconnected'` AND `action` is NOT passed |
+| `retryLabel` | `string`           | `'RETRY'`    | Button text. Override for context-specific labels like `'START CAPTURE'`, `'RECONNECT'`                                   |
+| `action`     | `Snippet`          | `undefined`  | Custom action area. OVERRIDES `onRetry` button. Use for icon-decorated buttons or non-retry actions                       |
+| `class`      | `string`           | `undefined`  | Extra class on outer `<div>`                                                                                              |
 
 ## Module-level type export
 

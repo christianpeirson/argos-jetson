@@ -15,11 +15,7 @@
 
 <div class="ses-grid">
 	{#each sessions as session (session.id)}
-		<SessionCard
-			{session}
-			selected={selectedId === session.id}
-			{onOpen}
-		/>
+		<SessionCard {session} selected={selectedId === session.id} {onOpen} />
 	{/each}
 
 	<button type="button" class="ses-new" onclick={onNew}>

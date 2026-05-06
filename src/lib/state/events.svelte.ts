@@ -16,7 +16,11 @@ let nextId = 1;
 function createEventBuffer() {
 	let events = $state<AppEvent[]>([]);
 
-	function record(level: AppEventLevel, source: string, payload: Record<string, unknown>): AppEvent {
+	function record(
+		level: AppEventLevel,
+		source: string,
+		payload: Record<string, unknown>
+	): AppEvent {
 		const evt: AppEvent = {
 			id: `evt-${nextId++}`,
 			timestamp: Date.now(),
@@ -24,7 +28,10 @@ function createEventBuffer() {
 			source,
 			payload
 		};
-		events = events.length < MAX_EVENTS ? [evt, ...events] : [evt, ...events.slice(0, MAX_EVENTS - 1)];
+		events =
+			events.length < MAX_EVENTS
+				? [evt, ...events]
+				: [evt, ...events.slice(0, MAX_EVENTS - 1)];
 		return evt;
 	}
 

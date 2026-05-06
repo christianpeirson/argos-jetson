@@ -4,41 +4,41 @@ The Carbon Modal primitive (wrapped at `src/lib/components/chassis/forms/Modal.s
 
 ## WCAG 2.2 success criteria covered
 
-| SC                                              | Level | How Carbon satisfies it                                                                                                                              |
-| ----------------------------------------------- | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1.3.1 Info and Relationships                    | A     | `role="dialog"` (or `alertdialog` when `alert={true}`); heading wired via `aria-labelledby` to `bx--modal-header__heading`.                          |
-| 1.4.3 Contrast (Minimum)                        | AA    | Lunaris token map keeps body, header, button text ≥ 4.5:1 against `--bg-1`. Focus ring uses `--accent` ≥ 3:1 against the container.                  |
-| 1.4.11 Non-text Contrast                        | AA    | Close-X icon, button borders, and divider lines target ≥ 3:1.                                                                                        |
-| 2.1.1 Keyboard                                  | A     | All controls reachable by Tab; primary action triggered by Enter (when `shouldSubmitOnEnter`); dismiss via Escape.                                   |
-| 2.1.2 No Keyboard Trap                          | A     | Focus-trap is **intentional** while open — Carbon releases focus when `open=false` and restores it to the invoking element.                          |
-| 2.4.3 Focus Order                               | A     | Tab cycles header-close → body-focusable → footer-secondary → footer-primary → wraps. `selectorPrimaryFocus` controls initial focus.                 |
-| 2.4.7 Focus Visible                             | AA    | Carbon applies a 2px focus ring using `$focus` token (mapped to `var(--accent)`).                                                                    |
-| 2.4.11 Focus Not Obscured (Minimum)             | AA    | Modal container is positioned above the scrim with z-index higher than any sticky chrome.                                                            |
-| 3.2.1 On Focus                                  | A     | Opening the modal does not trigger unexpected navigation; focus moves to `selectorPrimaryFocus` only.                                                |
-| 3.3.1 Error Identification (when used as form)  | A     | Consumer obligation — pair `<Modal hasForm>` with form-field `invalid` / `invalidText` props.                                                        |
-| 4.1.2 Name, Role, Value                         | A     | `role="dialog"`, `aria-modal="true"`, `aria-labelledby` (or `aria-label` via `modalAriaLabel` when no heading exists).                               |
+| SC                                             | Level | How Carbon satisfies it                                                                                                              |
+| ---------------------------------------------- | ----- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| 1.3.1 Info and Relationships                   | A     | `role="dialog"` (or `alertdialog` when `alert={true}`); heading wired via `aria-labelledby` to `bx--modal-header__heading`.          |
+| 1.4.3 Contrast (Minimum)                       | AA    | Lunaris token map keeps body, header, button text ≥ 4.5:1 against `--bg-1`. Focus ring uses `--accent` ≥ 3:1 against the container.  |
+| 1.4.11 Non-text Contrast                       | AA    | Close-X icon, button borders, and divider lines target ≥ 3:1.                                                                        |
+| 2.1.1 Keyboard                                 | A     | All controls reachable by Tab; primary action triggered by Enter (when `shouldSubmitOnEnter`); dismiss via Escape.                   |
+| 2.1.2 No Keyboard Trap                         | A     | Focus-trap is **intentional** while open — Carbon releases focus when `open=false` and restores it to the invoking element.          |
+| 2.4.3 Focus Order                              | A     | Tab cycles header-close → body-focusable → footer-secondary → footer-primary → wraps. `selectorPrimaryFocus` controls initial focus. |
+| 2.4.7 Focus Visible                            | AA    | Carbon applies a 2px focus ring using `$focus` token (mapped to `var(--accent)`).                                                    |
+| 2.4.11 Focus Not Obscured (Minimum)            | AA    | Modal container is positioned above the scrim with z-index higher than any sticky chrome.                                            |
+| 3.2.1 On Focus                                 | A     | Opening the modal does not trigger unexpected navigation; focus moves to `selectorPrimaryFocus` only.                                |
+| 3.3.1 Error Identification (when used as form) | A     | Consumer obligation — pair `<Modal hasForm>` with form-field `invalid` / `invalidText` props.                                        |
+| 4.1.2 Name, Role, Value                        | A     | `role="dialog"`, `aria-modal="true"`, `aria-labelledby` (or `aria-label` via `modalAriaLabel` when no heading exists).               |
 
 ## ARIA — Carbon owns vs consumer owes
 
-| Attribute              | Owner    | Notes                                                                                                                                                |
-| ---------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `role="dialog"`        | Carbon   | Set on `bx--modal-container`. Switches to `role="alertdialog"` when `alert={true}`.                                                                  |
-| `aria-modal="true"`    | Carbon   | Always set on container.                                                                                                                             |
-| `aria-labelledby`      | Carbon   | Wired to `bx--modal-header__heading` id when `modalHeading` is supplied.                                                                             |
-| `aria-label`           | Consumer | If neither `modalHeading` nor `modalLabel` is visible, supply `modalAriaLabel` so the dialog has an accessible name.                                 |
-| `aria-describedby`     | Consumer | Optional — wire to a descriptive paragraph id inside the body when the heading alone is insufficient context.                                        |
-| Close button `aria-label` | Carbon | Defaults to `iconDescription` ("Close the modal"). Override per locale if i18n applies.                                                              |
-| Form-field labels      | Consumer | When `hasForm`, every `<TextInput>` / `<Select>` etc. inside the body must carry `labelText`.                                                        |
+| Attribute                 | Owner    | Notes                                                                                                                |
+| ------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------- |
+| `role="dialog"`           | Carbon   | Set on `bx--modal-container`. Switches to `role="alertdialog"` when `alert={true}`.                                  |
+| `aria-modal="true"`       | Carbon   | Always set on container.                                                                                             |
+| `aria-labelledby`         | Carbon   | Wired to `bx--modal-header__heading` id when `modalHeading` is supplied.                                             |
+| `aria-label`              | Consumer | If neither `modalHeading` nor `modalLabel` is visible, supply `modalAriaLabel` so the dialog has an accessible name. |
+| `aria-describedby`        | Consumer | Optional — wire to a descriptive paragraph id inside the body when the heading alone is insufficient context.        |
+| Close button `aria-label` | Carbon   | Defaults to `iconDescription` ("Close the modal"). Override per locale if i18n applies.                              |
+| Form-field labels         | Consumer | When `hasForm`, every `<TextInput>` / `<Select>` etc. inside the body must carry `labelText`.                        |
 
 ## Keyboard interactions
 
-| Key                            | Behaviour                                                                                                  |
-| ------------------------------ | ---------------------------------------------------------------------------------------------------------- |
-| `Tab`                          | Move focus to next focusable element inside the modal. Wraps at end.                                       |
-| `Shift + Tab`                  | Move focus to previous focusable element. Wraps at start.                                                  |
-| `Enter`                        | When `shouldSubmitOnEnter={true}` (default), triggers `onSubmit`. Suppressed if focus is on a button.      |
-| `Escape`                       | Closes the modal; fires `onClose('escape-key')`. Cannot be disabled by Carbon.                             |
-| `Space` / `Enter` on a button  | Activates the focused button (default browser behaviour).                                                  |
+| Key                           | Behaviour                                                                                             |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `Tab`                         | Move focus to next focusable element inside the modal. Wraps at end.                                  |
+| `Shift + Tab`                 | Move focus to previous focusable element. Wraps at start.                                             |
+| `Enter`                       | When `shouldSubmitOnEnter={true}` (default), triggers `onSubmit`. Suppressed if focus is on a button. |
+| `Escape`                      | Closes the modal; fires `onClose('escape-key')`. Cannot be disabled by Carbon.                        |
+| `Space` / `Enter` on a button | Activates the focused button (default browser behaviour).                                             |
 
 ## Focus management
 
@@ -52,11 +52,11 @@ Carbon handles the full focus-trap lifecycle:
 
 ## Screen reader behaviour
 
-| SR        | Announcement                                                                                                |
-| --------- | ----------------------------------------------------------------------------------------------------------- |
-| NVDA      | "<modalLabel> dialog, <modalHeading>" then current focus target.                                            |
-| JAWS      | Same, with "modal" appended.                                                                                |
-| VoiceOver | Reads `aria-labelledby` target then `<h3>` content.                                                         |
+| SR        | Announcement                                                     |
+| --------- | ---------------------------------------------------------------- |
+| NVDA      | "<modalLabel> dialog, <modalHeading>" then current focus target. |
+| JAWS      | Same, with "modal" appended.                                     |
+| VoiceOver | Reads `aria-labelledby` target then `<h3>` content.              |
 
 When `alert={true}`, the dialog is announced as "alert dialog" instead — reserve for genuinely urgent attention (data loss confirmation, destructive action). Overuse causes alert fatigue.
 

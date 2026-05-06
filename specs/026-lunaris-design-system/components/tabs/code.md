@@ -8,12 +8,12 @@ Exported from `chassis/forms/Tabs.svelte:3-12` (module script):
 
 ```ts
 export interface TabDef {
-	id: string;          // stable identifier; consumer references via selectedId
-	label: string;       // visible label text (also used as Carbon Tab.label fallback)
+	id: string; // stable identifier; consumer references via selectedId
+	label: string; // visible label text (also used as Carbon Tab.label fallback)
 	badge?: string | number; // optional inline count/marker rendered after label
-	hasItems?: boolean;  // true → applies lunaris-has-items class (warning paint when inactive)
-	disabled?: boolean;  // true → Carbon greys + skips arrow-key navigation
-	icon?: Component;    // optional Svelte 5 Component (Carbon Tab icon slot)
+	hasItems?: boolean; // true → applies lunaris-has-items class (warning paint when inactive)
+	disabled?: boolean; // true → Carbon greys + skips arrow-key navigation
+	icon?: Component; // optional Svelte 5 Component (Carbon Tab icon slot)
 	secondaryLabel?: string; // optional sub-label rendered beneath label (container variant)
 }
 ```
@@ -22,16 +22,16 @@ The `id` field is the load-bearing addition vs Carbon's positional indexing. **U
 
 ## Chassis props
 
-| Prop              | Type                          | Default                  | Notes                                                                   |
-| ----------------- | ----------------------------- | ------------------------ | ----------------------------------------------------------------------- |
-| `tabs`            | `TabDef[]`                    | required                 | Order = render order                                                    |
-| `selectedId`      | `string` (`$bindable`)        | `tabs[0]?.id ?? ''`      | Two-way bindable; preselects first tab if not set                       |
-| `type`            | `'default' \| 'container'`    | `'default'`              | Visual variant (see `style.md`)                                         |
-| `autoWidth`       | `boolean`                     | `false`                  | Tabs size to label; recommended for variable-length labels              |
-| `fullWidth`       | `boolean`                     | `false`                  | Tabs distribute evenly across width                                     |
-| `iconDescription` | `string`                      | `'Show menu options'`    | Forwarded to Carbon overflow-menu when tabs overflow horizontally       |
-| `class`           | `string \| undefined`         | `undefined`              | Forwarded to root `bx--tabs` element                                    |
-| `onChange`        | `(id: string) => void`        | `undefined`              | Fires after `selectedId` updates (post-state-change, not pre-validate)  |
+| Prop              | Type                       | Default               | Notes                                                                  |
+| ----------------- | -------------------------- | --------------------- | ---------------------------------------------------------------------- |
+| `tabs`            | `TabDef[]`                 | required              | Order = render order                                                   |
+| `selectedId`      | `string` (`$bindable`)     | `tabs[0]?.id ?? ''`   | Two-way bindable; preselects first tab if not set                      |
+| `type`            | `'default' \| 'container'` | `'default'`           | Visual variant (see `style.md`)                                        |
+| `autoWidth`       | `boolean`                  | `false`               | Tabs size to label; recommended for variable-length labels             |
+| `fullWidth`       | `boolean`                  | `false`               | Tabs distribute evenly across width                                    |
+| `iconDescription` | `string`                   | `'Show menu options'` | Forwarded to Carbon overflow-menu when tabs overflow horizontally      |
+| `class`           | `string \| undefined`      | `undefined`           | Forwarded to root `bx--tabs` element                                   |
+| `onChange`        | `(id: string) => void`     | `undefined`           | Fires after `selectedId` updates (post-state-change, not pre-validate) |
 
 ## TabsSkeleton props
 
@@ -49,12 +49,12 @@ Pure passthrough to `CarbonTabsSkeleton` — see `chassis/forms/TabsSkeleton.sve
 
 ## Carbon → chassis API mapping
 
-| Carbon API                                                | Chassis equivalent                                      |
-| --------------------------------------------------------- | ------------------------------------------------------- |
-| `<Tabs selected={number} on:change={e: CustomEvent<number>}>` | `<Tabs {tabs} bind:selectedId={string} onChange={(id) => ...}>` |
-| `<Tab label="X" disabled icon={...} secondaryLabel="Y">`  | Pass `{ id, label, disabled, icon, secondaryLabel }` in `tabs` array |
-| `<svelte:fragment slot="content">` per Tab                | Caller renders content based on `selectedId` (no slot)  |
-| `<TabContent>...</TabContent>` companion component        | NOT used by chassis (omitted intentionally)             |
+| Carbon API                                                    | Chassis equivalent                                                   |
+| ------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `<Tabs selected={number} on:change={e: CustomEvent<number>}>` | `<Tabs {tabs} bind:selectedId={string} onChange={(id) => ...}>`      |
+| `<Tab label="X" disabled icon={...} secondaryLabel="Y">`      | Pass `{ id, label, disabled, icon, secondaryLabel }` in `tabs` array |
+| `<svelte:fragment slot="content">` per Tab                    | Caller renders content based on `selectedId` (no slot)               |
+| `<TabContent>...</TabContent>` companion component            | NOT used by chassis (omitted intentionally)                          |
 
 The `selected` ↔ `selectedId` translation lives at `chassis/forms/Tabs.svelte:40` (`$derived` index lookup) + `chassis/forms/Tabs.svelte:42-48` (`handleChange` callback bridge).
 
@@ -64,20 +64,20 @@ Carbon's `<TabContent>` keeps every panel mounted in the DOM with `hidden` toggl
 
 - **Mount-on-select** (recommended for heavy panels):
 
-  ```svelte
-  {#if selectedId === 'ble'}
-    <BlePanel />
-  {:else if selectedId === 'bt'}
-    <BtPanel />
-  {/if}
-  ```
+    ```svelte
+    {#if selectedId === 'ble'}
+    	<BlePanel />
+    {:else if selectedId === 'bt'}
+    	<BtPanel />
+    {/if}
+    ```
 
 - **Always-mounted** (for cheap panels where remount cost > memory cost):
 
-  ```svelte
-  <div hidden={selectedId !== 'ble'}><BlePanel /></div>
-  <div hidden={selectedId !== 'bt'}><BtPanel /></div>
-  ```
+    ```svelte
+    <div hidden={selectedId !== 'ble'}><BlePanel /></div>
+    <div hidden={selectedId !== 'bt'}><BtPanel /></div>
+    ```
 
 Choose per surface. DeviceSubTabs uses mount-on-select because each device class panel runs its own subscription.
 
@@ -95,8 +95,10 @@ Choose per surface. DeviceSubTabs uses mount-on-select because each device class
 		{ id: 'logs', label: 'Logs' }
 	];
 </script>
+
 <Tabs {tabs} bind:selectedId />
-{#if selectedId === 'overview'}<OverviewView />{:else if selectedId === 'details'}<DetailsView />{:else}<LogsView />{/if}
+{#if selectedId === 'overview'}<OverviewView />{:else if selectedId === 'details'}<DetailsView
+	/>{:else}<LogsView />{/if}
 ```
 
 ### 2. With badges (DeviceSubTabs pattern — count badges)
@@ -113,6 +115,7 @@ Choose per surface. DeviceSubTabs uses mount-on-select because each device class
 		{ id: 'wifi-ap', label: 'Wi-Fi APs', badge: devices.wifiAp.length }
 	]);
 </script>
+
 <Tabs {tabs} bind:selectedId />
 ```
 
@@ -125,6 +128,7 @@ Choose per surface. DeviceSubTabs uses mount-on-select because each device class
 		{ id: 'stale', label: 'Stale', badge: stale.length, hasItems: stale.length > 0 }
 	]);
 </script>
+
 <Tabs {tabs} bind:selectedId />
 ```
 
@@ -140,6 +144,7 @@ The "stale" tab label paints in `var(--warning)` while inactive (warning prompt 
 		{ id: 'gsm', label: 'GSM', disabled: !hasGsmHardware }
 	]);
 </script>
+
 <Tabs {tabs} bind:selectedId />
 ```
 
@@ -170,6 +175,7 @@ Container variant renders a filled tab strip; `secondaryLabel` adds a sub-line b
 	let { tabs, isLoading }: { tabs: TabDef[]; isLoading: boolean } = $props();
 	let selectedId = $state('');
 </script>
+
 {#if isLoading}
 	<TabsSkeleton count={3} />
 {:else}

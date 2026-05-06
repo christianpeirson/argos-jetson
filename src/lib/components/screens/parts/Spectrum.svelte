@@ -142,7 +142,13 @@
 
 	<!-- Peak-hold trace (subtle, below live) -->
 	{#if peakPath}
-		<path d={peakPath} stroke="var(--mk2-amber-dim)" stroke-width="1" fill="none" opacity="0.7" />
+		<path
+			d={peakPath}
+			stroke="var(--mk2-amber-dim)"
+			stroke-width="1"
+			fill="none"
+			opacity="0.7"
+		/>
 	{/if}
 
 	<!-- Live trace -->

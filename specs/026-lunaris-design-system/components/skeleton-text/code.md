@@ -13,13 +13,13 @@ Carbon ships `carbon-components-svelte@0.107.0`, still Svelte 4 internally — u
 
 ## Public API — `<SkeletonText>` component
 
-| Prop | Type | Default | Description |
-|---|---|---|---|
-| `lines` | `number` | `3` | Number of lines (only used when `paragraph={true}`) |
-| `paragraph` | `boolean` | `false` | Multi-line paragraph variant. `false` = single line |
-| `heading` | `boolean` | `false` | Heading-size variant. Adds `bx--skeleton__heading` class — taller bar |
-| `width` | `string` | `'100%'` | Bar width as CSS percent or px (e.g. `'80%'`, `'200px'`) |
-| `class` | `string` | `undefined` | Extra class forwarded to Carbon's outer wrapper |
+| Prop        | Type      | Default     | Description                                                           |
+| ----------- | --------- | ----------- | --------------------------------------------------------------------- |
+| `lines`     | `number`  | `3`         | Number of lines (only used when `paragraph={true}`)                   |
+| `paragraph` | `boolean` | `false`     | Multi-line paragraph variant. `false` = single line                   |
+| `heading`   | `boolean` | `false`     | Heading-size variant. Adds `bx--skeleton__heading` class — taller bar |
+| `width`     | `string`  | `'100%'`    | Bar width as CSS percent or px (e.g. `'80%'`, `'200px'`)              |
+| `class`     | `string`  | `undefined` | Extra class forwarded to Carbon's outer wrapper                       |
 
 **Note on Carbon prop name**: Carbon uses `lines` (not `lineCount`). The umbrella plan's reference to `lineCount` was incorrect — corrected at execution time per source.
 
@@ -35,14 +35,14 @@ The chassis does NOT expose any slot — Carbon SkeletonText has no slots in its
 
 ## Carbon → chassis API mapping
 
-| Carbon API | Chassis equivalent | Notes |
-|---|---|---|
-| `lines` | `lines` | Same name — Phase 8.3 corrected from umbrella plan's `lineCount` typo |
-| `paragraph` | `paragraph` | Same |
-| `heading` | `heading` | Same |
-| `width` | `width` | Same |
-| `class` | `class` | Same — forwarded via `$$restProps` in Carbon source |
-| `on:click`, `on:mouseover`, ... | NOT exposed | Skeleton interactivity is anti-pattern |
+| Carbon API                      | Chassis equivalent | Notes                                                                 |
+| ------------------------------- | ------------------ | --------------------------------------------------------------------- |
+| `lines`                         | `lines`            | Same name — Phase 8.3 corrected from umbrella plan's `lineCount` typo |
+| `paragraph`                     | `paragraph`        | Same                                                                  |
+| `heading`                       | `heading`          | Same                                                                  |
+| `width`                         | `width`            | Same                                                                  |
+| `class`                         | `class`            | Same — forwarded via `$$restProps` in Carbon source                   |
+| `on:click`, `on:mouseover`, ... | NOT exposed        | Skeleton interactivity is anti-pattern                                |
 
 ## Paste-ready snippets
 

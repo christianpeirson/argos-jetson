@@ -53,25 +53,25 @@ Key shape:
 
 Carbon ships 12 `kind` color pairs. Lunaris remaps each to dark-mode-appropriate values:
 
-| `kind` | Carbon `$tag-background-{kind}` | Carbon `$tag-color-{kind}` | Lunaris bg | Lunaris fg |
-| --- | --- | --- | --- | --- |
-| `red` | red-80 | red-30 | `var(--mk2-red-bg)` (#3a1d18) | `var(--mk2-red-fg)` (#ffaa9c) |
-| `magenta` | magenta-80 | magenta-30 | `#3d1632` | `#ffa3d1` |
-| `purple` | purple-80 | purple-30 | `#321b4f` | `#bda4ff` |
-| `blue` | blue-80 | blue-30 | `var(--accent-bg)` (steel blue 25% darken) | `var(--accent)` (#A8B8E0) |
-| `cyan` | cyan-80 | cyan-30 | `#0d2a3d` | `#82cfff` |
-| `teal` | teal-80 | teal-30 | `#0a2a2c` | `#3ddbd9` |
-| `green` | green-80 | green-30 | `var(--mk2-green-bg)` (#0d2418) | `var(--mk2-green-fg)` (#8BBFA0) |
-| `gray` | gray-80 | gray-30 | `var(--bg-2)` | `var(--ink-2)` |
-| `cool-gray` | cool-gray-80 | cool-gray-30 | `#262932` | `#c1c7d0` |
-| `warm-gray` | warm-gray-80 | warm-gray-30 | `#2a2725` | `var(--mk2-amber-fg)` (#D4A054) |
-| `high-contrast` | gray-90 (ink) | gray-10 | `var(--ink)` | `var(--bg)` (subtractive) |
-| `outline` | transparent | gray-30 + 1px gray-50 border | transparent | `var(--ink-2)` + 1 px `var(--border)` border |
+| `kind`          | Carbon `$tag-background-{kind}` | Carbon `$tag-color-{kind}`   | Lunaris bg                                 | Lunaris fg                                   |
+| --------------- | ------------------------------- | ---------------------------- | ------------------------------------------ | -------------------------------------------- |
+| `red`           | red-80                          | red-30                       | `var(--mk2-red-bg)` (#3a1d18)              | `var(--mk2-red-fg)` (#ffaa9c)                |
+| `magenta`       | magenta-80                      | magenta-30                   | `#3d1632`                                  | `#ffa3d1`                                    |
+| `purple`        | purple-80                       | purple-30                    | `#321b4f`                                  | `#bda4ff`                                    |
+| `blue`          | blue-80                         | blue-30                      | `var(--accent-bg)` (steel blue 25% darken) | `var(--accent)` (#A8B8E0)                    |
+| `cyan`          | cyan-80                         | cyan-30                      | `#0d2a3d`                                  | `#82cfff`                                    |
+| `teal`          | teal-80                         | teal-30                      | `#0a2a2c`                                  | `#3ddbd9`                                    |
+| `green`         | green-80                        | green-30                     | `var(--mk2-green-bg)` (#0d2418)            | `var(--mk2-green-fg)` (#8BBFA0)              |
+| `gray`          | gray-80                         | gray-30                      | `var(--bg-2)`                              | `var(--ink-2)`                               |
+| `cool-gray`     | cool-gray-80                    | cool-gray-30                 | `#262932`                                  | `#c1c7d0`                                    |
+| `warm-gray`     | warm-gray-80                    | warm-gray-30                 | `#2a2725`                                  | `var(--mk2-amber-fg)` (#D4A054)              |
+| `high-contrast` | gray-90 (ink)                   | gray-10                      | `var(--ink)`                               | `var(--bg)` (subtractive)                    |
+| `outline`       | transparent                     | gray-30 + 1px gray-50 border | transparent                                | `var(--ink-2)` + 1 px `var(--border)` border |
 
 Type-style:
 
-| Carbon | Lunaris | Notes |
-| --- | --- | --- |
+| Carbon     | Lunaris                                                                | Notes                                                          |
+| ---------- | ---------------------------------------------------------------------- | -------------------------------------------------------------- |
 | `label-01` | `var(--mk2-fs-3) / 1.4 var(--mk2-f-mono)` UPPERCASE letter-spacing 1.0 | Geist Mono 12 px (Argos default), UPPERCASE for tactical chips |
 
 Focus ring on interactive/filter tag: `$focus` → `var(--accent)` (2 px outside).
@@ -80,10 +80,10 @@ Focus ring on interactive/filter tag: `$focus` → `var(--accent)` (2 px outside
 
 ## Sizing
 
-| `size` | Block size | Padding (inline) | Padding (block) | Filter X size |
-| --- | --- | --- | --- | --- |
-| `default` | 24 px | 8 px | 0 (centered by min-block-size) | 16 px button (full-bleed end) |
-| `sm` | 18 px | 4 px | 0 | 12 px button |
+| `size`    | Block size | Padding (inline) | Padding (block)                | Filter X size                 |
+| --------- | ---------- | ---------------- | ------------------------------ | ----------------------------- |
+| `default` | 24 px      | 8 px             | 0 (centered by min-block-size) | 16 px button (full-bleed end) |
+| `sm`      | 18 px      | 4 px             | 0                              | 12 px button                  |
 
 Tag-to-tag gap in a row: 4 px (Lunaris default). In KISMET filter-chip rows: 8 px.
 
@@ -93,15 +93,15 @@ Tag-to-tag gap in a row: 4 px (Lunaris default). In KISMET filter-chip rows: 8 p
 
 For interactive/filter tags only:
 
-| `kind` | Default bg | Hover bg | Focus outline | Disabled bg/fg |
-| --- | --- | --- | --- | --- |
-| `red` | `#3a1d18` | `#4a2a23` | 2 px `var(--accent)` | opacity 0.5 |
-| `blue` | `var(--accent-bg)` | `var(--accent-bg-hover)` | 2 px `var(--accent)` | opacity 0.5 |
-| `cyan` | `#0d2a3d` | `#15394f` | 2 px `var(--accent)` | opacity 0.5 |
-| `green` | `var(--mk2-green-bg)` | `var(--mk2-green-bg-hover)` | 2 px `var(--accent)` | opacity 0.5 |
-| `gray` | `var(--bg-2)` | `var(--card-hover)` | 2 px `var(--accent)` | opacity 0.5 |
-| `high-contrast` | `var(--ink)` | `var(--ink-2)` (subtractive lightening) | 2 px `var(--accent)` | opacity 0.5 |
-| `outline` | transparent | `var(--card-hover)` | 2 px `var(--accent)` | opacity 0.5 |
+| `kind`          | Default bg            | Hover bg                                | Focus outline        | Disabled bg/fg |
+| --------------- | --------------------- | --------------------------------------- | -------------------- | -------------- |
+| `red`           | `#3a1d18`             | `#4a2a23`                               | 2 px `var(--accent)` | opacity 0.5    |
+| `blue`          | `var(--accent-bg)`    | `var(--accent-bg-hover)`                | 2 px `var(--accent)` | opacity 0.5    |
+| `cyan`          | `#0d2a3d`             | `#15394f`                               | 2 px `var(--accent)` | opacity 0.5    |
+| `green`         | `var(--mk2-green-bg)` | `var(--mk2-green-bg-hover)`             | 2 px `var(--accent)` | opacity 0.5    |
+| `gray`          | `var(--bg-2)`         | `var(--card-hover)`                     | 2 px `var(--accent)` | opacity 0.5    |
+| `high-contrast` | `var(--ink)`          | `var(--ink-2)` (subtractive lightening) | 2 px `var(--accent)` | opacity 0.5    |
+| `outline`       | transparent           | `var(--card-hover)`                     | 2 px `var(--accent)` | opacity 0.5    |
 
 Non-interactive tags have no hover/focus/disabled states.
 
@@ -123,12 +123,12 @@ Click fires the `close` callback; parent removes the tag from its array.
 
 ## Interactive vs filter vs default
 
-| Variant | DOM | Has tab-stop | Has hover state | Has focus ring |
-| --- | --- | --- | --- | --- |
-| `<Tag>` (default) | `<span>` | No | No | No |
-| `<Tag filter>` | `<span>` containing inner `<button>` (X) | Yes (the X) | On X only | On X only |
-| `<Tag interactive>` | `<button>` (whole tag) | Yes | Yes (whole tag) | Yes |
-| `<Tag interactive filter>` | `<button>` (whole tag) + inner `<button>` (X) | Yes (both) | Yes | Yes |
+| Variant                    | DOM                                           | Has tab-stop | Has hover state | Has focus ring |
+| -------------------------- | --------------------------------------------- | ------------ | --------------- | -------------- |
+| `<Tag>` (default)          | `<span>`                                      | No           | No              | No             |
+| `<Tag filter>`             | `<span>` containing inner `<button>` (X)      | Yes (the X)  | On X only       | On X only      |
+| `<Tag interactive>`        | `<button>` (whole tag)                        | Yes          | Yes (whole tag) | Yes            |
+| `<Tag interactive filter>` | `<button>` (whole tag) + inner `<button>` (X) | Yes (both)   | Yes             | Yes            |
 
 ---
 
@@ -143,13 +143,13 @@ Click fires the `close` callback; parent removes the tag from its array.
 
 ## State matrix summary
 
-| State | Default bg | Default fg | Border | Notes |
-| --- | --- | --- | --- | --- |
-| Default (per kind) | per kind-table above | per kind-table above | none (or 1 px for `outline`) | |
-| Hover (interactive/filter) | bg-hover | unchanged | unchanged | |
-| Focus (interactive/filter) | unchanged | unchanged | + 2 px `var(--accent)` outline | |
-| Disabled (interactive/filter) | unchanged | unchanged | unchanged | + opacity 0.5; pointer-events none |
-| Filter close hovered | bg-hover-darken on X only | unchanged | unchanged | X icon alpha increase |
+| State                         | Default bg                | Default fg           | Border                         | Notes                              |
+| ----------------------------- | ------------------------- | -------------------- | ------------------------------ | ---------------------------------- |
+| Default (per kind)            | per kind-table above      | per kind-table above | none (or 1 px for `outline`)   |                                    |
+| Hover (interactive/filter)    | bg-hover                  | unchanged            | unchanged                      |                                    |
+| Focus (interactive/filter)    | unchanged                 | unchanged            | + 2 px `var(--accent)` outline |                                    |
+| Disabled (interactive/filter) | unchanged                 | unchanged            | unchanged                      | + opacity 0.5; pointer-events none |
+| Filter close hovered          | bg-hover-darken on X only | unchanged            | unchanged                      | X icon alpha increase              |
 
 ---
 

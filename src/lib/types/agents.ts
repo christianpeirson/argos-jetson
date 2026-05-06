@@ -54,9 +54,13 @@ export interface SessionActionRequest {
 	name?: string;
 }
 
-export function filterSessions(sessions: readonly TmuxSession[], filter: SessionFilter): TmuxSession[] {
+export function filterSessions(
+	sessions: readonly TmuxSession[],
+	filter: SessionFilter
+): TmuxSession[] {
 	if (filter === 'ALL') return [...sessions];
 	if (filter === 'ACTIVE') return sessions.filter((s) => s.state === 'active');
-	if (filter === 'IDLE') return sessions.filter((s) => s.state === 'idle' || s.state === 'paused');
+	if (filter === 'IDLE')
+		return sessions.filter((s) => s.state === 'idle' || s.state === 'paused');
 	return sessions.filter((s) => s.state === 'dead');
 }

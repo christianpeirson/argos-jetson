@@ -4,11 +4,11 @@ This document maps Carbon Tooltip's visual treatment to Lunaris tokens. Per spec
 
 ## Carbon source-of-truth files
 
-| File                                                                | Purpose                                                                                                |
-| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `node_modules/carbon-components-svelte/src/Tooltip/Tooltip.svelte`  | Component template + class authority (`bx--tooltip__label`, `bx--tooltip__trigger`, `bx--tooltip`)     |
-| `node_modules/@carbon/styles/scss/components/tooltip/_tooltip.scss` | SCSS rules + token consumption (popover surface, arrow, transitions)                                   |
-| `node_modules/@carbon/styles/scss/components/popover/_popover.scss` | Carbon Tooltip is built on the popover primitive — popover SCSS owns position/arrow/elevation         |
+| File                                                                | Purpose                                                                                            |
+| ------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `node_modules/carbon-components-svelte/src/Tooltip/Tooltip.svelte`  | Component template + class authority (`bx--tooltip__label`, `bx--tooltip__trigger`, `bx--tooltip`) |
+| `node_modules/@carbon/styles/scss/components/tooltip/_tooltip.scss` | SCSS rules + token consumption (popover surface, arrow, transitions)                               |
+| `node_modules/@carbon/styles/scss/components/popover/_popover.scss` | Carbon Tooltip is built on the popover primitive — popover SCSS owns position/arrow/elevation      |
 
 Upstream source mirrored at `https://github.com/carbon-design-system/carbon-components-svelte/blob/v0.107.0/src/Tooltip/Tooltip.svelte`.
 
@@ -37,15 +37,15 @@ The Lunaris wrapper introduces no extra DOM — it forwards directly into `Carbo
 
 These overrides live (or will live) in `src/lib/styles/lunaris-carbon-theme.scss`. **Token additions are deferred** until visual diff exposes drift.
 
-| Carbon token              | Lunaris value           | Used by                                     | Citation                                              |
-| ------------------------- | ----------------------- | ------------------------------------------- | ----------------------------------------------------- |
-| `$background-inverse`     | `var(--bg-3)`           | Tooltip popover surface                     | `_tooltip.scss` `.bx--tooltip`                        |
-| `$text-inverse`           | `var(--ink)`            | Tooltip body text                           | `_tooltip.scss` `.bx--tooltip__content`               |
-| `$background-inverse`     | `var(--bg-3)`           | Caret/arrow fill (matches surface)          | `_tooltip.scss` `.bx--tooltip__caret`                 |
-| `$icon-secondary`         | `var(--ink-3)`          | Default trigger icon (Information glyph)    | `_tooltip.scss` `.bx--tooltip__icon`                  |
-| `$icon-primary` (hover)   | `var(--ink)`            | Trigger icon hover state                    | `_tooltip.scss` `.bx--tooltip__trigger:hover`         |
-| `$focus`                  | `var(--accent)`         | Trigger button `:focus` outline             | shared with all interactive elements                  |
-| `$layer-01`               | `var(--bg-2)`           | Caption-style tooltip (less common)         | shared with low-contrast notification                 |
+| Carbon token            | Lunaris value   | Used by                                  | Citation                                      |
+| ----------------------- | --------------- | ---------------------------------------- | --------------------------------------------- |
+| `$background-inverse`   | `var(--bg-3)`   | Tooltip popover surface                  | `_tooltip.scss` `.bx--tooltip`                |
+| `$text-inverse`         | `var(--ink)`    | Tooltip body text                        | `_tooltip.scss` `.bx--tooltip__content`       |
+| `$background-inverse`   | `var(--bg-3)`   | Caret/arrow fill (matches surface)       | `_tooltip.scss` `.bx--tooltip__caret`         |
+| `$icon-secondary`       | `var(--ink-3)`  | Default trigger icon (Information glyph) | `_tooltip.scss` `.bx--tooltip__icon`          |
+| `$icon-primary` (hover) | `var(--ink)`    | Trigger icon hover state                 | `_tooltip.scss` `.bx--tooltip__trigger:hover` |
+| `$focus`                | `var(--accent)` | Trigger button `:focus` outline          | shared with all interactive elements          |
+| `$layer-01`             | `var(--bg-2)`   | Caption-style tooltip (less common)      | shared with low-contrast notification         |
 
 ## Typography
 
@@ -55,18 +55,18 @@ Carbon's tooltip body uses `$body-compact-01` (14 px / 18 px line-height / 400 w
 
 Carbon Tooltip exposes a 3-axis layout grid: 4 directions × 3 align values = 12 placement combos.
 
-| Wrapper `direction` | Carbon `direction` | Visual                              |
-| ------------------- | ------------------ | ----------------------------------- |
-| `'top'`             | `'top'`            | Tooltip above trigger               |
-| `'right'`           | `'right'`          | Tooltip to right of trigger         |
-| `'bottom'` (default) | `'bottom'`        | Tooltip below trigger               |
-| `'left'`            | `'left'`           | Tooltip to left of trigger          |
+| Wrapper `direction`  | Carbon `direction` | Visual                      |
+| -------------------- | ------------------ | --------------------------- |
+| `'top'`              | `'top'`            | Tooltip above trigger       |
+| `'right'`            | `'right'`          | Tooltip to right of trigger |
+| `'bottom'` (default) | `'bottom'`         | Tooltip below trigger       |
+| `'left'`             | `'left'`           | Tooltip to left of trigger  |
 
-| Wrapper `align`      | Carbon `align`     | Notes                               |
-| -------------------- | ------------------ | ----------------------------------- |
-| `'start'` (default)  | `'start'`          | Tooltip-edge aligned to trigger-start |
-| `'center'`           | `'center'`         | Tooltip centered on trigger         |
-| `'end'`              | `'end'`            | Tooltip-edge aligned to trigger-end |
+| Wrapper `align`     | Carbon `align` | Notes                                 |
+| ------------------- | -------------- | ------------------------------------- |
+| `'start'` (default) | `'start'`      | Tooltip-edge aligned to trigger-start |
+| `'center'`          | `'center'`     | Tooltip centered on trigger           |
+| `'end'`             | `'end'`        | Tooltip-edge aligned to trigger-end   |
 
 Default in chassis is `direction='bottom'` + `align='start'` (`forms/Tooltip.svelte:25-26`) — most common popover placement, avoids viewport overflow at top of screen.
 

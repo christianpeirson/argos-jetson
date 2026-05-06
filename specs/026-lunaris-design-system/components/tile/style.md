@@ -4,6 +4,7 @@
 **Last updated:** 2026-05-04
 **Authority precedence:** Carbon source SCSS > Carbon site mdx > Lunaris CSS overlay
 **Carbon sources:**
+
 - <https://github.com/carbon-design-system/carbon-components-svelte/blob/v0.107.0/src/Tile/Tile.svelte>
 - <https://github.com/carbon-design-system/carbon-components-svelte/blob/v0.107.0/src/Tile/ClickableTile.svelte>
 
@@ -53,17 +54,17 @@ Key shape:
 
 ## Lunaris token map
 
-| Carbon token | Lunaris value | Notes |
-| --- | --- | --- |
-| `$layer` (tile bg) | `var(--card)` (#1A1A1A) | Card surface — one shade above `--background` |
-| `$layer-hover` (clickable hover) | `var(--card-hover)` | ~5% lighten of `--card` |
-| `$layer-active` (clickable active) | `var(--card-active)` | ~10% darken of `--card` |
-| `$layer-selected` (unused — selectable tile) | `var(--card-selected)` | Reserved for future SelectableTile |
-| `$border-tile` (Argos addition — NOT in Carbon) | `var(--border)` (#2E2E2E) | Argos adds 1 px border to differentiate from page bg in dark mode |
-| `$focus` (focus ring) | `var(--accent)` | 2 px inset outline |
-| `$icon-primary` (chevron) | `var(--ink-3)` → `var(--accent)` on hover | Chevron color brightens on hover |
-| `$text-primary` (tile content) | `var(--ink)` | Bright text for primary content |
-| `$text-secondary` (tile metadata) | `var(--ink-2)` | Muted for secondary lines |
+| Carbon token                                    | Lunaris value                             | Notes                                                             |
+| ----------------------------------------------- | ----------------------------------------- | ----------------------------------------------------------------- |
+| `$layer` (tile bg)                              | `var(--card)` (#1A1A1A)                   | Card surface — one shade above `--background`                     |
+| `$layer-hover` (clickable hover)                | `var(--card-hover)`                       | ~5% lighten of `--card`                                           |
+| `$layer-active` (clickable active)              | `var(--card-active)`                      | ~10% darken of `--card`                                           |
+| `$layer-selected` (unused — selectable tile)    | `var(--card-selected)`                    | Reserved for future SelectableTile                                |
+| `$border-tile` (Argos addition — NOT in Carbon) | `var(--border)` (#2E2E2E)                 | Argos adds 1 px border to differentiate from page bg in dark mode |
+| `$focus` (focus ring)                           | `var(--accent)`                           | 2 px inset outline                                                |
+| `$icon-primary` (chevron)                       | `var(--ink-3)` → `var(--accent)` on hover | Chevron color brightens on hover                                  |
+| `$text-primary` (tile content)                  | `var(--ink)`                              | Bright text for primary content                                   |
+| `$text-secondary` (tile metadata)               | `var(--ink-2)`                            | Muted for secondary lines                                         |
 
 **Lunaris addition**: Argos overlay adds a 1 px `var(--border)` border to all tiles. Carbon's stock theme relies on background contrast alone, but in Argos's near-black palette (`--background` #111 vs `--card` #1A) the contrast (≈1.3:1) is below the 3:1 graphical floor; the border restores visual separation.
 
@@ -73,11 +74,11 @@ Key shape:
 
 Carbon does NOT ship a size axis for `<Tile>` / `<ClickableTile>`. All tiles share the 16 px padding + 48 px min-block-size baseline; height is driven by content.
 
-| Argos surface | Min block size | Padding | Notes |
-| --- | --- | --- | --- |
-| Mission Control stat tile | 96 px | 16 px | Fixed-height row; content includes icon + label + ProgressBar |
-| AGENTS session card | auto (≈140 px) | 16 px | Variable height; content drives |
-| Workflows category card | 120 px | 24 px | Lunaris-bespoke padding override for breathing room |
+| Argos surface             | Min block size | Padding | Notes                                                         |
+| ------------------------- | -------------- | ------- | ------------------------------------------------------------- |
+| Mission Control stat tile | 96 px          | 16 px   | Fixed-height row; content includes icon + label + ProgressBar |
+| AGENTS session card       | auto (≈140 px) | 16 px   | Variable height; content drives                               |
+| Workflows category card   | 120 px         | 24 px   | Lunaris-bespoke padding override for breathing room           |
 
 ---
 
@@ -85,14 +86,14 @@ Carbon does NOT ship a size axis for `<Tile>` / `<ClickableTile>`. All tiles sha
 
 `<ClickableTile>` only:
 
-| State | Background | Border | Chevron | Outline |
-| --- | --- | --- | --- | --- |
-| Default | `var(--card)` | 1 px `var(--border)` | `var(--ink-3)` (muted) | none |
-| Hover | `var(--card-hover)` | 1 px `var(--ink-3)` (brighter) | `var(--accent)` | none |
-| Focus | `var(--card)` | 1 px `var(--border)` | `var(--ink-3)` | 2 px `var(--accent)` inset |
-| Focus + hover | `var(--card-hover)` | 1 px `var(--ink-3)` | `var(--accent)` | 2 px `var(--accent)` inset |
-| Active (mousedown) | `var(--card-active)` | 1 px `var(--ink-3)` | `var(--accent)` | none |
-| Disabled | `var(--card)` opacity 0.5 | 1 px `var(--border)` | hidden | none |
+| State              | Background                | Border                         | Chevron                | Outline                    |
+| ------------------ | ------------------------- | ------------------------------ | ---------------------- | -------------------------- |
+| Default            | `var(--card)`             | 1 px `var(--border)`           | `var(--ink-3)` (muted) | none                       |
+| Hover              | `var(--card-hover)`       | 1 px `var(--ink-3)` (brighter) | `var(--accent)`        | none                       |
+| Focus              | `var(--card)`             | 1 px `var(--border)`           | `var(--ink-3)`         | 2 px `var(--accent)` inset |
+| Focus + hover      | `var(--card-hover)`       | 1 px `var(--ink-3)`            | `var(--accent)`        | 2 px `var(--accent)` inset |
+| Active (mousedown) | `var(--card-active)`      | 1 px `var(--ink-3)`            | `var(--accent)`        | none                       |
+| Disabled           | `var(--card)` opacity 0.5 | 1 px `var(--border)`           | hidden                 | none                       |
 
 `<Tile>` (non-interactive) does NOT have hover/focus/active states.
 
@@ -129,12 +130,12 @@ These layouts are surface-specific; the chassis exposes only the outer container
 
 ## State matrix summary
 
-| Variant | Has hover | Has focus | Has chevron | Tab-stop |
-| --- | --- | --- | --- | --- |
-| `<Tile>` | No | No | No | No |
-| `<ClickableTile href>` | Yes | Yes | Yes | Yes (as `<a>`) |
-| `<ClickableTile onclick>` | Yes | Yes | Yes | Yes (as `<button>`) |
-| `<ClickableTile disabled>` | No | No | No | No |
+| Variant                    | Has hover | Has focus | Has chevron | Tab-stop            |
+| -------------------------- | --------- | --------- | ----------- | ------------------- |
+| `<Tile>`                   | No        | No        | No          | No                  |
+| `<ClickableTile href>`     | Yes       | Yes       | Yes         | Yes (as `<a>`)      |
+| `<ClickableTile onclick>`  | Yes       | Yes       | Yes         | Yes (as `<button>`) |
+| `<ClickableTile disabled>` | No        | No        | No          | No                  |
 
 ---
 
@@ -143,7 +144,7 @@ These layouts are surface-specific; the chassis exposes only the outer container
 - Carbon source SCSS: `docs/carbon-design-system/packages/styles/scss/components/tile/_tile.scss`
 - Carbon site mdx: `docs/carbon-website/src/pages/components/Tile/{usage,style,code,accessibility}.mdx`
 - Carbon Svelte sources:
-  - <https://github.com/carbon-design-system/carbon-components-svelte/blob/v0.107.0/src/Tile/Tile.svelte>
-  - <https://github.com/carbon-design-system/carbon-components-svelte/blob/v0.107.0/src/Tile/ClickableTile.svelte>
+    - <https://github.com/carbon-design-system/carbon-components-svelte/blob/v0.107.0/src/Tile/Tile.svelte>
+    - <https://github.com/carbon-design-system/carbon-components-svelte/blob/v0.107.0/src/Tile/ClickableTile.svelte>
 - Lunaris CSS custom properties: `src/app.css` (`:root` block)
 - Theme overlay: `src/lib/styles/lunaris-carbon-theme.scss`

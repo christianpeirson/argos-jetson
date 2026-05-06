@@ -267,8 +267,6 @@ Net coverage: 2 fallow firings (pre-push + CI) instead of 3. Defense remains lay
 
 (e) Known gaps and risks:
 
-
-
 - **No LOC/file or LOC/fn threshold.** Fallow's `health` does NOT enforce line counts (verified against `fallow config-schema` 2026-05-04). LOC enforcement provided by ESLint's built-in `max-lines` + `max-lines-per-function` rules — added to `config/eslint.config.js` in the same install PR.
 - **`.svelte` dead-code is excluded** via `ignorePatterns` because fallow's ROADMAP acknowledges `export let` props are indistinguishable from utility exports without Svelte compiler semantics.
 - **`static/**` excluded\*\* because Argos serves vendored WebTAK minified JS as a static asset — not first-party source. Without this exclusion, a single anonymous WebTAK function (cyclomatic=330, 291,033 lines) dominates findings.

@@ -23,29 +23,29 @@ Carbon ships `carbon-components-svelte@0.107.0`, which is **still Svelte 4 inter
 
 ## Public API — `<TooltipIcon>` component
 
-| Prop | Type | Default | Description |
-|---|---|---|---|
-| `tooltipText` | `string` | **REQUIRED** | Hover-revealed text. Becomes `aria-describedby` content. NOT optional — no safe default for accessibility. |
-| `icon` | `Component` (svelte) | **REQUIRED** | Icon component to render inside the trigger. The icon IS the trigger. Lucide (`@lucide/svelte`) preferred; carbon-icons-svelte accepted. |
-| `size` | `16 \| 20 \| 24 \| 32` | `16` | Icon size in px. Carbon supports any number; chassis narrows to the standard scale to discourage off-grid sizes. |
-| `direction` | `'top' \| 'right' \| 'bottom' \| 'left'` | `'bottom'` | Popover placement relative to trigger. |
-| `align` | `'start' \| 'center' \| 'end'` | `'center'` | Alignment of popover edge to trigger. Matches Carbon source default. |
-| `enterDelayMs` | `number` | `100` | Delay before tooltip opens on hover/focus. |
-| `leaveDelayMs` | `number` | `300` | Delay before tooltip closes after hover/focus ends. |
-| `disabled` | `boolean` | `false` | Disable all interactions. Trigger button receives `disabled` attribute. |
-| `open` | `boolean` (bindable) | `false` | Tooltip visibility. Two-way bindable for imperative control. |
-| `id` | `string` | auto-generated | DOM id for the wrapper span (auto-id `ccs-{random}` if omitted). |
-| `class` | `string` | `undefined` | Extra class forwarded to Carbon's outer wrapper `<div class="bx--tooltip--icon">`. |
+| Prop           | Type                                     | Default        | Description                                                                                                                              |
+| -------------- | ---------------------------------------- | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `tooltipText`  | `string`                                 | **REQUIRED**   | Hover-revealed text. Becomes `aria-describedby` content. NOT optional — no safe default for accessibility.                               |
+| `icon`         | `Component` (svelte)                     | **REQUIRED**   | Icon component to render inside the trigger. The icon IS the trigger. Lucide (`@lucide/svelte`) preferred; carbon-icons-svelte accepted. |
+| `size`         | `16 \| 20 \| 24 \| 32`                   | `16`           | Icon size in px. Carbon supports any number; chassis narrows to the standard scale to discourage off-grid sizes.                         |
+| `direction`    | `'top' \| 'right' \| 'bottom' \| 'left'` | `'bottom'`     | Popover placement relative to trigger.                                                                                                   |
+| `align`        | `'start' \| 'center' \| 'end'`           | `'center'`     | Alignment of popover edge to trigger. Matches Carbon source default.                                                                     |
+| `enterDelayMs` | `number`                                 | `100`          | Delay before tooltip opens on hover/focus.                                                                                               |
+| `leaveDelayMs` | `number`                                 | `300`          | Delay before tooltip closes after hover/focus ends.                                                                                      |
+| `disabled`     | `boolean`                                | `false`        | Disable all interactions. Trigger button receives `disabled` attribute.                                                                  |
+| `open`         | `boolean` (bindable)                     | `false`        | Tooltip visibility. Two-way bindable for imperative control.                                                                             |
+| `id`           | `string`                                 | auto-generated | DOM id for the wrapper span (auto-id `ccs-{random}` if omitted).                                                                         |
+| `class`        | `string`                                 | `undefined`    | Extra class forwarded to Carbon's outer wrapper `<div class="bx--tooltip--icon">`.                                                       |
 
 ## Events / callback props
 
 Chassis uses Svelte-5 callback props that bridge Carbon's Svelte-4 event dispatcher.
 
-| Callback prop | Args | Maps to Carbon event | Notes |
-|---|---|---|---|
-| `onClick` | `(event: MouseEvent)` | `on:click` | Fires on trigger button click — the action handler for the icon button |
-| `onOpen` | `()` | `on:open` | Fires when popover opens (hover/focus/click) |
-| `onClose` | `()` | `on:close` | Fires when popover closes (blur/escape/leave) |
+| Callback prop | Args                  | Maps to Carbon event | Notes                                                                  |
+| ------------- | --------------------- | -------------------- | ---------------------------------------------------------------------- |
+| `onClick`     | `(event: MouseEvent)` | `on:click`           | Fires on trigger button click — the action handler for the icon button |
+| `onOpen`      | `()`                  | `on:open`            | Fires when popover opens (hover/focus/click)                           |
+| `onClose`     | `()`                  | `on:close`           | Fires when popover closes (blur/escape/leave)                          |
 
 Carbon also dispatches `mouseover`, `mouseenter`, `mouseleave`, `focus`, `blur` on the trigger button. The chassis doesn't forward these explicitly — add named callback props if a future surface needs them.
 
@@ -57,15 +57,15 @@ The icon is passed via the `icon` prop, NOT a slot — Carbon's source uses `<sv
 
 ## Carbon → chassis API mapping
 
-| Carbon API | Chassis equivalent | Notes |
-|---|---|---|
-| `bind:open` | `bind:open` (preserved) | Same shape — `$bindable` |
-| `on:click={(e) => ...}` | `onClick={(e) => ...}` | Callback prop. Most-used event |
-| `on:open={() => ...}` | `onOpen={() => ...}` | Callback prop |
-| `on:close={() => ...}` | `onClose={() => ...}` | Callback prop |
-| `<svelte:fragment slot="tooltipText">` | not exposed | Use `tooltipText` prop (string only) |
-| `bind:ref` | not exposed | Add when first needed |
-| `portalTooltip={true}` | not exposed | Auto-detected via `getContext("carbon:Modal")` — explicit override deferred |
+| Carbon API                             | Chassis equivalent      | Notes                                                                       |
+| -------------------------------------- | ----------------------- | --------------------------------------------------------------------------- |
+| `bind:open`                            | `bind:open` (preserved) | Same shape — `$bindable`                                                    |
+| `on:click={(e) => ...}`                | `onClick={(e) => ...}`  | Callback prop. Most-used event                                              |
+| `on:open={() => ...}`                  | `onOpen={() => ...}`    | Callback prop                                                               |
+| `on:close={() => ...}`                 | `onClose={() => ...}`   | Callback prop                                                               |
+| `<svelte:fragment slot="tooltipText">` | not exposed             | Use `tooltipText` prop (string only)                                        |
+| `bind:ref`                             | not exposed             | Add when first needed                                                       |
+| `portalTooltip={true}`                 | not exposed             | Auto-detected via `getContext("carbon:Modal")` — explicit override deferred |
 
 ## Paste-ready snippets
 

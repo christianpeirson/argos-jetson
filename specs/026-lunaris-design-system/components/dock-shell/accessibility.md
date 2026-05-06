@@ -25,12 +25,12 @@ If the secondary panel is `dock === 'hidden'`, its `<section>` is not rendered (
 
 ```html
 <div class="dock-shell-root" data-dock="right">
-  <section class="dock-primary" aria-label="...">
-    <!-- primary -->
-  </section>
-  <section class="dock-secondary" aria-label="...">
-    <!-- secondary -->
-  </section>
+	<section class="dock-primary" aria-label="...">
+		<!-- primary -->
+	</section>
+	<section class="dock-secondary" aria-label="...">
+		<!-- secondary -->
+	</section>
 </div>
 ```
 
@@ -40,8 +40,8 @@ Both `<section>` elements are landmark roles. Screen reader landmark navigation 
 
 The shell only contributes a `--mk2-line` (#2E2E2E) divider between panels:
 
-| Element | Token | Background | Ratio | Status |
-|---|---|---|---|---|
+| Element      | Token                  | Background           | Ratio | Status                                                         |
+| ------------ | ---------------------- | -------------------- | ----- | -------------------------------------------------------------- |
 | Divider line | `--mk2-line` (#2E2E2E) | `--mk2-bg` (#0A0A0A) | 1.6:1 | Non-text contrast (WCAG 1.4.11 requires 3:1 for UI components) |
 
 The 1px divider is **decorative**, not a UI component — it does not convey state and cannot be interacted with. WCAG 1.4.11 (Non-text Contrast) does not apply to purely decorative borders. If future feedback considers the divider too subtle, bump to `--mk2-line-2` for a 3:1+ ratio.
@@ -51,6 +51,7 @@ The 1px divider is **decorative**, not a UI component — it does not convey sta
 The shell is **not focusable** and produces no tab stops. Keyboard navigation flows naturally through the focusable content of `primary` and `secondary` panels (consumer-managed).
 
 Tab order:
+
 1. All focusable elements in `primary` (in DOM order)
 2. All focusable elements in `secondary` (in DOM order)
 
@@ -70,16 +71,16 @@ The shell conveys no information through color alone. The dock side is a layout 
 
 ## WCAG 2.1 AA criteria
 
-| Criterion | Status | Notes |
-|---|---|---|
-| 1.3.1 Info and Relationships | PASS | Both panels exposed as labeled landmarks |
-| 1.4.3 Contrast (Minimum) | N/A | Shell is layout only; no text |
-| 1.4.10 Reflow | PASS | All dock modes work in narrow viewports; CSS grid handles |
-| 1.4.11 Non-text Contrast | N/A (decorative) | Divider is decorative, not UI component |
-| 2.1.1 Keyboard | PASS | No keyboard traps; tab flows through content |
-| 2.4.1 Bypass Blocks | PASS | Both panels are landmarks |
-| 2.4.6 Headings and Labels | PASS | Consumer provides `aria-label` per panel |
-| 4.1.2 Name, Role, Value | PASS | `<section>` + `aria-label` provides name; role is landmark |
+| Criterion                    | Status           | Notes                                                      |
+| ---------------------------- | ---------------- | ---------------------------------------------------------- |
+| 1.3.1 Info and Relationships | PASS             | Both panels exposed as labeled landmarks                   |
+| 1.4.3 Contrast (Minimum)     | N/A              | Shell is layout only; no text                              |
+| 1.4.10 Reflow                | PASS             | All dock modes work in narrow viewports; CSS grid handles  |
+| 1.4.11 Non-text Contrast     | N/A (decorative) | Divider is decorative, not UI component                    |
+| 2.1.1 Keyboard               | PASS             | No keyboard traps; tab flows through content               |
+| 2.4.1 Bypass Blocks          | PASS             | Both panels are landmarks                                  |
+| 2.4.6 Headings and Labels    | PASS             | Consumer provides `aria-label` per panel                   |
+| 4.1.2 Name, Role, Value      | PASS             | `<section>` + `aria-label` provides name; role is landmark |
 
 ## Dock-control buttons (consumer responsibility)
 

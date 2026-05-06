@@ -28,27 +28,27 @@ Per Carbon ContentSwitcher source confirms (`role="tablist"` + `role="tab"` patt
 
 ### Keyboard interaction
 
-| Key | Behavior |
-| --- | --- |
-| Tab | Move focus into the switcher (lands on selected tab). Tab again moves out. |
-| Shift+Tab | Move focus out backward. |
-| Left / Up | Move active tab to previous (wraps to last). In `automatic` mode, also commits + emits `change`. |
-| Right / Down | Move active tab to next (wraps to first). In `automatic` mode, also commits. |
-| Home | Move active tab to first. |
-| End | Move active tab to last. |
+| Key           | Behavior                                                                                               |
+| ------------- | ------------------------------------------------------------------------------------------------------ |
+| Tab           | Move focus into the switcher (lands on selected tab). Tab again moves out.                             |
+| Shift+Tab     | Move focus out backward.                                                                               |
+| Left / Up     | Move active tab to previous (wraps to last). In `automatic` mode, also commits + emits `change`.       |
+| Right / Down  | Move active tab to next (wraps to first). In `automatic` mode, also commits.                           |
+| Home          | Move active tab to first.                                                                              |
+| End           | Move active tab to last.                                                                               |
 | Space / Enter | In `manual` mode, commits the focused tab as selected. In `automatic` mode, no-op (already committed). |
 
 ### Color contrast (Carbon's audit floor)
 
 Carbon's stock theme passes WCAG 2.1 AA. Lunaris token overrides MUST preserve those ratios.
 
-| Pair                                                | Min contrast (AA) | Lunaris target                                           | Status                                              |
-| --------------------------------------------------- | ----------------- | -------------------------------------------------------- | --------------------------------------------------- |
-| Border (`$border-strong`) on `--bg-2`               | 3:1 (graphical)   | `var(--ink-3)` on `var(--bg-2)`                          | ≈ 6.2:1 ✓                                            |
-| Unselected label (`$text-secondary`) on `$layer`    | 4.5:1             | `var(--ink-2)` on `var(--bg-2)`                          | ≈ 11.4:1 ✓                                           |
-| Selected label (`$text-inverse`) on selected fill   | 4.5:1             | `var(--bg)` on `var(--ink)`                              | ≈ 14.6:1 ✓ (subtractive — same as inverse)           |
-| Focus outline (`$focus`) on any background          | 3:1 (graphical)   | `var(--accent)` ≈ 7.4:1 vs `--bg` and `--bg-2`           | ✓                                                    |
-| Disabled label / border                             | 3:1 (graphical)   | `var(--ink-5)` (oklch 32%) on `var(--bg-2)`              | ≈ 1.7:1 ⚠ — expected for disabled, AT announces state |
+| Pair                                              | Min contrast (AA) | Lunaris target                                 | Status                                                 |
+| ------------------------------------------------- | ----------------- | ---------------------------------------------- | ------------------------------------------------------ |
+| Border (`$border-strong`) on `--bg-2`             | 3:1 (graphical)   | `var(--ink-3)` on `var(--bg-2)`                | ≈ 6.2:1 ✓                                              |
+| Unselected label (`$text-secondary`) on `$layer`  | 4.5:1             | `var(--ink-2)` on `var(--bg-2)`                | ≈ 11.4:1 ✓                                             |
+| Selected label (`$text-inverse`) on selected fill | 4.5:1             | `var(--bg)` on `var(--ink)`                    | ≈ 14.6:1 ✓ (subtractive — same as inverse)             |
+| Focus outline (`$focus`) on any background        | 3:1 (graphical)   | `var(--accent)` ≈ 7.4:1 vs `--bg` and `--bg-2` | ✓                                                      |
+| Disabled label / border                           | 3:1 (graphical)   | `var(--ink-5)` (oklch 32%) on `var(--bg-2)`    | ≈ 1.7:1 ⚠ — expected for disabled, AT announces state |
 
 **No amber flags.** Disabled contrast is intentionally low per WCAG-conformant pattern. All Phase 9.1 sites pass.
 
@@ -60,13 +60,13 @@ Carbon's stock theme passes WCAG 2.1 AA. Lunaris token overrides MUST preserve t
 
 Carbon's segments are full-width (`flex: 1 1 0`). Effective tap target is the segment's full rendered width × height.
 
-| Surface                | Carbon size | Per-segment height | Per-segment min width  | WCAG 2.5.8 (24 px) |
-| ---------------------- | ----------- | ------------------ | ---------------------- | ------------------ |
-| SPECTRUM mode toggle   | sm          | 24 px              | ≈ 60 px (PEAK/AVG/LIVE)| ✓ pass             |
-| AGENTS filter tabs     | default     | 32 px              | ≈ 70 px each           | ✓ pass             |
-| AGENTS view-mode (icon)| default     | 32 px              | 32 px (square)         | ✓ pass (32 ≥ 24)    |
-| FilterBar chips        | sm          | 24 px              | varies, ≥ 50 px        | ✓ pass             |
-| ReportsView export     | default     | 32 px              | ≈ 80 px each           | ✓ pass             |
+| Surface                 | Carbon size | Per-segment height | Per-segment min width   | WCAG 2.5.8 (24 px) |
+| ----------------------- | ----------- | ------------------ | ----------------------- | ------------------ |
+| SPECTRUM mode toggle    | sm          | 24 px              | ≈ 60 px (PEAK/AVG/LIVE) | ✓ pass             |
+| AGENTS filter tabs      | default     | 32 px              | ≈ 70 px each            | ✓ pass             |
+| AGENTS view-mode (icon) | default     | 32 px              | 32 px (square)          | ✓ pass (32 ≥ 24)   |
+| FilterBar chips         | sm          | 24 px              | varies, ≥ 50 px         | ✓ pass             |
+| ReportsView export      | default     | 32 px              | ≈ 80 px each            | ✓ pass             |
 
 WCAG 2.1 SC 2.5.5 (44 × 44 px AAA) is **not** satisfied at any density. Documented as Argos-wide deviation from AAA in Phase 7 audit.
 
@@ -107,17 +107,17 @@ Carbon uses `motion(standard, productive)` for the bg-color transition on hover 
 
 ## Verification checklist (Phase 9.1)
 
-| Check                                | Tool                                  | Pass criterion                                                                |
-| ------------------------------------ | ------------------------------------- | ----------------------------------------------------------------------------- |
-| WCAG 2.1 AA on each migrated surface | `@axe-core/playwright` (`AxeBuilder`) | `violations: []` with `wcag2a, wcag2aa, wcag21a, wcag21aa, best-practice`     |
-| Roving tabindex                      | Playwright keyboard nav               | Tab lands on selected only; arrow keys move and update tabindex               |
-| Arrow-key wrap                       | Playwright keyboard test              | Right from last wraps to first; Left from first wraps to last                  |
-| Home / End                           | Playwright keyboard test              | Home moves to first; End moves to last                                        |
-| Space (manual mode)                  | Playwright keyboard test              | In `selectiveMode="manual"`, Space commits focused tab                        |
-| Focus ring visible                   | manual + Playwright `:focus` check    | 2-px outline visible at all densities + accents                               |
-| Color contrast (border, focus, fill) | chrome-devtools MCP + axe             | Border ≥ 3:1, Focus ≥ 3:1, Selected fg ≥ 4.5:1                                |
-| Icon-only `iconDescription`          | axe rule `aria-input-field-name`      | All icon-only switches have `iconDescription`                                  |
-| Selection state announcement        | manual NVDA / VoiceOver pass          | "[label], tab, [n] of [N], selected" on each focus                            |
+| Check                                | Tool                                  | Pass criterion                                                            |
+| ------------------------------------ | ------------------------------------- | ------------------------------------------------------------------------- |
+| WCAG 2.1 AA on each migrated surface | `@axe-core/playwright` (`AxeBuilder`) | `violations: []` with `wcag2a, wcag2aa, wcag21a, wcag21aa, best-practice` |
+| Roving tabindex                      | Playwright keyboard nav               | Tab lands on selected only; arrow keys move and update tabindex           |
+| Arrow-key wrap                       | Playwright keyboard test              | Right from last wraps to first; Left from first wraps to last             |
+| Home / End                           | Playwright keyboard test              | Home moves to first; End moves to last                                    |
+| Space (manual mode)                  | Playwright keyboard test              | In `selectiveMode="manual"`, Space commits focused tab                    |
+| Focus ring visible                   | manual + Playwright `:focus` check    | 2-px outline visible at all densities + accents                           |
+| Color contrast (border, focus, fill) | chrome-devtools MCP + axe             | Border ≥ 3:1, Focus ≥ 3:1, Selected fg ≥ 4.5:1                            |
+| Icon-only `iconDescription`          | axe rule `aria-input-field-name`      | All icon-only switches have `iconDescription`                             |
+| Selection state announcement         | manual NVDA / VoiceOver pass          | "[label], tab, [n] of [N], selected" on each focus                        |
 
 Phase 7 includes the full WCAG 2.1 AA audit for all migrated segmented surfaces.
 
