@@ -97,7 +97,7 @@ const NAME_RULES: NameRule[] = [
 	{ match: /tesla\s*model/i, product: (n) => n, category: 'vehicle', vendor: 'Tesla' }
 ];
 
-export function classifyFromLocalName(
+function classifyFromLocalName(
 	name: string
 ): { product: string; category: BluetoothCategory; vendor?: string } | null {
 	for (const rule of NAME_RULES) {
@@ -126,7 +126,7 @@ const SERVICE_UUID_CATEGORY: Record<string, BluetoothCategory> = {
 	FD92: 'phone'
 };
 
-export function categoryFromServiceUuid(uuid: string): BluetoothCategory | null {
+function categoryFromServiceUuid(uuid: string): BluetoothCategory | null {
 	const u = uuid.toUpperCase().padStart(4, '0');
 	return SERVICE_UUID_CATEGORY[u] ?? null;
 }
@@ -225,7 +225,7 @@ export function decodeMicrosoftCdp(msdBytes: Uint8Array): DecodedIntel {
 	return result;
 }
 
-export function decodeFastPair(serviceDataBytes: Uint8Array): DecodedIntel {
+function decodeFastPair(serviceDataBytes: Uint8Array): DecodedIntel {
 	const result: DecodedIntel = { ...EMPTY, vendor: 'Google', category: 'audio_earbud' };
 	if (serviceDataBytes.length < 3) return result;
 	const modelId = bytesToHex(serviceDataBytes.slice(0, 3));
@@ -249,7 +249,7 @@ function applyVendorLookup(best: DecodedIntel, companyId: number | null | undefi
 	if (vendor) best.vendor = vendor;
 }
 
-export function decodeXiaomiBeacon(msdBytes: Uint8Array): DecodedIntel {
+function decodeXiaomiBeacon(msdBytes: Uint8Array): DecodedIntel {
 	const result: DecodedIntel = { ...EMPTY, vendor: 'Xiaomi' };
 	if (msdBytes.length < 5) return result;
 	const deviceType = ((msdBytes[3] << 8) | msdBytes[2])
@@ -262,7 +262,7 @@ export function decodeXiaomiBeacon(msdBytes: Uint8Array): DecodedIntel {
 	return result;
 }
 
-export function decodeSamsungBle(msdBytes: Uint8Array): DecodedIntel {
+function decodeSamsungBle(msdBytes: Uint8Array): DecodedIntel {
 	const result: DecodedIntel = { ...EMPTY, vendor: 'Samsung' };
 	if (msdBytes.length < 2) return result;
 	const typeByte = msdBytes[0].toString(16).toUpperCase().padStart(2, '0');

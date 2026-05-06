@@ -9,7 +9,7 @@ import { safeJsonParse } from '$lib/server/security/safe-json';
 import { logger } from '$lib/utils/logger';
 
 /** Zod schema for gpsd JSON protocol messages (TPV, SKY, VERSION, DEVICES, etc.) */
-export const GpsdMessageSchema = z
+const GpsdMessageSchema = z
 	.object({
 		class: z.string(),
 		mode: z.number().optional(),
@@ -96,7 +96,7 @@ function asTPVObject(data: unknown): Record<string, unknown> | null {
 }
 
 /** Parse a TPV (Time-Position-Velocity) message from gpsd output. */
-export function parseTPVData(data: unknown): TPVData | null {
+function parseTPVData(data: unknown): TPVData | null {
 	const obj = asTPVObject(data);
 	if (!obj) return null;
 
@@ -140,7 +140,7 @@ function parseSkyMessage(data: unknown): SkyMessage | null {
  * Extract satellite count from a parsed SKY message.
  * Returns the satellite count or null if the message is not a SKY message.
  */
-export function extractSatelliteCount(parsed: unknown): number | null {
+function extractSatelliteCount(parsed: unknown): number | null {
 	const skyMsg = parseSkyMessage(parsed);
 	if (!skyMsg) return null;
 

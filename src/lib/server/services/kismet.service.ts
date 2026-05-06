@@ -12,7 +12,7 @@ import { buildRawDevice, buildSimplifiedDevice } from './kismet-service-transfor
 import type { DevicesResponse, KismetDevice } from './kismet-service-types';
 
 // Re-export types for backward compatibility
-export type { DevicesResponse, KismetDevice } from './kismet-service-types';
+export type { DevicesResponse } from './kismet-service-types';
 export type { GPSPosition } from '$lib/gps/types';
 
 /**

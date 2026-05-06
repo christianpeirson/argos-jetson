@@ -323,5 +323,3 @@ export async function handleSweepError(
 		await stopSweep();
 	}
 }
-
-export { testHackrfAvailability } from './hackrf-availability';

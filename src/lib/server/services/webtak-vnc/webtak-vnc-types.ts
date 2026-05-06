@@ -31,11 +31,6 @@ export const WEBTAK_DEPTH = 24;
 /** Scratch profile directory for the headless Chromium instance. */
 export const CHROMIUM_USER_DATA_DIR = '/tmp/argos-webtak-chromium';
 
-/** Shape of the POST body accepted by `/api/webtak-vnc/control`. */
-export interface WebtakVncStartRequest {
-	url: string;
-}
-
 /** Result returned from every control action (start/stop/status). */
 export interface WebtakVncControlResult {
 	success: boolean;

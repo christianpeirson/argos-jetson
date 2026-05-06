@@ -6,10 +6,7 @@
 // Module-scope $state is fine because Svelte 5 schedules updates lazily; any
 // component that reads `accentStore.value` opts into reactivity automatically.
 
-import { DRAWER_TABS, type DrawerTab, isDrawerTab } from '$lib/types/drawer';
-
-export type { DrawerTab };
-export { DRAWER_TABS };
+import { type DrawerTab, isDrawerTab } from '$lib/types/drawer';
 
 export type AccentName = 'amber' | 'green' | 'cyan' | 'magenta' | 'steel';
 export type Density = 'compact' | 'normal' | 'comfy';

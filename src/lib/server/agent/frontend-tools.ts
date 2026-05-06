@@ -7,9 +7,6 @@
 
 import { frontendTools } from '$lib/server/agent/frontend-tool-definitions';
 
-export type { FrontendTool } from '$lib/server/agent/frontend-tool-definitions';
-export { frontendTools } from '$lib/server/agent/frontend-tool-definitions';
-
 /**
  * Get frontend tools in MCP format for agent context
  */

@@ -6,7 +6,7 @@ import { CLEANUP_TIMEOUT_MS, MAX_BUFFER_BYTES, type PtySession } from './types';
 
 const PROJECT_ROOT = process.cwd();
 
-export const VALID_SHELLS: string[] = [
+const VALID_SHELLS: string[] = [
 	path.join(PROJECT_ROOT, 'scripts/tmux/tmux-0.sh'),
 	path.join(PROJECT_ROOT, 'scripts/tmux/tmux-1.sh'),
 	path.join(PROJECT_ROOT, 'scripts/tmux/tmux-2.sh'),
@@ -35,7 +35,7 @@ export function loadPtyModule(): Promise<typeof import('node-pty') | null> {
 }
 
 // fallow-ignore-next-line complexity
-export function normalizeShellPath(shellPath: string): string {
+function normalizeShellPath(shellPath: string): string {
 	let normalized = shellPath;
 	if (normalized.startsWith('/app/')) {
 		normalized = normalized.replace(/^\/app\//, PROJECT_ROOT + '/');
@@ -52,7 +52,7 @@ export function normalizeShellPath(shellPath: string): string {
 	return normalized;
 }
 
-export async function isValidShell(shellPath: string): Promise<boolean> {
+async function isValidShell(shellPath: string): Promise<boolean> {
 	if (!VALID_SHELLS.includes(shellPath)) return false;
 	try {
 		await access(shellPath, constants.X_OK);
@@ -68,7 +68,7 @@ export function sendJson(ws: WebSocket, data: Record<string, unknown>): void {
 	}
 }
 
-export function destroySession(sessionId: string): void {
+function destroySession(sessionId: string): void {
 	const session = sessions.get(sessionId);
 	if (!session) return;
 	if (session.cleanupTimer) clearTimeout(session.cleanupTimer);
@@ -92,10 +92,6 @@ export function detachSession(sessionId: string): void {
 		console.warn(`[argos-terminal] Session ${sessionId} timed out, destroying`);
 		destroySession(sessionId);
 	}, CLEANUP_TIMEOUT_MS);
-}
-
-export function destroyAllSessions(): void {
-	for (const id of Array.from(sessions.keys())) destroySession(id);
 }
 
 function getDefaultShell(): string {

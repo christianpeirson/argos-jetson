@@ -73,6 +73,22 @@
 		"@sveltejs/adapter-node",
 		"pixelmatch"
 	],
+	"overrides": [
+		{
+			"files": [
+				"src/lib/server/services/sdrpp/sdrpp-vnc-processes.ts",
+				"src/lib/server/services/sparrow/sparrow-vnc-processes.ts",
+				"src/lib/server/services/webtak-vnc/webtak-vnc-processes.ts",
+				"src/lib/server/services/wireshark-vnc/wireshark-vnc-processes.ts",
+				"src/lib/server/services/vnc-common/spawn-helpers.ts",
+				"src/lib/server/services/weather/metar-cache.ts",
+				"src/lib/server/services/weather/metar-parse.ts"
+			],
+			"rules": {
+				"duplicate-exports": "off"
+			}
+		}
+	],
 	"audit": {
 		"deadCodeBaseline": ".fallow-deadcode-baseline.json",
 		"healthBaseline": ".fallow-health-baseline.json",

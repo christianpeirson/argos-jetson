@@ -26,7 +26,6 @@ export const SourceConfigSchema = z.object({
 	device: z.string().default('hackrf=0'),
 	error: z.number().default(0)
 });
-export type SourceConfig = z.infer<typeof SourceConfigSchema>;
 
 /** One talkgroup row — human-readable mapping for numeric TGID. */
 export const TalkgroupRowSchema = z.object({
@@ -38,7 +37,6 @@ export const TalkgroupRowSchema = z.object({
 	category: z.string().max(32).default(''),
 	priority: z.number().int().min(1).max(5).default(3)
 });
-export type TalkgroupRow = z.infer<typeof TalkgroupRowSchema>;
 
 /** Preset as stored (JSON columns stringified in SQLite). */
 export const PresetSchema = z.object({
@@ -70,7 +68,6 @@ export const ControlActionSchema = z.object({
 	presetId: z.string().min(1).optional()
 });
 export type ControlBody = z.infer<typeof ControlActionSchema>;
-export type ControlAction = ControlBody['action'];
 
 /** Status returned by GET /api/trunk-recorder/status. */
 export interface TrunkRecorderStatus {

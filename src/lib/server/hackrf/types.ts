@@ -1,22 +1,5 @@
 // HackRF API Types and Interfaces
 
-export interface SweepConfig {
-	centerFrequency: number;
-	bandwidth?: number;
-	sampleRate?: number;
-	lnaGain?: number;
-	vgaGain?: number;
-	txvgaGain?: number;
-	ampEnable?: boolean;
-	antennaEnable?: boolean;
-	binSize?: number;
-	numSweeps?: number;
-	sweepRate?: number;
-	// Support for multi-frequency cycling
-	frequencies?: Array<{ value: number; unit: string }>;
-	cycleTime?: number; // Time per frequency in ms
-}
-
 import type { SweepManagerState } from '$lib/types/shared';
 
 /** Mutable state shared by reference between SweepManager and cycle-init functions. */
@@ -69,14 +52,4 @@ export interface SweepArgs {
 	binWidthHz: number;
 	lnaGain?: string;
 	vgaGain?: string;
-}
-
-export interface HackRFHealth {
-	connected: boolean;
-	serialNumber?: string;
-	firmwareVersion?: string;
-	temperature?: number;
-	deviceInfo?: string;
-	error?: string;
-	lastUpdate: number;
 }

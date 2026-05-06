@@ -46,7 +46,9 @@ import { applyDimOthers } from './map/rf-highlight-paint';
 import { clearAllOverlays, syncRFOverlays } from './map/rf-propagation-overlay.svelte';
 import { buildUASConnectionLinesGeoJSON, buildUASGeoJSON } from './map/uas-geojson';
 
-export type { CellTowerFetchState, PopupState, TowerPopupState };
+// PopupState and TowerPopupState consumed by map-handlers.ts and map-handlers-helpers.ts
+// fallow-ignore-next-line unused-type
+export type { PopupState, TowerPopupState };
 export { MAP_UI_COLORS, onClusterClick, towerClickHandler };
 
 /** Create all reactive map state and effects. Call once from the component. */

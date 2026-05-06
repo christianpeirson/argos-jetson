@@ -38,16 +38,3 @@ export interface SignalMarker {
 	metadata: SignalMetadata;
 	sessionId?: string; // RF-visualization session bucket (see services/session/session-tracker)
 }
-
-export interface SignalStats {
-	count: number;
-	avgPower: number;
-	minPower: number;
-	maxPower: number;
-	dominantFreq: number;
-	signalTypes: Map<string, number>;
-	timeRange: {
-		start: number;
-		end: number;
-	};
-}

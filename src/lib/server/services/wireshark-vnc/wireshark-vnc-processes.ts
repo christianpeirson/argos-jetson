@@ -223,6 +223,8 @@ export async function assertWiresharkGroupMember(): Promise<void> {
 
 // ─────────────────────────────── spawn ──────────────────────────────────
 
+// Service-specific wrapper around vnc-common/spawn-helpers.ts — bakes in
+// Wireshark config (display :96, geometry, depth, port). NOT a redundant copy.
 /** Spawn Xtigervnc as a combined X server + VNC server on `:96`. */
 export function spawnXtigervnc(): void {
 	const child = spawnXtigervncShared(
@@ -246,6 +248,8 @@ export function spawnXtigervnc(): void {
 	state.xvncProcess = child;
 }
 
+// Service-specific wrapper around vnc-common/spawn-helpers.ts — bakes in
+// Wireshark display constant. NOT a redundant copy of the canonical typed export.
 /** Set X11 background to match Lunaris dark theme (#111111). */
 export function setVncBackground(): void {
 	setVncBackgroundShared(WIRESHARK_VNC_DISPLAY, 'wireshark-vnc');
@@ -300,6 +304,8 @@ export function spawnWiresharkGui(iface: string, filter: string): void {
 	});
 }
 
+// Service-specific wrapper around vnc-common/spawn-helpers.ts — bakes in
+// Wireshark WS + VNC port pair. NOT a redundant copy of the canonical typed export.
 /** Spawn websockify to bridge the VNC port to a WebSocket. */
 export function spawnWebsockify(): void {
 	const child = spawnWebsockifyShared(
@@ -325,11 +331,15 @@ export function isVncPortOpen(): Promise<boolean> {
 	return isPortOpen(WIRESHARK_VNC_PORT);
 }
 
+// Service-specific wrapper around vnc-common/spawn-helpers.ts — bakes in
+// Wireshark WS port. NOT a redundant copy of the canonical typed export.
 /** Probe whether websockify is responding. */
 export async function isWebsockifyResponding(): Promise<boolean> {
 	return isWebsockifyRespondingShared(WIRESHARK_WS_PORT);
 }
 
+// Service-specific wrapper around vnc-common/spawn-helpers.ts — bakes in
+// Wireshark VNC + WS ports. NOT a redundant copy of the canonical typed export.
 /** Poll until both VNC and websockify are alive. */
 export async function waitForStackReady(maxAttempts = 25): Promise<boolean> {
 	return waitForStackReadyShared(WIRESHARK_VNC_PORT, WIRESHARK_WS_PORT, maxAttempts);
@@ -342,6 +352,8 @@ export async function killProcess(ref: ChildProcess | null, name: string): Promi
 	return killVncProcess(ref, name, 'wireshark-vnc');
 }
 
+// Service-specific wrapper around vnc-common/spawn-helpers.ts — bakes in
+// Wireshark VNC + WS ports. NOT a redundant copy of the canonical typed export.
 /** Non-fatal fuser-kill of anything bound to the VNC or WebSocket ports. */
 export async function killOrphansByPort(): Promise<void> {
 	return killOrphansByPortShared(WIRESHARK_VNC_PORT, WIRESHARK_WS_PORT);

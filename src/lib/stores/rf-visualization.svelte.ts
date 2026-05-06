@@ -43,7 +43,7 @@ interface HexCell {
 
 type LayerMode = 'off' | 'heatmap' | 'hex';
 
-export interface RfVisualizationFilters {
+interface RfVisualizationFilters {
 	sessionId?: string;
 	deviceIds?: string[];
 	bbox?: [minLon: number, minLat: number, maxLon: number, maxLat: number];
@@ -206,7 +206,7 @@ function hexCellsToGeoJson(cells: HexCell[]): FeatureCollection<Point> {
 	};
 }
 
-export interface RfGeoJson {
+interface RfGeoJson {
 	path: FeatureCollection<LineString>;
 	centroids: FeatureCollection<Point>;
 	heatmap: FeatureCollection<Point>;
@@ -249,6 +249,8 @@ interface ObservationPoint {
 	timestamp: number;
 }
 
+// DeviceEllipse consumed by server/db/device-ellipse.ts, utils/ellipse-geometry.ts, and device-ellipse.test.ts
+// fallow-ignore-next-line unused-type
 export type { DeviceEllipse } from '$lib/types/rf-ellipse';
 
 interface ObservationsResponse {

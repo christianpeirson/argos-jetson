@@ -1,10 +1,11 @@
-import { afterEach,describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {
 	_setSpawnImplForTest,
 	spawnGnuRadioCompanion,
 	spawnWebsockify,
-	spawnXtigervnc} from './gnu-radio-vnc-processes';
+	spawnXtigervnc
+} from './gnu-radio-vnc-processes';
 
 afterEach(() => {
 	_setSpawnImplForTest(null);
@@ -34,7 +35,11 @@ describe('gnu-radio-vnc-processes', () => {
 
 	it('spawnGnuRadioCompanion sets DISPLAY=:95 and QT_QPA_PLATFORM=xcb env', () => {
 		const calls: Array<Record<string, unknown>> = [];
-		const mockSpawn: unknown = (_cmd: string, _args: string[], opts: Record<string, unknown>) => {
+		const mockSpawn: unknown = (
+			_cmd: string,
+			_args: string[],
+			opts: Record<string, unknown>
+		) => {
 			calls.push(opts as Record<string, unknown>);
 			return { pid: 4243, on: vi.fn(), once: vi.fn(), kill: vi.fn() };
 		};

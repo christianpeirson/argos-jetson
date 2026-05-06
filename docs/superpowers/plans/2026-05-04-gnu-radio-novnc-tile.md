@@ -14,20 +14,20 @@
 
 ## File Map
 
-| Operation | Path | Purpose |
-|---|---|---|
-| Create | `src/lib/server/services/gnu-radio-vnc/gnu-radio-vnc-types.ts` | Constants (display, ports, paths) + result interfaces |
-| Create | `src/lib/server/services/gnu-radio-vnc/gnu-radio-vnc-processes.ts` | Spawn helpers for Xvnc / grc / websockify; `globalThis` state pin; DI seam for tests |
-| Create | `src/lib/server/services/gnu-radio-vnc/gnu-radio-vnc-control-service.ts` | start/stop/status orchestration |
-| Create | `src/lib/server/services/gnu-radio-vnc/gnu-radio-vnc-processes.test.ts` | Unit tests (mocked spawn) |
-| Create | `src/lib/server/services/gnu-radio-vnc/gnu-radio-vnc-control-service.test.ts` | Unit tests (mocked processes) |
-| Create | `src/routes/api/gnuradio/control/+server.ts` | POST endpoint `{action, flowgraph?}` |
-| Create | `src/lib/components/dashboard/views/GnuRadioView.svelte` | Iframe panel (mirrors `WiresharkView.svelte`) |
-| Create | `tests/fixtures/grc/argos-grc-demo.grc` | Phase 5 demo flowgraph (`signal_source → throttle → null_sink`) |
-| Modify | `src/app.d.ts` | Type `globalThis.__argos_gnuradioVnc_state` |
-| Modify | `src/lib/data/offnet-utilities.ts` | Add `gnu-radio` tile to `signalRecording.children` |
-| Modify | `src/lib/types/dashboard-view.ts` | Add `'gnu-radio'` to `ActiveView` + `VALID_VIEWS` |
-| Modify | `src/routes/dashboard/+page.svelte` | Mount `GnuRadioView` when `$activeView === 'gnu-radio'` |
+| Operation | Path                                                                          | Purpose                                                                              |
+| --------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| Create    | `src/lib/server/services/gnu-radio-vnc/gnu-radio-vnc-types.ts`                | Constants (display, ports, paths) + result interfaces                                |
+| Create    | `src/lib/server/services/gnu-radio-vnc/gnu-radio-vnc-processes.ts`            | Spawn helpers for Xvnc / grc / websockify; `globalThis` state pin; DI seam for tests |
+| Create    | `src/lib/server/services/gnu-radio-vnc/gnu-radio-vnc-control-service.ts`      | start/stop/status orchestration                                                      |
+| Create    | `src/lib/server/services/gnu-radio-vnc/gnu-radio-vnc-processes.test.ts`       | Unit tests (mocked spawn)                                                            |
+| Create    | `src/lib/server/services/gnu-radio-vnc/gnu-radio-vnc-control-service.test.ts` | Unit tests (mocked processes)                                                        |
+| Create    | `src/routes/api/gnuradio/control/+server.ts`                                  | POST endpoint `{action, flowgraph?}`                                                 |
+| Create    | `src/lib/components/dashboard/views/GnuRadioView.svelte`                      | Iframe panel (mirrors `WiresharkView.svelte`)                                        |
+| Create    | `tests/fixtures/grc/argos-grc-demo.grc`                                       | Phase 5 demo flowgraph (`signal_source → throttle → null_sink`)                      |
+| Modify    | `src/app.d.ts`                                                                | Type `globalThis.__argos_gnuradioVnc_state`                                          |
+| Modify    | `src/lib/data/offnet-utilities.ts`                                            | Add `gnu-radio` tile to `signalRecording.children`                                   |
+| Modify    | `src/lib/types/dashboard-view.ts`                                             | Add `'gnu-radio'` to `ActiveView` + `VALID_VIEWS`                                    |
+| Modify    | `src/routes/dashboard/+page.svelte`                                           | Mount `GnuRadioView` when `$activeView === 'gnu-radio'`                              |
 
 **Reuse without modification:** `src/lib/server/services/vnc-common/resolve-bin.ts`, `src/lib/components/dashboard/views/webtak/webtak-vnc-viewer.svelte`, `static/webtak/novnc/*`.
 
@@ -97,6 +97,7 @@ No commit for Phase 1 — host state only.
 ### Task 2: Create `gnu-radio-vnc-types.ts`
 
 **Files:**
+
 - Create: `src/lib/server/services/gnu-radio-vnc/gnu-radio-vnc-types.ts`
 
 - [ ] **Step 1: Write the file**
@@ -172,6 +173,7 @@ git commit -m "feat(gnu-radio-vnc): add types + port constants (:95/5995/6084)"
 ### Task 3: Extend `globalThis` typing in `src/app.d.ts`
 
 **Files:**
+
 - Modify: `src/app.d.ts`
 
 - [ ] **Step 1: Read existing file**
@@ -187,16 +189,16 @@ Expected: shows `globalThis.__argos_wiresharkVnc_state` declaration block. We ap
 Find the block declaring `__argos_wiresharkVnc_state` and append immediately after (still inside the `declare global { ... }` block):
 
 ```typescript
-	// eslint-disable-next-line no-var
-	var __argos_gnuradioVnc_state:
-		| {
-				xvncProcess: import('child_process').ChildProcess | null;
-				grcProcess: import('child_process').ChildProcess | null;
-				websockifyProcess: import('child_process').ChildProcess | null;
-				currentFlowgraph: string | null;
-				spawnError: Error | null;
-		  }
-		| undefined;
+// eslint-disable-next-line no-var
+var __argos_gnuradioVnc_state:
+	| {
+			xvncProcess: import('child_process').ChildProcess | null;
+			grcProcess: import('child_process').ChildProcess | null;
+			websockifyProcess: import('child_process').ChildProcess | null;
+			currentFlowgraph: string | null;
+			spawnError: Error | null;
+	  }
+	| undefined;
 ```
 
 - [ ] **Step 3: Typecheck**
@@ -219,6 +221,7 @@ git commit -m "feat(gnu-radio-vnc): type globalThis.__argos_gnuradioVnc_state"
 ### Task 4: Create `gnu-radio-vnc-processes.ts` (TDD with DI seam)
 
 **Files:**
+
 - Create: `src/lib/server/services/gnu-radio-vnc/gnu-radio-vnc-processes.ts`
 - Test: `src/lib/server/services/gnu-radio-vnc/gnu-radio-vnc-processes.test.ts`
 
@@ -429,7 +432,8 @@ export function spawnGnuRadioCompanion(flowgraph?: string): ChildProcess {
 			...process.env,
 			DISPLAY: GNU_RADIO_VNC_DISPLAY,
 			QT_QPA_PLATFORM: 'xcb',
-			XDG_RUNTIME_DIR: process.env.XDG_RUNTIME_DIR ?? `/run/user/${process.getuid?.() ?? 1000}`
+			XDG_RUNTIME_DIR:
+				process.env.XDG_RUNTIME_DIR ?? `/run/user/${process.getuid?.() ?? 1000}`
 		}
 	});
 	const state = ensureState();
@@ -517,6 +521,7 @@ git commit -m "feat(gnu-radio-vnc): add process spawners with DI seam"
 ### Task 5: Create `gnu-radio-vnc-control-service.ts` (TDD)
 
 **Files:**
+
 - Create: `src/lib/server/services/gnu-radio-vnc/gnu-radio-vnc-control-service.ts`
 - Test: `src/lib/server/services/gnu-radio-vnc/gnu-radio-vnc-control-service.test.ts`
 
@@ -646,9 +651,7 @@ function validateFlowgraph(path: string): string | null {
 	return null;
 }
 
-export async function startGnuRadioVnc(
-	flowgraph?: string
-): Promise<GnuRadioVncControlResult> {
+export async function startGnuRadioVnc(flowgraph?: string): Promise<GnuRadioVncControlResult> {
 	if (isAnyProcessAlive()) {
 		return {
 			success: true,
@@ -745,6 +748,7 @@ git commit -m "feat(gnu-radio-vnc): add control service with start/stop/status"
 ### Task 6: Create `POST /api/gnuradio/control` endpoint
 
 **Files:**
+
 - Create: `src/routes/api/gnuradio/control/+server.ts`
 
 - [ ] **Step 1: Write the file**
@@ -846,6 +850,7 @@ git commit -m "feat(api): add POST /api/gnuradio/control endpoint"
 ### Task 7: Add `gnu-radio` to dashboard view registry
 
 **Files:**
+
 - Modify: `src/lib/types/dashboard-view.ts`
 
 - [ ] **Step 1: Add `'gnu-radio'` to `ActiveView` union**
@@ -888,6 +893,7 @@ git commit -m "feat(dashboard): register 'gnu-radio' ActiveView"
 ### Task 8: Add `gnu-radio` tile to offnet utilities
 
 **Files:**
+
 - Modify: `src/lib/data/offnet-utilities.ts`
 
 - [ ] **Step 1: Inspect existing icon registry**
@@ -903,17 +909,16 @@ Expected: confirms `toolIcons.sdr` exists (already used by SigMF/Inspectrum tile
 Find the `signalRecording` `ToolCategory` and append a new `createTool` call to its `children` array (after `inspectrum`):
 
 ```typescript
-		createTool(
-			{
-				id: 'gnu-radio',
-				name: 'GNU Radio',
-				description:
-					'GNU Radio Companion (GRC) flowgraph editor streamed via noVNC',
-				icon: toolIcons.sdr,
-				deployment: 'native'
-			},
-			{ isInstalled: true, viewName: 'gnu-radio', canOpen: true }
-		)
+createTool(
+	{
+		id: 'gnu-radio',
+		name: 'GNU Radio',
+		description: 'GNU Radio Companion (GRC) flowgraph editor streamed via noVNC',
+		icon: toolIcons.sdr,
+		deployment: 'native'
+	},
+	{ isInstalled: true, viewName: 'gnu-radio', canOpen: true }
+);
 ```
 
 The `viewName: 'gnu-radio'` keys the dashboard view router; `isInstalled: true` makes the tile clickable from day one (Phase 1 install satisfied this).
@@ -939,6 +944,7 @@ git commit -m "feat(dashboard): add GNU Radio tile under Signal Recording & Anal
 ### Task 9: Create `GnuRadioView.svelte` (mirror WiresharkView pattern)
 
 **Files:**
+
 - Create: `src/lib/components/dashboard/views/GnuRadioView.svelte`
 
 - [ ] **Step 1: Read template**
@@ -1115,7 +1121,11 @@ Tool: `mcp__plugin_svelte_svelte__list-sections`. Skim `use_cases` for "iframe",
 			</Button>
 		{/if}
 		<PanelStatus
-			status={serviceStatus === 'running' ? 'success' : serviceStatus === 'error' ? 'error' : 'pending'}
+			status={serviceStatus === 'running'
+				? 'success'
+				: serviceStatus === 'error'
+					? 'error'
+					: 'pending'}
 			label={serviceStatus}
 		/>
 		{#if currentFlowgraph}
@@ -1182,6 +1192,7 @@ git commit -m "feat(dashboard): add GnuRadioView component with noVNC iframe"
 ### Task 10: Mount `GnuRadioView` in dashboard router
 
 **Files:**
+
 - Modify: `src/routes/dashboard/+page.svelte`
 
 - [ ] **Step 1: Add import**
@@ -1284,10 +1295,11 @@ Expected: 0.
 - [ ] **Step 9: Document smoke result**
 
 Append a checkpoint memory entry under `~/.claude/projects/-home-jetson2-code-Argos/memory/project_gnu_radio_smoke_done.md` with:
-  - Timestamp
-  - PID counts before/after
-  - Screenshot path
-  - Any quirks encountered
+
+- Timestamp
+- PID counts before/after
+- Screenshot path
+- Any quirks encountered
 
 Index line in `MEMORY.md`.
 
@@ -1302,127 +1314,128 @@ If a screenshot was saved into the repo, commit only intentional artifacts under
 ### Task 12: Create demo flowgraph fixture
 
 **Files:**
+
 - Create: `tests/fixtures/grc/argos-grc-demo.grc`
 
 - [ ] **Step 1: Write the YAML** (canonical GRC 3.10 format)
 
 ```yaml
 options:
-  parameters:
-    author: argos-session-4
-    catch_exceptions: 'True'
-    category: '[GRC Hier Blocks]'
-    comment: ''
-    copyright: ''
-    description: 'Argos demo flowgraph: signal_source -> throttle -> null_sink'
-    gen_cmake: 'On'
-    gen_linking: dynamic
-    generate_options: qt_gui
-    hier_block_src_path: '.:'
-    id: argos_grc_demo
-    max_nouts: '0'
-    output_language: python
-    placement: (0,0)
-    qt_qss_theme: ''
-    realtime_scheduling: ''
-    run: 'True'
-    run_command: '{python} -u {filename}'
-    run_options: prompt
-    sizing_mode: fixed
-    thread_safe_setters: ''
-    title: 'Argos GRC Demo'
-    window_size: (1000,600)
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [8, 8]
-    rotation: 0
-    state: enabled
+    parameters:
+        author: argos-session-4
+        catch_exceptions: 'True'
+        category: '[GRC Hier Blocks]'
+        comment: ''
+        copyright: ''
+        description: 'Argos demo flowgraph: signal_source -> throttle -> null_sink'
+        gen_cmake: 'On'
+        gen_linking: dynamic
+        generate_options: qt_gui
+        hier_block_src_path: '.:'
+        id: argos_grc_demo
+        max_nouts: '0'
+        output_language: python
+        placement: (0,0)
+        qt_qss_theme: ''
+        realtime_scheduling: ''
+        run: 'True'
+        run_command: '{python} -u {filename}'
+        run_options: prompt
+        sizing_mode: fixed
+        thread_safe_setters: ''
+        title: 'Argos GRC Demo'
+        window_size: (1000,600)
+    states:
+        bus_sink: false
+        bus_source: false
+        bus_structure: null
+        coordinate: [8, 8]
+        rotation: 0
+        state: enabled
 
 blocks:
-  - name: samp_rate
-    id: variable
-    parameters:
-      comment: ''
-      value: '32000'
-    states:
-      bus_sink: false
-      bus_source: false
-      bus_structure: null
-      coordinate: [184, 12]
-      rotation: 0
-      state: enabled
+    - name: samp_rate
+      id: variable
+      parameters:
+          comment: ''
+          value: '32000'
+      states:
+          bus_sink: false
+          bus_source: false
+          bus_structure: null
+          coordinate: [184, 12]
+          rotation: 0
+          state: enabled
 
-  - name: analog_sig_source_x_0
-    id: analog_sig_source_x
-    parameters:
-      affinity: ''
-      alias: ''
-      amp: '1'
-      comment: ''
-      freq: '1000'
-      maxoutbuf: '0'
-      minoutbuf: '0'
-      offset: '0'
-      phase: '0'
-      samp_rate: samp_rate
-      showports: 'False'
-      type: complex
-      waveform: analog.GR_COS_WAVE
-    states:
-      bus_sink: false
-      bus_source: false
-      bus_structure: null
-      coordinate: [128, 168]
-      rotation: 0
-      state: enabled
+    - name: analog_sig_source_x_0
+      id: analog_sig_source_x
+      parameters:
+          affinity: ''
+          alias: ''
+          amp: '1'
+          comment: ''
+          freq: '1000'
+          maxoutbuf: '0'
+          minoutbuf: '0'
+          offset: '0'
+          phase: '0'
+          samp_rate: samp_rate
+          showports: 'False'
+          type: complex
+          waveform: analog.GR_COS_WAVE
+      states:
+          bus_sink: false
+          bus_source: false
+          bus_structure: null
+          coordinate: [128, 168]
+          rotation: 0
+          state: enabled
 
-  - name: blocks_throttle_0
-    id: blocks_throttle
-    parameters:
-      affinity: ''
-      alias: ''
-      comment: ''
-      ignoretag: 'True'
-      maxoutbuf: '0'
-      minoutbuf: '0'
-      samples_per_second: samp_rate
-      type: complex
-      vlen: '1'
-    states:
-      bus_sink: false
-      bus_source: false
-      bus_structure: null
-      coordinate: [400, 168]
-      rotation: 0
-      state: enabled
+    - name: blocks_throttle_0
+      id: blocks_throttle
+      parameters:
+          affinity: ''
+          alias: ''
+          comment: ''
+          ignoretag: 'True'
+          maxoutbuf: '0'
+          minoutbuf: '0'
+          samples_per_second: samp_rate
+          type: complex
+          vlen: '1'
+      states:
+          bus_sink: false
+          bus_source: false
+          bus_structure: null
+          coordinate: [400, 168]
+          rotation: 0
+          state: enabled
 
-  - name: blocks_null_sink_0
-    id: blocks_null_sink
-    parameters:
-      affinity: ''
-      alias: ''
-      bus_structure_sink: '[[0,],]'
-      comment: ''
-      num_inputs: '1'
-      type: complex
-      vlen: '1'
-    states:
-      bus_sink: false
-      bus_source: false
-      bus_structure: null
-      coordinate: [688, 168]
-      rotation: 0
-      state: enabled
+    - name: blocks_null_sink_0
+      id: blocks_null_sink
+      parameters:
+          affinity: ''
+          alias: ''
+          bus_structure_sink: '[[0,],]'
+          comment: ''
+          num_inputs: '1'
+          type: complex
+          vlen: '1'
+      states:
+          bus_sink: false
+          bus_source: false
+          bus_structure: null
+          coordinate: [688, 168]
+          rotation: 0
+          state: enabled
 
 connections:
-  - [analog_sig_source_x_0, '0', blocks_throttle_0, '0']
-  - [blocks_throttle_0, '0', blocks_null_sink_0, '0']
+    - [analog_sig_source_x_0, '0', blocks_throttle_0, '0']
+    - [blocks_throttle_0, '0', blocks_null_sink_0, '0']
 
 metadata:
-  file_format: 1
-  grc_version: 3.10.1.1
+    file_format: 1
+    grc_version: 3.10.1.1
 ```
 
 - [ ] **Step 2: Verify GRC parses the fixture**
@@ -1476,6 +1489,7 @@ Three blocks render on canvas: `analog_sig_source_x_0` → `blocks_throttle_0` �
 - [ ] **Step 4: User decision gate**
 
 Ask user: "Does the canvas show the demo flowgraph correctly?"
+
 - **Yes** → ship the PR; defer gr-mcp install to a follow-up spec.
 - **No** → triage the rendering gap, iterate, do not progress to gr-mcp.
 - **Yes + want gr-mcp** → write a follow-up spec for gr-mcp install (Python 3.13 prerequisite is the blocker per Agent C research; needs its own brainstorming + plan cycle).
@@ -1594,6 +1608,7 @@ One memory entry summarising the day's batch under `project_gnu_radio_novnc_done
 ## Self-Review
 
 **Spec coverage:**
+
 - §3 Architecture → Tasks 4-5 (process trio + control service)
 - §4 Port allocation → Task 2 (constants)
 - §5 File layout → File Map (top of plan)

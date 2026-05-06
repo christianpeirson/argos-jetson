@@ -7,10 +7,9 @@
  * backend is wired.
  */
 
-import { derived, type Readable, writable } from 'svelte/store';
+import { writable } from 'svelte/store';
 
-import type { SessionFilter, TmuxSession } from '$lib/types/agents';
-import { filterSessions } from '$lib/types/agents';
+import type { TmuxSession } from '$lib/types/agents';
 
 const MOCK_SESSIONS: TmuxSession[] = [
 	{
@@ -188,9 +187,3 @@ export const tmuxSessionsStore = {
 	},
 	refresh: fetchOnce
 };
-
-export function filteredSessionsStore(filter: Readable<SessionFilter>): Readable<TmuxSession[]> {
-	return derived([store, filter], ([$state, $filter]) =>
-		filterSessions($state.sessions, $filter)
-	);
-}

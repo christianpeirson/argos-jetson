@@ -110,5 +110,3 @@ function putPixel(
 	buf[idx + 2] = rgb[2];
 	buf[idx + 3] = 0xff;
 }
-
-export { GLYPH_H, GLYPH_W, SPACING };

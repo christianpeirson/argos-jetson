@@ -86,18 +86,6 @@ export class FrequencyBlacklist {
 		return this.blacklist.has(freqHz);
 	}
 
-	/** Remove frequency from blacklist */
-	remove(frequency: FrequencyConfig): void {
-		const freqHz = convertToHz(frequency.value, frequency.unit);
-		this.blacklist.delete(freqHz);
-		logger.info('[CLEAR] Frequency removed from blacklist', { frequency, freqHz });
-	}
-
-	/** Get valid (non-blacklisted) frequencies from a list */
-	filterValid(frequencies: FrequencyConfig[]): FrequencyConfig[] {
-		return frequencies.filter((freq) => !this.has(freq));
-	}
-
 	/** Clear all blacklisted frequencies */
 	clear(): void {
 		this.blacklist.clear();

@@ -87,12 +87,12 @@ export const terminalPanelState = persistedWritable<TerminalPanelState>(
 // Derived stores for convenience
 export const terminalSessions = derived(terminalPanelState, ($state) => $state.sessions);
 
+// src/lib/components/dashboard/TerminalPanel.svelte:9
+// fallow-ignore-next-line unused-export
 export const activeSession = derived(terminalPanelState, ($state) => {
 	if (!$state.activeTabId) return null;
 	return $state.sessions.find((s) => s.id === $state.activeTabId) ?? null;
 });
-
-export const preferredShell = derived(terminalPanelState, ($state) => $state.preferredShell);
 
 // Panel visibility functions
 function openTerminalPanel(): void {

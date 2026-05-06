@@ -15,7 +15,7 @@ export type Sortable = string | number;
 export type SortDir = 'asc' | 'desc';
 
 /** Plain three-way `Sortable` compare without null handling. */
-export function rawCompare(a: Sortable, b: Sortable): number {
+function rawCompare(a: Sortable, b: Sortable): number {
 	if (a < b) return -1;
 	if (a > b) return 1;
 	return 0;

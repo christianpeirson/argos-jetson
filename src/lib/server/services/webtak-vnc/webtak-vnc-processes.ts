@@ -76,6 +76,8 @@ export function getSpawnError(): Error | null {
 
 // ─────────────────────────────── spawn ──────────────────────────────────
 
+// Service-specific wrapper around vnc-common/spawn-helpers.ts — bakes in
+// WebTAK config (display :99, geometry, depth, port). NOT a redundant copy.
 /** Spawn Xtigervnc as a combined X server + VNC server on `:99`. */
 export function spawnXtigervnc(): void {
 	xvncProcess = spawnXtigervncShared(
@@ -131,6 +133,8 @@ export function spawnChromium(url: string): void {
 	});
 }
 
+// Service-specific wrapper around vnc-common/spawn-helpers.ts — bakes in
+// WebTAK WS + VNC port pair. NOT a redundant copy of the canonical typed export.
 /** Spawn websockify to bridge the VNC port to a WebSocket. */
 export function spawnWebsockify(): void {
 	websockifyProcess = spawnWebsockifyShared(
@@ -155,11 +159,15 @@ export function isVncPortOpen(): Promise<boolean> {
 	return isPortOpen(WEBTAK_VNC_PORT);
 }
 
+// Service-specific wrapper around vnc-common/spawn-helpers.ts — bakes in
+// WebTAK WS port. NOT a redundant copy of the canonical typed export.
 /** Probe whether websockify is responding (any HTTP response is proof of life). */
 export async function isWebsockifyResponding(): Promise<boolean> {
 	return isWebsockifyRespondingShared(WEBTAK_WS_PORT);
 }
 
+// Service-specific wrapper around vnc-common/spawn-helpers.ts — bakes in
+// WebTAK VNC + WS ports. NOT a redundant copy of the canonical typed export.
 /** Poll every 200ms for up to maxAttempts × 200ms until both services are alive. */
 export async function waitForStackReady(maxAttempts = 20): Promise<boolean> {
 	return waitForStackReadyShared(WEBTAK_VNC_PORT, WEBTAK_WS_PORT, maxAttempts);
@@ -172,6 +180,8 @@ export async function killProcess(ref: ChildProcess | null, name: string): Promi
 	return killVncProcess(ref, name, SCOPE);
 }
 
+// Service-specific wrapper around vnc-common/spawn-helpers.ts — bakes in
+// WebTAK VNC + WS ports. NOT a redundant copy of the canonical typed export.
 /** Non-fatal fuser-kill of anything bound to the VNC or WebSocket ports. */
 export async function killOrphansByPort(): Promise<void> {
 	return killOrphansByPortShared(WEBTAK_VNC_PORT, WEBTAK_WS_PORT);

@@ -67,4 +67,6 @@ export async function set(icao: string, data: WeatherReport): Promise<void> {
 	await writeDisk(key, data);
 }
 
+// Distinct test seam from metar-parse.ts.__test — exposes cache internals
+// (TTL_MS, safeKey) vs. parse internals (classifyCategory, etc.).
 export const __test = { TTL_MS, safeKey };

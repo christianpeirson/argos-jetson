@@ -6,8 +6,6 @@
 import { getFrontendToolsForAgent } from '$lib/server/agent/frontend-tools';
 import { argosTools, type Tool } from '$lib/server/agent/tool-schemas';
 
-export { argosTools };
-
 /**
  * Get all available tools (hardcoded + frontend)
  */

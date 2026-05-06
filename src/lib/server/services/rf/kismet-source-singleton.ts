@@ -41,7 +41,7 @@ function extractFix(
  * fallback failure from "no fix yet". Wraps the original error rather than
  * silently swallowing it.
  */
-export class GpsFetchError extends Error {
+class GpsFetchError extends Error {
 	constructor(public readonly cause: Error) {
 		super(`GPS fallback fetch failed: ${cause.message}`);
 		this.name = 'GpsFetchError';
@@ -56,7 +56,7 @@ export class GpsFetchError extends Error {
  *   - `[null, null]`      — GPS service responded but has no fix yet
  *   - `[null, error]`     — GPS fetch threw; observability/UI may surface
  */
-export type GpsFetchResult = [{ lat: number; lon: number } | null, GpsFetchError | null];
+type GpsFetchResult = [{ lat: number; lon: number } | null, GpsFetchError | null];
 
 /**
  * Fetch the operator's current GPS position via the Argos GPS service,

@@ -46,6 +46,8 @@ export class BufferManager {
 	}
 
 	/** Process new data chunk from stdout */
+	// Called via src/lib/server/hackrf/sweep-coordinator.ts:90
+	// fallow-ignore-next-line unused-class-member
 	processDataChunk(
 		data: Buffer | string,
 		onLineProcessed: (parsedLine: ParsedLine) => void
@@ -144,67 +146,10 @@ export class BufferManager {
 		});
 	}
 
-	/** Update buffer configuration */
-	updateConfig(config: BufferConfig): void {
-		if (config.maxBufferSize) {
-			this.bufferState.maxBufferSize = config.maxBufferSize;
-		}
-		logger.info('[CONFIG] Buffer configuration updated', {
-			maxBufferSize: this.bufferState.maxBufferSize
-		});
-	}
-
 	/** Validate spectrum data quality (delegates to buffer-parser) */
+	// Called via src/lib/server/hackrf/sweep-coordinator.ts:242
+	// fallow-ignore-next-line unused-class-member
 	validateSpectrumData(data: SpectrumData): { isValid: boolean; issues: string[] } {
 		return validateSpectrumData(data);
-	}
-
-	private collectHealthIssues(): { issues: string[]; recommendations: string[] } {
-		const stats = this.getBufferStats();
-		const issues: string[] = [];
-		const recommendations: string[] = [];
-
-		if (stats.bufferUtilization > 90) {
-			issues.push('High buffer utilization');
-			recommendations.push('Increase buffer size or reduce data rate');
-		}
-		if (stats.bufferOverflowCount > this.overflowThreshold) {
-			issues.push('Excessive buffer overflows');
-			recommendations.push('Increase buffer size');
-		}
-		if (stats.lineCount > 0 && stats.averageLineLength > 1000) {
-			issues.push('Very long average line length');
-			recommendations.push('Check data format');
-		}
-		return { issues, recommendations };
-	}
-
-	private deriveHealthStatus(): 'healthy' | 'warning' | 'critical' {
-		const stats = this.getBufferStats();
-		const isCritical =
-			stats.bufferUtilization > 95 || stats.bufferOverflowCount > this.overflowThreshold * 2;
-		return isCritical ? 'critical' : 'warning';
-	}
-
-	/** Get buffer health status */
-	getHealthStatus(): {
-		status: 'healthy' | 'warning' | 'critical';
-		issues: string[];
-		recommendations: string[];
-	} {
-		const { issues, recommendations } = this.collectHealthIssues();
-		const status = issues.length === 0 ? 'healthy' : this.deriveHealthStatus();
-		return { status, issues, recommendations };
-	}
-
-	/** Parse spectrum line (alias for parseLine) */
-	parseSpectrumLine(line: string): ParsedLine {
-		return parseLine(line, this.maxLineLength);
-	}
-
-	/** Clean up resources */
-	cleanup(): void {
-		this.clearBuffer();
-		logger.info('[CLEANUP] BufferManager cleanup completed');
 	}
 }

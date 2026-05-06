@@ -10,11 +10,9 @@ import { validateNumericParam } from '$lib/server/security/input-sanitizer';
 import { delay } from '$lib/utils/delay';
 import { logger } from '$lib/utils/logger';
 
-import { detectWifiAdapter, type KismetStatusResult, pgrepKismet } from './kismet-status-checker';
+import { detectWifiAdapter, pgrepKismet } from './kismet-status-checker';
 
 const KISMET_OWNER = 'kismet';
-
-export type { KismetStatusResult };
 
 export interface KismetControlResult {
 	success: boolean;

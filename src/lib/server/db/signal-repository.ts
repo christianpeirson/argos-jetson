@@ -184,7 +184,7 @@ export function insertSignalsBatch(
 /**
  * Update an existing signal row (used when a UNIQUE constraint collision occurs).
  */
-export function updateSignal(
+function updateSignal(
 	db: Database.Database,
 	statements: Map<string, Database.Statement>,
 	signal: DbSignal

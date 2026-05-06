@@ -83,7 +83,7 @@ function safeCompare(a: string, b: string): boolean {
  *   - If the session cookie leaks, it cannot be used as an X-API-Key header value
  *   - Token is deterministic: same API key always produces the same token
  */
-export function deriveSessionToken(apiKey: string): string {
+function deriveSessionToken(apiKey: string): string {
 	return createHmac('sha256', HMAC_SECRET).update(apiKey).digest('hex');
 }
 

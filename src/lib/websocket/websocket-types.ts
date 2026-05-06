@@ -19,12 +19,16 @@ export interface BaseWebSocketConfig {
 	protocols?: string | string[];
 }
 
+// Re-exported via websocket/base.ts as part of the public WebSocket API surface
+// fallow-ignore-next-line unused-type
 export type WebSocketEventListener = (event: WebSocketEvent) => void;
 
 export type ResolvedConfig = Required<Omit<BaseWebSocketConfig, 'protocols'>> & {
 	protocols?: string | string[];
 };
 
+// Re-exported by websocket/base.ts; fallow sees no direct external consumer
+// fallow-ignore-next-line unused-export
 export const CONFIG_DEFAULTS: Omit<ResolvedConfig, 'url'> = {
 	reconnectInterval: 1000,
 	maxReconnectAttempts: -1,

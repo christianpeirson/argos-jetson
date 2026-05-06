@@ -6,14 +6,14 @@
  */
 
 import type { CaptureLoadout } from './loadout-hash';
-export type {
-	Capture,
-	DiffResult,
-	EmitterDelta,
-	EmitterRow,
-	EmitterSignalType
-} from './emcon-diff';
-export type { CaptureLoadout, LoadoutIntersection, SensorLoadout } from './loadout-hash';
+export type { Capture, DiffResult, EmitterRow, EmitterSignalType } from './emcon-diff';
+// EmitterDelta consumed by emcon-template.ts:124 via direct emcon-diff import
+// fallow-ignore-next-line unused-type
+export type { EmitterDelta } from './emcon-diff';
+export type { CaptureLoadout } from './loadout-hash';
+// LoadoutIntersection/SensorLoadout consumed by emcon-diff.ts:22 via direct loadout-hash import
+// fallow-ignore-next-line unused-type
+export type { LoadoutIntersection, SensorLoadout } from './loadout-hash';
 
 export type MissionType = 'sitrep-loop' | 'emcon-survey';
 export type CaptureRole = 'baseline' | 'posture' | 'tick';

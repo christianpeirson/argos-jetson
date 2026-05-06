@@ -122,9 +122,7 @@ function computeFormatOnlyLOC() {
 function reportPrSize(lineCount, generated, formatOnly) {
 	const reviewable = Math.max(0, lineCount - formatOnly.total);
 	if (formatOnly.total > 0) {
-		const list = formatOnly.matched
-			.map((m) => `\`${m.sha}\` (${m.loc} LOC)`)
-			.join(', ');
+		const list = formatOnly.matched.map((m) => `\`${m.sha}\` (${m.loc} LOC)`).join(', ');
 		warn(
 			`Excluding ${formatOnly.total} format-only LOC from size cap (commits matching \`^style(<scope>): prettier|format ...\`): ${list}. Reviewer can verify by re-running \`npm run format\` on the PR head — diff should be empty.`
 		);

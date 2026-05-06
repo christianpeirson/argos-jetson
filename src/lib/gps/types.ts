@@ -66,6 +66,8 @@ export interface GPSPositionData {
 	time?: string;
 }
 
+// Re-exported via tactical-map/gps-service.ts for backward compatibility
+// fallow-ignore-next-line unused-type
 export interface GPSApiResponse {
 	success: boolean;
 	data?: GPSPositionData;

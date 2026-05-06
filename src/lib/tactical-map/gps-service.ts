@@ -7,9 +7,6 @@ import { logger } from '$lib/utils/logger';
 import { latLonToMGRS } from '$lib/utils/mgrs-converter';
 import { safeParseWithHandling } from '$lib/utils/validation-error';
 
-// Re-export for backward compatibility (barrel and consumers that import from this module)
-export type { GPSApiResponse, GPSPositionData } from '$lib/gps/types';
-
 /** Minimum movement in meters before triggering a full store update. */
 const MIN_POSITION_DELTA_METERS = 5;
 

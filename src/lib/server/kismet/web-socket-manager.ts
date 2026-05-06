@@ -275,7 +275,9 @@ export class WebSocketManager extends EventEmitter {
 		};
 	}
 
+	// globalThis chain fallow can't trace. Called via src/hooks.server.ts:284 (wsManager = WebSocketManager.getInstance()).
 	/** Clean up resources */
+	// fallow-ignore-next-line unused-class-member
 	destroy() {
 		if (this.pollingInterval) {
 			clearInterval(this.pollingInterval);

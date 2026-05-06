@@ -10,8 +10,7 @@ import { RateLimiter } from '$lib/server/security/rate-limiter';
 
 // Singleton rate limiter (globalThis for HMR persistence) - Phase 2.2.5
 // globalThis.__rateLimiter and __rateLimiterCleanup are typed in src/app.d.ts.
-export const rateLimiter =
-	globalThis.__rateLimiter ?? (globalThis.__rateLimiter = new RateLimiter());
+const rateLimiter = globalThis.__rateLimiter ?? (globalThis.__rateLimiter = new RateLimiter());
 
 // Cleanup interval (globalThis guard for HMR) - Phase 2.2.5
 if (!globalThis.__rateLimiterCleanup) {
@@ -19,14 +18,6 @@ if (!globalThis.__rateLimiterCleanup) {
 		() => rateLimiter.cleanup(),
 		300_000 // 5 minutes
 	);
-}
-
-/** Stop the rate-limiter cleanup interval and remove the globalThis reference. */
-export function disposeRateLimiter(): void {
-	if (globalThis.__rateLimiterCleanup !== undefined) {
-		clearInterval(globalThis.__rateLimiterCleanup);
-		globalThis.__rateLimiterCleanup = undefined;
-	}
 }
 
 /**
@@ -52,7 +43,7 @@ function extractSessionId(cookieHeader: string | null): string | null {
  * Get rate limit identifier - uses session cookie when IP unavailable.
  * This prevents all Tailscale clients from sharing the same rate limit bucket.
  */
-export function getRateLimitKey(event: Parameters<Handle>[0]['event'], prefix: string): string {
+function getRateLimitKey(event: Parameters<Handle>[0]['event'], prefix: string): string {
 	try {
 		return `${prefix}:${event.getClientAddress()}`;
 	} catch {

@@ -3,7 +3,7 @@
  * Prevents memory issues from excessive logging
  */
 
-export enum LogLevel {
+enum LogLevel {
 	ERROR = 0,
 	WARN = 1,
 	INFO = 2,

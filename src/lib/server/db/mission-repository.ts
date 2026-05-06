@@ -26,7 +26,7 @@ import type {
 
 import { createStmtsCache } from './repo-helpers';
 
-export type Stmts = {
+type Stmts = {
 	insertMission: Database.Statement;
 	getMission: Database.Statement;
 	listMissions: Database.Statement;

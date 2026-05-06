@@ -1,76 +1,6 @@
 // Kismet server types — only types actively imported by kismet modules
 
 /**
- * Kismet configuration
- */
-export interface KismetConfig {
-	interface: string;
-	hasMonitorMode: boolean;
-	channels: number[];
-	hopRate: number;
-	restPort: number;
-	restUser: string;
-	restPassword: string;
-	logLevel: string;
-	shouldEnableGPS: boolean;
-	shouldEnableLogging: boolean;
-	shouldEnableAlerts: boolean;
-	deviceTimeout: number;
-}
-
-/**
- * Kismet status
- */
-export interface KismetStatus {
-	isRunning: boolean;
-	interface: string | null;
-	channels: number[];
-	startTime: Date | null;
-	uptime: number;
-	deviceCount: number;
-	monitorInterfaces: MonitorInterface[];
-	metrics: Record<string, number | string>;
-	config: KismetConfig;
-}
-
-/**
- * Monitor interface configuration
- */
-export interface MonitorInterface {
-	name: string;
-	type: string;
-	channels: number[];
-	isEnabled: boolean;
-}
-
-/**
- * Device statistics
- */
-export interface DeviceStats {
-	// Compatible with existing usage in kismetProxy.ts
-	total: number;
-	byType: Record<string, number>;
-	byEncryption: Record<string, number>;
-	byManufacturer: Record<string, number>;
-	activeInLast5Min: number;
-	activeInLast15Min: number;
-	// Extended properties for comprehensive stats
-	totalDevices: number;
-	accessPoints: number;
-	clients: number;
-	unknownDevices: number;
-	newDevicesLastHour: number;
-	activeDevicesLast5Min: number;
-	securityThreats: number;
-	rogueAPs: number;
-	encryptionTypes: Map<string, number>;
-	manufacturers: Map<string, number>;
-	channelUsage: Map<number, number>;
-	signalStrengthDistribution: Map<string, number>;
-	lastUpdate: Date;
-}
-
-/**
  * WebSocket message types
  */
 export interface WebSocketMessage {
@@ -92,26 +22,6 @@ export interface WebSocketMessage {
 		| 'uas_status_update';
 	data: Record<string, unknown>;
 	timestamp: string;
-}
-
-/**
- * Kismet service status
- */
-export interface KismetServiceStatus {
-	isRunning: boolean;
-	pid?: number;
-	cpu?: number;
-	memory?: number;
-	uptime?: number;
-	error?: string;
-	restApiRunning?: boolean;
-	webUIRunning?: boolean;
-	gpsStatus?: boolean;
-	interfaceStatus?: string;
-	errors?: string[];
-	startTime?: Date;
-	version?: string;
-	configValid?: boolean;
 }
 
 /**

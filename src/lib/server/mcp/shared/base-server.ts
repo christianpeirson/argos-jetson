@@ -79,6 +79,8 @@ export abstract class BaseMCPServer {
 		});
 	}
 
+	// Abstract method overridden by APIDebugger, GSMEvilServer, StreamingInspector, SystemInspector, HardwareDebugger, TestRunner, DatabaseInspector.
+	// fallow-ignore-next-line unused-class-member
 	async start(): Promise<void> {
 		logger.info('MCP server starting', {
 			server: this.serverName,
@@ -89,6 +91,8 @@ export abstract class BaseMCPServer {
 		logger.info('MCP server ready', { server: this.serverName });
 	}
 
+	// Abstract method overridden by APIDebugger, GSMEvilServer, StreamingInspector, SystemInspector, HardwareDebugger, TestRunner, DatabaseInspector.
+	// fallow-ignore-next-line unused-class-member
 	async stop(): Promise<void> {
 		await this.server.close();
 	}

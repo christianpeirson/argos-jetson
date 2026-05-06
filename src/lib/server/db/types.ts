@@ -33,6 +33,8 @@ export interface DbDevice {
 	metadata?: string;
 }
 
+// Referenced in src/lib/schemas/database.ts documentation; kept exported for future schema use
+// fallow-ignore-next-line unused-type
 export interface DbNetwork {
 	id?: number;
 	network_id: string;
@@ -47,6 +49,8 @@ export interface DbNetwork {
 	radius?: number;
 }
 
+// Companion to DbNetwork — kept exported for future schema / migration use
+// fallow-ignore-next-line unused-type
 export interface DbRelationship {
 	id?: number;
 	source_device_id: string;

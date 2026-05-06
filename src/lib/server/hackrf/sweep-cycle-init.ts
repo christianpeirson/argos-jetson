@@ -234,7 +234,7 @@ export async function runNextFrequency(ctx: CycleRuntimeContext): Promise<void> 
 }
 
 /** Switch to the next frequency in the cycle and restart sweep. */
-export async function cycleToNextFrequency(ctx: CycleRuntimeContext): Promise<void> {
+async function cycleToNextFrequency(ctx: CycleRuntimeContext): Promise<void> {
 	const cycleState = ctx.frequencyCycler.getCycleState();
 	if (!cycleState.isCycling || !ctx.state.isRunning) return;
 	await ctx.frequencyCycler.cycleToNext(async (nextFreq) => {

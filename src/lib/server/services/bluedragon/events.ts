@@ -86,7 +86,7 @@ export function scheduleParserStart(): void {
 
 /** Tear down runtime state after the process exits (from exit handler or
  * deliberate stop). Idempotent. */
-export function handleProcessExit(): void {
+function handleProcessExit(): void {
 	clearRuntimeState();
 	broadcastStatus();
 }

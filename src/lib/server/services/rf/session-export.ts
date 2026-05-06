@@ -10,7 +10,7 @@ import type Database from 'better-sqlite3';
 
 const CHUNK_ROWS = 500;
 
-export interface ExportRow {
+interface ExportRow {
 	signalId: string;
 	deviceId: string | null;
 	source: string;

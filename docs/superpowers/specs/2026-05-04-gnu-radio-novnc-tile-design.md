@@ -43,18 +43,18 @@ Three-process stack identical to `src/lib/server/services/wireshark-vnc/`:
 - **gnuradio-companion** — GTK editor for GNU Radio flowgraphs (GTK3 default in 3.10.x; `--qt` opts into experimental Qt5 frontend). Launches with `DISPLAY=:95 QT_QPA_PLATFORM=xcb gnuradio-companion --log info [optional /path/to/file.grc]`.
 - **websockify** — TCP↔WebSocket bridge, `5995 ⇄ 6084`. Bare-proxy mode (no `--web` flag — SvelteKit serves `vnc.html` from `static/novnc/`, mirroring Wireshark).
 
-**Why `QT_QPA_PLATFORM=xcb`** — GRC's default editor framework is GTK (per `grc/main.py` argparse: `--qt | --gtk`, GTK default), but Qt sinks instantiated by *running* flowgraphs (`qt_sink`, `qt_freq_sink`, `qt_time_sink`) spawn child Qt windows. Wayland Qt backend hangs under TigerVNC; xcb forces the legacy X11 path which works.
+**Why `QT_QPA_PLATFORM=xcb`** — GRC's default editor framework is GTK (per `grc/main.py` argparse: `--qt | --gtk`, GTK default), but Qt sinks instantiated by _running_ flowgraphs (`qt_sink`, `qt_freq_sink`, `qt_time_sink`) spawn child Qt windows. Wayland Qt backend hangs under TigerVNC; xcb forces the legacy X11 path which works.
 
 ## 4. Port + display allocation
 
 Following the descending pattern (`:99→6080`, `:98→6081`, `:97→6082`, `:96→6083`):
 
-| Display | VNC port | WS port | Service |
-|---|---|---|---|
-| :99 | 5999 | 6080 | WebTAK |
-| :98 | 5998 | 6081 | Sparrow-WiFi |
-| :97 | 5997 | 6082 | SDR++ |
-| :96 | 5996 | 6083 | Wireshark |
+| Display | VNC port | WS port  | Service                   |
+| ------- | -------- | -------- | ------------------------- |
+| :99     | 5999     | 6080     | WebTAK                    |
+| :98     | 5998     | 6081     | Sparrow-WiFi              |
+| :97     | 5997     | 6082     | SDR++                     |
+| :96     | 5996     | 6083     | Wireshark                 |
 | **:95** | **5995** | **6084** | **GNU Radio (this spec)** |
 
 Geometry: `1920x1080x24`, depth 24 — matches Wireshark.
@@ -178,14 +178,14 @@ Identical Zod schema shape + `createHandler` + `resultStatus` helpers as Wiresha
 
 ## 11. Risk + mitigation
 
-| Risk | Mitigation |
-|---|---|
+| Risk                                           | Mitigation                                                                                                   |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
 | `add-apt-repository` adds GPG key over network | Explicit user approval before run (CLAUDE.md "no install without approval"); fallback to manual key download |
-| PPA jammy aarch64 build broken on Jetson | Fallback to `apt install gnuradio` from jammy/universe (3.10.1.1) — slightly older but distro-supported |
-| GRC startup latency >10 s on first launch | Splash visible inside iframe; if user complains, add backend warmup probe before iframe loads |
-| Vite HMR loses process refs | `globalThis` pinning + state typed in `src/app.d.ts` (proven pattern in wireshark-vnc) |
-| Port 6084 collision with future tile | Reserve in port-allocation table comment in `gnu-radio-vnc-types.ts` |
-| Xtigervnc package name on Jetson | Already verified working for Wireshark (`/usr/bin/Xtigervnc`); same binary, no extra install |
+| PPA jammy aarch64 build broken on Jetson       | Fallback to `apt install gnuradio` from jammy/universe (3.10.1.1) — slightly older but distro-supported      |
+| GRC startup latency >10 s on first launch      | Splash visible inside iframe; if user complains, add backend warmup probe before iframe loads                |
+| Vite HMR loses process refs                    | `globalThis` pinning + state typed in `src/app.d.ts` (proven pattern in wireshark-vnc)                       |
+| Port 6084 collision with future tile           | Reserve in port-allocation table comment in `gnu-radio-vnc-types.ts`                                         |
+| Xtigervnc package name on Jetson               | Already verified working for Wireshark (`/usr/bin/Xtigervnc`); same binary, no extra install                 |
 
 ## 12. Phase ordering + sentrux brackets
 

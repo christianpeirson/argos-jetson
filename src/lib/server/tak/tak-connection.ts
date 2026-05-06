@@ -21,9 +21,9 @@ import { logger } from '$lib/utils/logger';
 import type { TakServerConfig } from '../../types/tak';
 
 /** Initial exponential-backoff delay for reconnect attempts. */
-export const RECONNECT_BASE_MS = 1000;
+const RECONNECT_BASE_MS = 1000;
 /** Upper bound on reconnect delay regardless of attempt count. */
-export const RECONNECT_MAX_MS = 30000;
+const RECONNECT_MAX_MS = 30000;
 /** Activity-silence threshold above which `getStatus()` reports `stale`. */
 export const STALE_THRESHOLD_MS = 120_000;
 
@@ -75,7 +75,7 @@ export async function loadCertificates(config: ValidatedTakConfig): Promise<Cert
 }
 
 /** Build the `ssl://hostname:port` URL TAK expects. */
-export function buildTakUrl(config: ValidatedTakConfig): URL {
+function buildTakUrl(config: ValidatedTakConfig): URL {
 	return new URL(`ssl://${config.hostname}:${config.port}`);
 }
 

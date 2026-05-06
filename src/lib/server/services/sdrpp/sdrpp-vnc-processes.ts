@@ -58,6 +58,8 @@ export function getSpawnError(): Error | null {
 
 // ─────────────────────────────── spawn ──────────────────────────────────
 
+// Service-specific wrapper around vnc-common/spawn-helpers.ts — bakes in
+// SDR++ config (display :97, geometry, depth, port). NOT a redundant copy.
 /** Spawn Xtigervnc as a combined X server + VNC server on `:97`. */
 export function spawnXtigervnc(): void {
 	xvncProcess = spawnXtigervncShared(
@@ -80,6 +82,8 @@ export function spawnXtigervnc(): void {
 	);
 }
 
+// Service-specific wrapper around vnc-common/spawn-helpers.ts — bakes in
+// SDR++ display constant. NOT a redundant copy of the canonical typed export.
 /** Set X11 background to match Lunaris dark theme (#111111). */
 export function setVncBackground(): void {
 	setVncBackgroundShared(SDRPP_VNC_DISPLAY, SCOPE);
@@ -114,6 +118,8 @@ export function spawnSdrppGui(): void {
 	});
 }
 
+// Service-specific wrapper around vnc-common/spawn-helpers.ts — bakes in
+// SDR++ WS + VNC port pair. NOT a redundant copy of the canonical typed export.
 /** Spawn websockify to bridge the VNC port to a WebSocket. */
 export function spawnWebsockify(): void {
 	websockifyProcess = spawnWebsockifyShared(
@@ -138,11 +144,15 @@ export function isVncPortOpen(): Promise<boolean> {
 	return isPortOpen(SDRPP_VNC_PORT);
 }
 
+// Service-specific wrapper around vnc-common/spawn-helpers.ts — bakes in
+// SDR++ WS port. NOT a redundant copy of the canonical typed export.
 /** Probe whether websockify is responding. */
 export async function isWebsockifyResponding(): Promise<boolean> {
 	return isWebsockifyRespondingShared(SDRPP_WS_PORT);
 }
 
+// Service-specific wrapper around vnc-common/spawn-helpers.ts — bakes in
+// SDR++ VNC + WS ports. NOT a redundant copy of the canonical typed export.
 /** Poll until both VNC and websockify are alive. */
 export async function waitForStackReady(maxAttempts = 25): Promise<boolean> {
 	return waitForStackReadyShared(SDRPP_VNC_PORT, SDRPP_WS_PORT, maxAttempts);
@@ -155,6 +165,8 @@ export async function killProcess(ref: ChildProcess | null, name: string): Promi
 	return killVncProcess(ref, name, SCOPE);
 }
 
+// Service-specific wrapper around vnc-common/spawn-helpers.ts — bakes in
+// SDR++ VNC + WS ports. NOT a redundant copy of the canonical typed export.
 /** Non-fatal fuser-kill of anything bound to the VNC or WebSocket ports. */
 export async function killOrphansByPort(): Promise<void> {
 	return killOrphansByPortShared(SDRPP_VNC_PORT, SDRPP_WS_PORT);

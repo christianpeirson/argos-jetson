@@ -7,7 +7,7 @@
  */
 
 /** Em-dash placeholder used everywhere a null cell renders. */
-export const NULL_PLACEHOLDER = '—';
+const NULL_PLACEHOLDER = '—';
 
 /** Render `null` / undefined cells as the em-dash placeholder. */
 export function fmtNullable(s: string | null | undefined): string {

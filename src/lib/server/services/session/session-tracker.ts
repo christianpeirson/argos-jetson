@@ -202,14 +202,6 @@ export function startNewSession(
 	return id;
 }
 
-/** Close the current session without opening a new one. */
-export function endCurrentSession(): void {
-	const state = getState();
-	if (!state.currentId) return;
-	endSession(getRFDatabase().rawDb, state.currentId, Date.now());
-	state.currentId = null;
-}
-
 /** List sessions, newest first. */
 export function listSessions(limit = 50): Session[] {
 	const rows = getRFDatabase()

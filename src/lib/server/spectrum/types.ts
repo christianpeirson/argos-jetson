@@ -48,6 +48,8 @@ export interface SpectrumFrame {
 // continue importing them from the local `./types` they already reference.
 import type { GainConfig, SourceState, SpectrumConfig } from '$lib/types/spectrum';
 
+// GainConfig/SourceState/SpectrumConfig re-exported so server modules avoid crossing state↛server boundary
+// fallow-ignore-next-line unused-type
 export type { GainConfig, SourceState, SpectrumConfig };
 
 export interface SourceStatus {

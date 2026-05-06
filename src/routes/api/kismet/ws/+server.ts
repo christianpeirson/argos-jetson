@@ -21,6 +21,8 @@ export const GET: RequestHandler = ({ request }) => {
 };
 
 // Alternative: Document how to set up WebSocket server separately
+// SvelteKit route config — consumed by the framework adapter, not by TS imports
+// fallow-ignore-next-line unused-export
 export const config = {
 	api: {
 		bodyParser: false

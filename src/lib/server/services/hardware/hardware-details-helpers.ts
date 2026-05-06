@@ -37,7 +37,7 @@ export async function sysLink(path: string): Promise<string> {
 }
 
 /** List top-level USB device paths (e.g. /sys/bus/usb/devices/1-2) */
-export async function listUsbDevices(): Promise<string[]> {
+async function listUsbDevices(): Promise<string[]> {
 	try {
 		const entries = await readdir('/sys/bus/usb/devices');
 		return entries
@@ -145,7 +145,7 @@ export function parseBands(phyInfo: string): string[] {
 // ── SDR helpers ──
 
 /** Parse firmware API version from USB bcdDevice field */
-export function parseFirmwareApi(bcd: string): string {
+function parseFirmwareApi(bcd: string): string {
 	if (bcd.length !== 4) return '';
 	const major = parseInt(bcd.slice(0, 2), 10);
 	return `${major}.${bcd.slice(2)}`;
@@ -157,7 +157,7 @@ const SPEED_MAP: Record<string, string> = {
 	'5000': '5 Gbps (USB 3.0)'
 };
 
-export function formatUsbSpeed(speed: string): string {
+function formatUsbSpeed(speed: string): string {
 	if (!speed) return '';
 	return SPEED_MAP[speed] || `${speed} Mbps`;
 }

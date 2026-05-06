@@ -1,3 +1,4 @@
+// fallow-ignore-file unused-file
 /**
  * Argos tool catalog — hierarchical port of `docs/UI/Argos (1).zip` `tools-data.jsx`.
  *

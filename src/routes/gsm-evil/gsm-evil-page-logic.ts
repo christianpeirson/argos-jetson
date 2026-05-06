@@ -26,7 +26,7 @@ function scrollToBottom(selector: string) {
 }
 
 /** Fetch tower location from the API */
-export async function fetchTowerLocation(
+async function fetchTowerLocation(
 	mcc: string,
 	mnc: string,
 	lac: string,

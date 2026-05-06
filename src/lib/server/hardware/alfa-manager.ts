@@ -1,6 +1,4 @@
-import { execFileAsync } from '$lib/server/exec';
 import { AlfaDetector } from '$lib/server/kismet/alfa-detector';
-import { validateInterfaceName } from '$lib/server/security/input-sanitizer';
 
 import type { ProcessConfig } from './process-utils';
 import { findBlockingProcesses, killMatchingProcesses } from './process-utils';
@@ -17,19 +15,6 @@ const ALFA_PROCESS_CONFIGS: ProcessConfig[] = [
 /** Detects the ALFA USB Wi-Fi adapter and returns its interface name, or null if absent. */
 export async function detectAdapter(): Promise<string | null> {
 	return AlfaDetector.getAlfaInterface();
-}
-
-/** Returns the current wireless mode (monitor, managed, or unknown) for the given interface. */
-export async function getMode(iface: string): Promise<'monitor' | 'managed' | 'unknown'> {
-	const validIface = validateInterfaceName(iface);
-	try {
-		const { stdout } = await execFileAsync('/usr/sbin/iwconfig', [validIface]);
-		if (stdout.includes('Mode:Monitor')) return 'monitor';
-		if (stdout.includes('Mode:Managed')) return 'managed';
-		return 'unknown';
-	} catch (_error: unknown) {
-		return 'unknown';
-	}
 }
 
 /** Returns a list of running processes (kismet, wifite, bettercap, etc.) that may block ALFA adapter access. */

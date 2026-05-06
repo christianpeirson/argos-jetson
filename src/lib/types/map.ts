@@ -26,13 +26,6 @@ export interface LeafletPopup {
 	openOn: (map: LeafletMap) => LeafletPopup;
 }
 
-export interface LeafletIcon {
-	Default: {
-		prototype: { _getIconUrl?: unknown };
-		mergeOptions: (options: Record<string, string>) => void;
-	};
-}
-
 export interface LeafletMap {
 	setView: (center: [number, number], zoom: number) => LeafletMap;
 	attributionControl: {
@@ -86,18 +79,4 @@ export interface LeafletCircleMarker extends LeafletLayer {
 	getPopup: () => LeafletPopup | null;
 	isPopupOpen?: () => boolean;
 	setPopupContent?: (content: string) => LeafletCircleMarker;
-}
-
-export interface LeafletLibrary {
-	map: (container: HTMLElement) => LeafletMap;
-	tileLayer: (url: string, options?: Record<string, unknown>) => LeafletTileLayer;
-	marker: (latlng: [number, number], options?: Record<string, unknown>) => LeafletMarker;
-	circle: (latlng: [number, number], options?: Record<string, unknown>) => LeafletCircle;
-	circleMarker: (
-		latlng: [number, number],
-		options?: Record<string, unknown>
-	) => LeafletCircleMarker;
-	divIcon: (options: Record<string, unknown>) => unknown;
-	popup: (options?: Record<string, unknown>) => LeafletPopup;
-	Icon: LeafletIcon;
 }

@@ -59,13 +59,17 @@ function buildStartedResult(resolvedFlowgraph: string | undefined): GnuRadioVncC
 	};
 }
 
-function resolveFlowgraphOrError(
-	flowgraph: string | undefined
-): { resolved: string | undefined; error: GnuRadioVncControlResult | null } {
+function resolveFlowgraphOrError(flowgraph: string | undefined): {
+	resolved: string | undefined;
+	error: GnuRadioVncControlResult | null;
+} {
 	if (!flowgraph) return { resolved: undefined, error: null };
 	const err = validateFlowgraph(flowgraph);
 	if (err) {
-		return { resolved: undefined, error: { success: false, message: 'invalid flowgraph', error: err } };
+		return {
+			resolved: undefined,
+			error: { success: false, message: 'invalid flowgraph', error: err }
+		};
 	}
 	return { resolved: resolvePath(flowgraph), error: null };
 }
@@ -82,9 +86,7 @@ async function performStartup(resolvedFlowgraph: string | undefined): Promise<Er
 	}
 }
 
-export async function startGnuRadioVnc(
-	flowgraph?: string
-): Promise<GnuRadioVncControlResult> {
+export async function startGnuRadioVnc(flowgraph?: string): Promise<GnuRadioVncControlResult> {
 	if (isAnyProcessAlive()) return buildAlreadyRunningResult();
 
 	const { resolved, error } = resolveFlowgraphOrError(flowgraph);

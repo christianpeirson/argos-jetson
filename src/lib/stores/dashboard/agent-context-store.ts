@@ -56,8 +56,14 @@ export type WorkflowType =
 	| 'imsi_catcher_detection'
 	| null;
 
+// agentContext (consumed by src/lib/server/agent/tools.ts + runtime.ts via agentContext derived)
+// fallow-ignore-next-line unused-export
 export const currentWorkflow = writable<WorkflowType>(null);
+// agentContext (consumed by src/lib/server/agent/tools.ts + runtime.ts via agentContext derived)
+// fallow-ignore-next-line unused-export
 export const workflowStep = writable<number>(0);
+// agentContext (consumed by src/lib/server/agent/tools.ts + runtime.ts via agentContext derived)
+// fallow-ignore-next-line unused-export
 export const workflowGoal = writable<string>('');
 
 // ============================================================================
@@ -112,6 +118,8 @@ function buildDeviceDetails(device: KismetDevice, mac: string) {
 	};
 }
 
+// agentContext depends on this; consumed by src/lib/server/agent/tools.ts + runtime.ts
+// fallow-ignore-next-line unused-export
 export const selectedDeviceDetails = derived(
 	[selectedDeviceMAC, kismetStore],
 	([$mac, $kismet]) => {
@@ -179,14 +187,6 @@ export const agentContext = derived(
 // ============================================================================
 
 /**
- * Reset selected device and clear interaction event
- */
-export function clearSelection() {
-	selectedDeviceMAC.set(null);
-	lastInteractionEvent.set(null);
-}
-
-/**
  * Set a device as selected (triggered by map clicks)
  */
 export function selectDevice(mac: string, deviceData?: Record<string, unknown>) {
@@ -201,6 +201,8 @@ export function selectDevice(mac: string, deviceData?: Record<string, unknown>) 
 /**
  * Set the current workflow context
  */
+// src/lib/server/agent/frontend-tool-definitions.ts:112
+// fallow-ignore-next-line unused-export
 export function setWorkflow(workflow: WorkflowType, goal?: string) {
 	currentWorkflow.set(workflow);
 	workflowStep.set(0);
@@ -212,6 +214,8 @@ export function setWorkflow(workflow: WorkflowType, goal?: string) {
 /**
  * Advance to the next workflow step
  */
+// src/lib/server/agent/frontend-tool-definitions.ts:137
+// fallow-ignore-next-line unused-export
 export function nextWorkflowStep() {
 	workflowStep.update((n) => n + 1);
 }
@@ -219,6 +223,8 @@ export function nextWorkflowStep() {
 /**
  * Reset workflow context
  */
+// src/lib/server/agent/frontend-tool-definitions.ts:143
+// fallow-ignore-next-line unused-export
 export function clearWorkflow() {
 	currentWorkflow.set(null);
 	workflowStep.set(0);

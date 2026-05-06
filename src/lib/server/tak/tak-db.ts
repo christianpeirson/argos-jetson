@@ -13,7 +13,7 @@ function strOrDefault(val: unknown, fallback: string): string {
 }
 
 /** Maps snake_case DB rows to camelCase TakServerConfig */
-export function rowToConfig(row: Record<string, unknown>): TakServerConfig {
+function rowToConfig(row: Record<string, unknown>): TakServerConfig {
 	return {
 		id: row.id as string,
 		name: row.name as string,

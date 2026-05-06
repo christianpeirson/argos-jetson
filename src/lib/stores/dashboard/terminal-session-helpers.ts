@@ -6,7 +6,7 @@
 import type { TerminalPanelState, TerminalSession } from '$lib/types/terminal';
 
 /** Generate a short random unique ID for terminal sessions and split panes. */
-export function generateId(): string {
+function generateId(): string {
 	return Math.random().toString(36).substring(2, 9);
 }
 
@@ -28,6 +28,8 @@ export const TMUX_SHELLS = [
 ];
 
 /** Resolve a human-readable shell name from a shell path. */
+// terminal-store.ts imports this; TerminalTabContent.svelte has its own local copy
+// fallow-ignore-next-line unused-export
 export function resolveShellName(shell: string): string {
 	const match = TMUX_NAMES.find(([key]) => shell.includes(key));
 	return match ? match[1] : shell.split('/').pop() || 'terminal';

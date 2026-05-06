@@ -7,6 +7,8 @@
 import { GEO } from '$lib/constants/limits';
 import { hashMAC, hashMAC2 } from '$lib/utils/geo';
 
+// hashMAC2 consumed internally at kismet-geo-helpers.ts:17 (signalToDistance); fallow can't trace re-export → local import chain
+// fallow-ignore-next-line unused-export
 export { hashMAC, hashMAC2 } from '$lib/utils/geo';
 
 /** Compute deterministic distance from signal strength and MAC hash. */

@@ -3,12 +3,6 @@
  * Helps prevent FOUC (Flash of Unstyled Content) and optimize CSS loading
  */
 
-export interface CSSLoadOptions {
-	preload?: boolean;
-	media?: string;
-	priority?: 'high' | 'low';
-}
-
 /**
  * Dynamically loads CSS with preloading support
  * @param href - Path to CSS file

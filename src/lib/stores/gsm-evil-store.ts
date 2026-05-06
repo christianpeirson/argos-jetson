@@ -25,8 +25,9 @@ import type {
 } from './gsm-evil-types';
 import { defaultState, STORAGE_KEY, STORAGE_VERSION } from './gsm-evil-types';
 
-// Re-export all types so existing consumers can continue to import from this module
-export type { GSMEvilState, IMSICapture, ScanResult, StoreSet, StoreUpdate, TowerLocation };
+// GSMEvilState/ScanResult/TowerLocation consumed by gsm-evil-persistence.ts and route files
+// fallow-ignore-next-line unused-type
+export type { GSMEvilState, ScanResult, TowerLocation };
 
 function createScanResultActions(update: StoreUpdate) {
 	return {
