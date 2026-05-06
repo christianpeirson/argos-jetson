@@ -30,27 +30,27 @@ Per Carbon `progress-bar/usage.mdx`:
 - **Determinate** — `value` and `max` both set; bar fills proportionally.
 - **Indeterminate** — `value={undefined}`; bar animates a sweeping pulse.
 - **`status` axis**:
-  - `'active'` (default) — accent-colored fill; in-progress.
-  - `'finished'` — success-colored fill; task complete.
-  - `'error'` — red-colored fill + error icon; task failed.
+    - `'active'` (default) — accent-colored fill; in-progress.
+    - `'finished'` — success-colored fill; task complete.
+    - `'error'` — red-colored fill + error icon; task failed.
 - **`size` axis**:
-  - `'sm'` (4 px) — compact; for stat-tile rows.
-  - `'md'` (8 px) — default; for mission-critical metrics.
+    - `'sm'` (4 px) — compact; for stat-tile rows.
+    - `'md'` (8 px) — default; for mission-critical metrics.
 - **`kind` axis** (layout):
-  - `'inline'` — label and bar on the same line; bar takes remaining inline space.
-  - `'indented'` — label + helper text indented above the bar (for forms).
-  - `'big'` — full-width bar with caption above.
+    - `'inline'` — label and bar on the same line; bar takes remaining inline space.
+    - `'indented'` — label + helper text indented above the bar (for forms).
+    - `'big'` — full-width bar with caption above.
 
 ## Argos surface inventory (provisional)
 
 Bespoke `<div class="progress-bar">` sites that Phase 9.1 retires:
 
-| Surface | File | Current pattern | Variant |
-| --- | --- | --- | --- |
-| Mission Control CPU TOTAL | `src/lib/components/dashboard/views/MissionControlView.svelte` | bespoke `.bar > .fill` div pair | `kind="inline"` `size="sm"` |
-| Mission Control MEM TOTAL | `src/lib/components/dashboard/views/MissionControlView.svelte` | bespoke `.bar > .fill` div pair | `kind="inline"` `size="sm"` |
-| Future: report generation progress | (deferred) | n/a | `kind="indented"` `size="md"` |
-| Future: file upload | (deferred) | n/a | `kind="indented"` `size="md"` |
+| Surface                            | File                                                           | Current pattern                 | Variant                       |
+| ---------------------------------- | -------------------------------------------------------------- | ------------------------------- | ----------------------------- |
+| Mission Control CPU TOTAL          | `src/lib/components/dashboard/views/MissionControlView.svelte` | bespoke `.bar > .fill` div pair | `kind="inline"` `size="sm"`   |
+| Mission Control MEM TOTAL          | `src/lib/components/dashboard/views/MissionControlView.svelte` | bespoke `.bar > .fill` div pair | `kind="inline"` `size="sm"`   |
+| Future: report generation progress | (deferred)                                                     | n/a                             | `kind="indented"` `size="md"` |
+| Future: file upload                | (deferred)                                                     | n/a                             | `kind="indented"` `size="md"` |
 
 Total bespoke progress-bar call sites in Phase 9.1: 2 (the Mission Control CPU + MEM bars).
 

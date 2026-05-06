@@ -15,7 +15,11 @@ WorkingDirectory=__PROJECT_DIR__
 Environment="NODE_ENV=development"
 Environment="NODE_OPTIONS=--max-old-space-size=2048"
 Environment="VITE_PORT=5174"
-ExecStart=__PROJECT_DIR__/scripts/dev/vite-oom-protect.sh
+# Fetch upstream before vite starts so :5174 cannot serve stale code on boot.
+# Non-blocking: `|| true` ensures a transient network failure doesn't prevent
+# vite from starting against the locally-checked-out tip.
+ExecStartPre=/bin/sh -c 'cd __PROJECT_DIR__ && git fetch origin --quiet || true'
+ExecStart=__PROJECT_DIR__/scripts/dev/start-vite.sh
 Restart=on-failure
 RestartSec=10
 StandardOutput=journal

@@ -1,44 +1,44 @@
 {
-  "$comment": "Argos project-scope settings (shared, committed). Hard-locks GitHub MCP per workflow.md Rule 4. Belt+suspenders: permissions.deny blocks at the harness layer; PreToolUse hooks catch anything that slips a glob match. Personal overrides go in .claude/settings.local.json (gitignored).",
-  "permissions": {
-    "deny": [
-      "mcp__octocode__githubGetFileContent",
-      "mcp__octocode__githubViewRepoStructure",
-      "mcp__octocode__githubSearchCode",
-      "mcp__octocode__githubSearchRepositories",
-      "mcp__octocode__githubSearchPullRequests"
-    ],
-    "allow": [
-      "mcp__github__*",
-      "mcp__octocode__lsp*",
-      "mcp__octocode__local*",
-      "mcp__octocode__packageSearch",
-      "Bash(git *)",
-      "Bash(gh workflow *)",
-      "Bash(gh secret *)",
-      "Bash(gh auth status*)"
-    ]
-  },
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "mcp__octocode__github*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash ${CLAUDE_PROJECT_DIR}/scripts/claude-hooks/block-octocode-github.sh"
-          }
-        ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash ${CLAUDE_PROJECT_DIR}/scripts/claude-hooks/gh-cli-restrict.sh"
-          }
-        ]
-      }
-    ]
-  }
+	"$comment": "Argos project-scope settings (shared, committed). Hard-locks GitHub MCP per workflow.md Rule 4. Belt+suspenders: permissions.deny blocks at the harness layer; PreToolUse hooks catch anything that slips a glob match. Personal overrides go in .claude/settings.local.json (gitignored).",
+	"permissions": {
+		"deny": [
+			"mcp__octocode__githubGetFileContent",
+			"mcp__octocode__githubViewRepoStructure",
+			"mcp__octocode__githubSearchCode",
+			"mcp__octocode__githubSearchRepositories",
+			"mcp__octocode__githubSearchPullRequests"
+		],
+		"allow": [
+			"mcp__github__*",
+			"mcp__octocode__lsp*",
+			"mcp__octocode__local*",
+			"mcp__octocode__packageSearch",
+			"Bash(git *)",
+			"Bash(gh workflow *)",
+			"Bash(gh secret *)",
+			"Bash(gh auth status*)"
+		]
+	},
+	"hooks": {
+		"PreToolUse": [
+			{
+				"matcher": "mcp__octocode__github*",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bash ${CLAUDE_PROJECT_DIR}/scripts/claude-hooks/block-octocode-github.sh"
+					}
+				]
+			},
+			{
+				"matcher": "Bash",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bash ${CLAUDE_PROJECT_DIR}/scripts/claude-hooks/gh-cli-restrict.sh"
+					}
+				]
+			}
+		]
+	}
 }

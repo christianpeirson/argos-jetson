@@ -4,9 +4,7 @@
 
 	const id = $derived(page.params.id);
 	const tool = $derived(mk2ToolsCatalog.find((t) => t.id === id) ?? null);
-	const externalUrl = $derived(
-		tool && tool.action.kind === 'external' ? tool.action.url : null
-	);
+	const externalUrl = $derived(tool && tool.action.kind === 'external' ? tool.action.url : null);
 </script>
 
 <svelte:head>
@@ -22,7 +20,12 @@
 			</div>
 			<div class="embed-actions">
 				{#if tool.docsUrl}
-					<a class="ext-btn docs" href={tool.docsUrl} target="_blank" rel="noopener noreferrer">
+					<a
+						class="ext-btn docs"
+						href={tool.docsUrl}
+						target="_blank"
+						rel="noopener noreferrer"
+					>
 						OFFICIAL DOCS ↗
 					</a>
 				{/if}

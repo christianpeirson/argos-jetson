@@ -8,25 +8,25 @@ The `<DockShell>` chassis at `src/lib/components/chassis/DockShell.svelte` is a 
 export type DockMode = 'left' | 'right' | 'top' | 'bottom' | 'hidden';
 
 interface Props {
-  dock: DockMode;                                 // REQUIRED — current dock side
-  primary: Snippet;                               // REQUIRED — primary panel content
-  secondary: Snippet;                             // REQUIRED — secondary panel content
-  secondarySize?: string;                         // Optional CSS length override (e.g. '320px', '30vw')
-  primaryLabel?: string;                          // Optional aria-label for primary <section>
-  secondaryLabel?: string;                        // Optional aria-label for secondary <section>
-  class?: string;                                 // Optional consumer styling hook
+	dock: DockMode; // REQUIRED — current dock side
+	primary: Snippet; // REQUIRED — primary panel content
+	secondary: Snippet; // REQUIRED — secondary panel content
+	secondarySize?: string; // Optional CSS length override (e.g. '320px', '30vw')
+	primaryLabel?: string; // Optional aria-label for primary <section>
+	secondaryLabel?: string; // Optional aria-label for secondary <section>
+	class?: string; // Optional consumer styling hook
 }
 ```
 
-| Prop | Type | Default | Description |
-|---|---|---|---|
-| `dock` | `DockMode` | **REQUIRED** | One of 5 layout modes; component data-attribute drives CSS grid template |
-| `primary` | `Snippet` | **REQUIRED** | Primary content (e.g., session grid). Always rendered, occupies remaining surface |
-| `secondary` | `Snippet` | **REQUIRED** | Secondary panel content. Hidden when `dock === 'hidden'` |
-| `secondarySize` | `string` | (clamp default) | CSS length for the secondary track; overrides the default `clamp()` |
-| `primaryLabel` | `string` | `'Primary panel'` | `aria-label` for the primary `<section>` landmark |
-| `secondaryLabel` | `string` | `'Secondary panel'` | `aria-label` for the secondary `<section>` landmark |
-| `class` | `string` | `undefined` | Pass-through |
+| Prop             | Type       | Default             | Description                                                                       |
+| ---------------- | ---------- | ------------------- | --------------------------------------------------------------------------------- |
+| `dock`           | `DockMode` | **REQUIRED**        | One of 5 layout modes; component data-attribute drives CSS grid template          |
+| `primary`        | `Snippet`  | **REQUIRED**        | Primary content (e.g., session grid). Always rendered, occupies remaining surface |
+| `secondary`      | `Snippet`  | **REQUIRED**        | Secondary panel content. Hidden when `dock === 'hidden'`                          |
+| `secondarySize`  | `string`   | (clamp default)     | CSS length for the secondary track; overrides the default `clamp()`               |
+| `primaryLabel`   | `string`   | `'Primary panel'`   | `aria-label` for the primary `<section>` landmark                                 |
+| `secondaryLabel` | `string`   | `'Secondary panel'` | `aria-label` for the secondary `<section>` landmark                               |
+| `class`          | `string`   | `undefined`         | Pass-through                                                                      |
 
 The shell does **not** ship a `onDockChange` callback in v1 — dock state is consumer-managed. The dock-control buttons live inside the consumer's secondary panel header (per design archive's `WorkflowsPanel`), which already owns its own `onDock` callback path back to the parent. Adding a parallel chassis-level callback would be redundant and invite drift.
 
@@ -61,33 +61,41 @@ The shell switches `grid-template` via `[data-dock]`:
 
 ```css
 .dock-shell-root {
-  display: grid;
-  width: 100%;
-  height: 100%;
-  gap: 0;
-  position: relative;
+	display: grid;
+	width: 100%;
+	height: 100%;
+	gap: 0;
+	position: relative;
 }
 .dock-shell-root[data-dock='right'] {
-  grid-template-columns: 1fr var(--dock-secondary-size, clamp(240px, 28vw, 480px));
-  grid-template-areas: 'primary secondary';
+	grid-template-columns: 1fr var(--dock-secondary-size, clamp(240px, 28vw, 480px));
+	grid-template-areas: 'primary secondary';
 }
 .dock-shell-root[data-dock='left'] {
-  grid-template-columns: var(--dock-secondary-size, clamp(240px, 28vw, 480px)) 1fr;
-  grid-template-areas: 'secondary primary';
+	grid-template-columns: var(--dock-secondary-size, clamp(240px, 28vw, 480px)) 1fr;
+	grid-template-areas: 'secondary primary';
 }
 .dock-shell-root[data-dock='top'] {
-  grid-template-rows: var(--dock-secondary-size, clamp(160px, 30vh, 400px)) 1fr;
-  grid-template-areas: 'secondary' 'primary';
+	grid-template-rows: var(--dock-secondary-size, clamp(160px, 30vh, 400px)) 1fr;
+	grid-template-areas: 'secondary' 'primary';
 }
 .dock-shell-root[data-dock='bottom'] {
-  grid-template-rows: 1fr var(--dock-secondary-size, clamp(160px, 30vh, 400px));
-  grid-template-areas: 'primary' 'secondary';
+	grid-template-rows: 1fr var(--dock-secondary-size, clamp(160px, 30vh, 400px));
+	grid-template-areas: 'primary' 'secondary';
 }
 .dock-shell-root[data-dock='hidden'] {
-  grid-template: 'primary' 1fr / 1fr;
+	grid-template: 'primary' 1fr / 1fr;
 }
-.dock-primary { grid-area: primary; min-width: 0; min-height: 0; }
-.dock-secondary { grid-area: secondary; min-width: 0; min-height: 0; }
+.dock-primary {
+	grid-area: primary;
+	min-width: 0;
+	min-height: 0;
+}
+.dock-secondary {
+	grid-area: secondary;
+	min-width: 0;
+	min-height: 0;
+}
 ```
 
 `min-width: 0` / `min-height: 0` prevent grid track blowout from oversized child content (a common CSS-grid footgun).

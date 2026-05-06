@@ -4,7 +4,7 @@
 		type DataTableRow
 	} from '$lib/components/chassis/forms/DataTable.svelte';
 	import Tag from '$lib/components/chassis/forms/Tag.svelte';
-	import { type SourcesState,sourcesStore } from '$lib/stores/dashboard/sources-store';
+	import { type SourcesState, sourcesStore } from '$lib/stores/dashboard/sources-store';
 	import { SOURCE_STATE_TAG_KIND, type SourceStatus } from '$lib/types/overview-sources';
 
 	let state = $state<SourcesState>({ sources: [], loading: false, error: null, source: 'mock' });
@@ -35,16 +35,16 @@
 	</header>
 
 	<div class="src-body">
-		<DataTable
-			{headers}
-			{rows}
-			size="compact"
-			zebra
-			stickyHeader
-		>
-			{#snippet cell({ row, cell }: { row: DataTableRow; cell: { key: string; value: unknown } })}
+		<DataTable {headers} {rows} size="compact" zebra stickyHeader>
+			{#snippet cell({
+				row,
+				cell
+			}: {
+				row: DataTableRow;
+				cell: { key: string; value: unknown };
+			})}
 				{#if cell.key === 'state'}
-					<Tag type={SOURCE_STATE_TAG_KIND[(row.state as SourceStatus['state'])]} size="sm">
+					<Tag type={SOURCE_STATE_TAG_KIND[row.state as SourceStatus['state']]} size="sm">
 						{row.state}
 					</Tag>
 				{:else}

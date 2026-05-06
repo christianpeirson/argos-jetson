@@ -5,6 +5,7 @@
 **Implementation files (target):** `src/lib/components/chassis/data/Tile.svelte` AND `src/lib/components/chassis/data/ClickableTile.svelte`
 **Carbon components:** `<Tile>` and `<ClickableTile>` from `carbon-components-svelte` v0.107.0+
 **Carbon sources:**
+
 - <https://github.com/carbon-design-system/carbon-components-svelte/blob/v0.107.0/src/Tile/Tile.svelte>
 - <https://github.com/carbon-design-system/carbon-components-svelte/blob/v0.107.0/src/Tile/ClickableTile.svelte>
 
@@ -46,11 +47,11 @@ Per Carbon `tile/usage.mdx`:
 
 Bespoke `.card` / hand-rolled tile sites that Phase 9.1 retires:
 
-| Surface | File | Current pattern | Variant |
-| --- | --- | --- | --- |
-| Mission Control stat tiles | `src/lib/components/dashboard/views/MissionControlView.svelte` | bespoke `.stat-tile` div with hand-rolled border + padding | `Tile` |
-| AGENTS session cards | `src/lib/components/dashboard/views/AgentsView.svelte` | bespoke `.session-card` with `onclick` handler on outer div | `ClickableTile` |
-| Workflows category cards | `src/lib/components/dashboard/views/WorkflowsView.svelte` | bespoke `.cat-card` with `<a>` wrapper | `ClickableTile` |
+| Surface                    | File                                                           | Current pattern                                             | Variant         |
+| -------------------------- | -------------------------------------------------------------- | ----------------------------------------------------------- | --------------- |
+| Mission Control stat tiles | `src/lib/components/dashboard/views/MissionControlView.svelte` | bespoke `.stat-tile` div with hand-rolled border + padding  | `Tile`          |
+| AGENTS session cards       | `src/lib/components/dashboard/views/AgentsView.svelte`         | bespoke `.session-card` with `onclick` handler on outer div | `ClickableTile` |
+| Workflows category cards   | `src/lib/components/dashboard/views/WorkflowsView.svelte`      | bespoke `.cat-card` with `<a>` wrapper                      | `ClickableTile` |
 
 Total bespoke tile call sites: ~12-18 (4 stat tiles × 1 view + N session cards + ~6 workflow categories).
 
@@ -105,8 +106,8 @@ Tile-to-tile gap in a grid: 16 px (Lunaris default). Mission Control stat-tile r
 
 - Carbon Svelte component: <https://svelte.carbondesignsystem.com/?path=/docs/components-tile--default>
 - Carbon Svelte sources:
-  - <https://github.com/carbon-design-system/carbon-components-svelte/blob/v0.107.0/src/Tile/Tile.svelte>
-  - <https://github.com/carbon-design-system/carbon-components-svelte/blob/v0.107.0/src/Tile/ClickableTile.svelte>
+    - <https://github.com/carbon-design-system/carbon-components-svelte/blob/v0.107.0/src/Tile/Tile.svelte>
+    - <https://github.com/carbon-design-system/carbon-components-svelte/blob/v0.107.0/src/Tile/ClickableTile.svelte>
 - Carbon source SCSS: `docs/carbon-design-system/packages/styles/scss/components/tile/_tile.scss`
 - Carbon usage mdx: `docs/carbon-website/src/pages/components/Tile/usage.mdx`
 - Argos bespoke surfaces: see "Surface inventory" table above

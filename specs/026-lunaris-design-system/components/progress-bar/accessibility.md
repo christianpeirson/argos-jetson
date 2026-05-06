@@ -38,17 +38,17 @@ Per Carbon ProgressBar accessibility patterns (ProgressBar.svelte source confirm
 
 Carbon's stock theme passes WCAG 2.1 AA. Lunaris token overrides MUST preserve those ratios.
 
-| Pair | Min contrast (AA) | Lunaris target | Status |
-| --- | --- | --- | --- |
-| Track bg vs page bg | 3:1 (graphical) | `var(--bg-2)` on `var(--background)` | ≈ 1.5:1 ⚠ — **track is the empty state container; visual primary signal is the FILL** |
-| Bar fill (active) vs track | 3:1 (graphical) | `var(--accent)` on `var(--bg-2)` | ≈ 7.4:1 ✓ |
-| Bar fill (finished) vs track | 3:1 (graphical) | `var(--mk2-green-fg)` on `var(--bg-2)` | ≈ 5.8:1 ✓ |
-| Bar fill (error) vs track | 3:1 (graphical) | `var(--mk2-red)` on `var(--bg-2)` | ≈ 5.2:1 ✓ |
-| Label text on page bg | 4.5:1 | `var(--ink)` on `var(--background)` | ≈ 14.6:1 ✓ |
-| Helper text on page bg | 4.5:1 | `var(--ink-2)` on `var(--background)` | ≈ 13.0:1 ✓ |
-| Status icon (finished) on label color | 3:1 (graphical) | `var(--mk2-green-fg)` on `var(--background)` | ≈ 5.7:1 ✓ |
-| Status icon (error) on label color | 3:1 (graphical) | `var(--mk2-red)` on `var(--background)` | ≈ 5.0:1 ✓ |
-| Error text (`invalidText`) | 4.5:1 | `var(--mk2-red)` on `var(--background)` | ≈ 5.0:1 ✓ |
+| Pair                                  | Min contrast (AA) | Lunaris target                               | Status                                                                                 |
+| ------------------------------------- | ----------------- | -------------------------------------------- | -------------------------------------------------------------------------------------- |
+| Track bg vs page bg                   | 3:1 (graphical)   | `var(--bg-2)` on `var(--background)`         | ≈ 1.5:1 ⚠ — **track is the empty state container; visual primary signal is the FILL** |
+| Bar fill (active) vs track            | 3:1 (graphical)   | `var(--accent)` on `var(--bg-2)`             | ≈ 7.4:1 ✓                                                                              |
+| Bar fill (finished) vs track          | 3:1 (graphical)   | `var(--mk2-green-fg)` on `var(--bg-2)`       | ≈ 5.8:1 ✓                                                                              |
+| Bar fill (error) vs track             | 3:1 (graphical)   | `var(--mk2-red)` on `var(--bg-2)`            | ≈ 5.2:1 ✓                                                                              |
+| Label text on page bg                 | 4.5:1             | `var(--ink)` on `var(--background)`          | ≈ 14.6:1 ✓                                                                             |
+| Helper text on page bg                | 4.5:1             | `var(--ink-2)` on `var(--background)`        | ≈ 13.0:1 ✓                                                                             |
+| Status icon (finished) on label color | 3:1 (graphical)   | `var(--mk2-green-fg)` on `var(--background)` | ≈ 5.7:1 ✓                                                                              |
+| Status icon (error) on label color    | 3:1 (graphical)   | `var(--mk2-red)` on `var(--background)`      | ≈ 5.0:1 ✓                                                                              |
+| Error text (`invalidText`)            | 4.5:1             | `var(--mk2-red)` on `var(--background)`      | ≈ 5.0:1 ✓                                                                              |
 
 **One amber flag**: track-vs-page-bg contrast (1.5:1) is below the 3:1 graphical floor. This is acceptable per WCAG 1.4.11 reasoning — the track is the "empty container" surface; the load-bearing visual is the FILL bar (which passes 7.4:1 vs the track) and the LABEL text (which passes 14.6:1 vs the page bg). The track itself does not communicate state; the bar fill does. Documented as a Phase 7 audit deviation.
 
@@ -132,22 +132,22 @@ Caller MUST NOT remove the status icons via custom CSS.
 
 ## Verification checklist (Phase 9.1)
 
-| Check | Tool | Pass criterion |
-| --- | --- | --- |
-| WCAG 2.1 AA on canary route | `@axe-core/playwright` (`AxeBuilder`) | `violations: []` with `wcag2a, wcag2aa, wcag21a, wcag21aa, best-practice` tags (track-contrast deviation logged) |
-| `role="progressbar"` set on track | Playwright DOM audit | Element has `role="progressbar"` |
-| `aria-valuenow` reflects value | Playwright `expect(locator).toHaveAttribute('aria-valuenow', '47')` | matches |
-| `aria-valuemin / valuemax` set | Playwright DOM audit | `min=0`, `max=value of max prop` |
-| Indeterminate omits `aria-valuenow` | Playwright DOM audit | attribute absent |
-| `aria-labelledby` linked to visible label | Playwright DOM audit | label `id` matches |
-| `aria-describedby` linked to helper text | Playwright DOM audit | helper-text `id` matches |
-| `aria-busy` flips with status | Playwright state-change test | `true` → `false` on `finished`/`error` |
-| Status icon present (finished/error) | Playwright DOM audit | `<svg>` adjacent to label |
-| `invalidText` has `role="alert"` | Playwright DOM audit | Argos chassis adds |
-| Color contrast (bar fill, label, helper, error) | chrome-devtools MCP + axe | All ≥ 3:1 graphical, ≥ 4.5:1 text |
-| Reduced motion disables indeterminate sweep | Playwright `emulateMedia({ reducedMotion: 'reduce' })` | animation suspended; static fill |
-| Live region opt-in for slow tasks | manual NVDA / VoiceOver test | parent `aria-live="polite"` re-announces |
-| Color-not-sole-indicator | manual visual | Status icon visible alongside fill color in finished/error |
+| Check                                           | Tool                                                                | Pass criterion                                                                                                   |
+| ----------------------------------------------- | ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| WCAG 2.1 AA on canary route                     | `@axe-core/playwright` (`AxeBuilder`)                               | `violations: []` with `wcag2a, wcag2aa, wcag21a, wcag21aa, best-practice` tags (track-contrast deviation logged) |
+| `role="progressbar"` set on track               | Playwright DOM audit                                                | Element has `role="progressbar"`                                                                                 |
+| `aria-valuenow` reflects value                  | Playwright `expect(locator).toHaveAttribute('aria-valuenow', '47')` | matches                                                                                                          |
+| `aria-valuemin / valuemax` set                  | Playwright DOM audit                                                | `min=0`, `max=value of max prop`                                                                                 |
+| Indeterminate omits `aria-valuenow`             | Playwright DOM audit                                                | attribute absent                                                                                                 |
+| `aria-labelledby` linked to visible label       | Playwright DOM audit                                                | label `id` matches                                                                                               |
+| `aria-describedby` linked to helper text        | Playwright DOM audit                                                | helper-text `id` matches                                                                                         |
+| `aria-busy` flips with status                   | Playwright state-change test                                        | `true` → `false` on `finished`/`error`                                                                           |
+| Status icon present (finished/error)            | Playwright DOM audit                                                | `<svg>` adjacent to label                                                                                        |
+| `invalidText` has `role="alert"`                | Playwright DOM audit                                                | Argos chassis adds                                                                                               |
+| Color contrast (bar fill, label, helper, error) | chrome-devtools MCP + axe                                           | All ≥ 3:1 graphical, ≥ 4.5:1 text                                                                                |
+| Reduced motion disables indeterminate sweep     | Playwright `emulateMedia({ reducedMotion: 'reduce' })`              | animation suspended; static fill                                                                                 |
+| Live region opt-in for slow tasks               | manual NVDA / VoiceOver test                                        | parent `aria-live="polite"` re-announces                                                                         |
+| Color-not-sole-indicator                        | manual visual                                                       | Status icon visible alongside fill color in finished/error                                                       |
 
 Phase 7-style audit re-run for the migrated CPU + MEM bars in 9.1l.
 

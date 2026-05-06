@@ -17,7 +17,9 @@
 	onDestroy(() => detectionsStore.stop());
 
 	function fmtBearing(d: Detection): string {
-		return d.bearingDeg === null ? '—' : `${Math.round(d.bearingDeg).toString().padStart(3, '0')}°`;
+		return d.bearingDeg === null
+			? '—'
+			: `${Math.round(d.bearingDeg).toString().padStart(3, '0')}°`;
 	}
 
 	function fmtDistance(d: Detection): string {
@@ -49,7 +51,9 @@
 		<span>CONF</span>
 	</div>
 	{#if detectionsStore.ranked.length === 0}
-		<div class="empty">{detectionsStore.connected ? 'no signals in window' : 'awaiting SSE'}</div>
+		<div class="empty">
+			{detectionsStore.connected ? 'no signals in window' : 'awaiting SSE'}
+		</div>
 	{:else}
 		<ul role="list" class="rows">
 			{#each detectionsStore.ranked as d (d.signalId)}

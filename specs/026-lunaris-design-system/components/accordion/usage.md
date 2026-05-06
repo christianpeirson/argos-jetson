@@ -24,7 +24,7 @@ Vertical stack of expand/collapse sections grouping related items, where the use
 
 Per Carbon `accordion/usage.mdx`:
 
-- **Default (single-select)** — only one `<AccordionItem>` open at a time. Opening a second auto-closes the first. NOT the Carbon default — Carbon ships *multi-select* by default.
+- **Default (single-select)** — only one `<AccordionItem>` open at a time. Opening a second auto-closes the first. NOT the Carbon default — Carbon ships _multi-select_ by default.
 - **Multi-select (Carbon default)** — multiple items can be open simultaneously. User explicitly toggles each. This is Argos's preferred behavior for category groupings.
 - **Skeleton** — `<AccordionSkeleton>` for async-loaded items; not used in Phase 9.1 (Workflows panel is synchronous).
 - **Sizing** — Carbon ships `sm` / default / `xl`. Lunaris uses `sm` for tactical-density nav (Workflows panel) and default for prose-heavy disclosures.
@@ -34,12 +34,12 @@ Per Carbon `accordion/usage.mdx`:
 
 Bespoke disclosure-stack sites Phase 9.1 retires by migrating to `<Accordion>`:
 
-| Surface                       | File                                                              | Current pattern                                                  |
-| ----------------------------- | ----------------------------------------------------------------- | ---------------------------------------------------------------- |
-| Workflows panel categories    | `src/lib/components/dashboard/panels/WorkflowsPanel.svelte`       | bespoke `.cat` button + collapse with hand-rolled `aria-expanded` |
-| Tools flyout sub-categories   | `src/lib/components/dashboard/overlays/ToolsFlyout.svelte`        | bespoke nested-list expand/collapse                              |
-| Advanced settings sections    | `src/lib/components/mk2/Tweaks.svelte`                            | bespoke `<details>` / `<summary>`                                |
-| Mission report sections       | `src/lib/components/dashboard/views/ReportsView.svelte`           | bespoke `.section-toggle` button group                           |
+| Surface                     | File                                                        | Current pattern                                                   |
+| --------------------------- | ----------------------------------------------------------- | ----------------------------------------------------------------- |
+| Workflows panel categories  | `src/lib/components/dashboard/panels/WorkflowsPanel.svelte` | bespoke `.cat` button + collapse with hand-rolled `aria-expanded` |
+| Tools flyout sub-categories | `src/lib/components/dashboard/overlays/ToolsFlyout.svelte`  | bespoke nested-list expand/collapse                               |
+| Advanced settings sections  | `src/lib/components/mk2/Tweaks.svelte`                      | bespoke `<details>` / `<summary>`                                 |
+| Mission report sections     | `src/lib/components/dashboard/views/ReportsView.svelte`     | bespoke `.section-toggle` button group                            |
 
 Total bespoke accordion sites: ~4-6. Migration order: Workflows panel (highest visibility, biggest payoff) → Tools flyout → ReportsView mission sections → Tweaks.
 

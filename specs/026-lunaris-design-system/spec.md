@@ -77,7 +77,7 @@ Per-phase pre-merge gate (CLAUDE.md Rule 6 already enforces sentrux):
 
 | Check                 | Tool                                                                              | Pass criterion                     |
 | --------------------- | --------------------------------------------------------------------------------- | ---------------------------------- |
-| Build clean           | `npm run build`                                                                   | Exit 0, `✔ done`                   |
+| Build clean           | `npm run build`                                                                   | Exit 0, `✔ done`                  |
 | Production restart    | `sudo systemctl restart argos-final.service` + curl                               | HTTP 200 within 10s                |
 | Visual parity         | chrome-devtools MCP `take_screenshot` vs `docs/argos-v2-mockup/screenshots/*.png` | Pixel-diff or human-judgment match |
 | a11y                  | Carbon's `axe-core` test integration                                              | Zero WCAG 2.1 AA violations        |

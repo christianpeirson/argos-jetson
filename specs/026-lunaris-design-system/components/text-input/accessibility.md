@@ -35,15 +35,15 @@ Per Carbon TextInput accessibility patterns (`TextInput.svelte` source confirms)
 
 Carbon's stock theme passes WCAG 2.1 AA. Lunaris token overrides MUST preserve those ratios.
 
-| Pair                                                | Min contrast (AA) | Lunaris target                                          | Status                                  |
-| --------------------------------------------------- | ----------------- | ------------------------------------------------------- | --------------------------------------- |
-| Input text (`$text-primary`) on `$field` background | 4.5:1             | `var(--ink)` (oklch 94%) on `var(--bg-2)` (oklch 17%)   | ≈ 14.6:1 ✓ exceeds AAA                  |
+| Pair                                                | Min contrast (AA) | Lunaris target                                          | Status                                   |
+| --------------------------------------------------- | ----------------- | ------------------------------------------------------- | ---------------------------------------- |
+| Input text (`$text-primary`) on `$field` background | 4.5:1             | `var(--ink)` (oklch 94%) on `var(--bg-2)` (oklch 17%)   | ≈ 14.6:1 ✓ exceeds AAA                   |
 | Placeholder (`$text-placeholder`) on `$field`       | 4.5:1             | `var(--ink-4)` (oklch 42%) on `var(--bg-2)` (oklch 17%) | ≈ 3.9:1 ⚠ below AA — **verify in PR3a** |
-| Label text on page background                       | 4.5:1             | `var(--ink-2)` (oklch 88%) on `var(--bg)` (oklch 13%)   | ≈ 13.0:1 ✓                              |
-| Helper text on page background                      | 4.5:1             | `var(--ink-3)` (oklch 64%) on `var(--bg)`               | ≈ 6.4:1 ✓                               |
+| Label text on page background                       | 4.5:1             | `var(--ink-2)` (oklch 88%) on `var(--bg)` (oklch 13%)   | ≈ 13.0:1 ✓                               |
+| Helper text on page background                      | 4.5:1             | `var(--ink-3)` (oklch 64%) on `var(--bg)`               | ≈ 6.4:1 ✓                                |
 | Bottom border (`$border-strong`)                    | 3:1 (graphical)   | `var(--line)` (oklch 34%) on `var(--bg-2)` (oklch 17%)  | ≈ 2.7:1 ⚠ below 3:1 — **verify**        |
-| Focus outline (`$focus`)                            | 3:1 (graphical)   | `var(--accent)` ≈ 7.4:1 vs both `--bg` and `--bg-2`     | ✓                                       |
-| Invalid state border (`$support-error`)             | 3:1 (graphical)   | `var(--mk2-red)` (#FF5C33) on `var(--bg-2)`             | ≈ 4.8:1 ✓                               |
+| Focus outline (`$focus`)                            | 3:1 (graphical)   | `var(--accent)` ≈ 7.4:1 vs both `--bg` and `--bg-2`     | ✓                                        |
+| Invalid state border (`$support-error`)             | 3:1 (graphical)   | `var(--mk2-red)` (#FF5C33) on `var(--bg-2)`             | ≈ 4.8:1 ✓                                |
 
 **Two amber flags** (placeholder, bottom border). Verification step in PR3a: render GpServerForm in chrome-devtools MCP, sample computed colors, compute ratio. If below threshold, escalate to a tokens.md update before PR3a merge.
 

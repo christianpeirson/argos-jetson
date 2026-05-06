@@ -29,7 +29,9 @@ export const _MissionPatchSchema = z
 		link_budget: z.number().finite().nullable().optional()
 	})
 	.strict()
-	.refine((obj) => Object.keys(obj).length > 0, { message: 'patch must include at least one field' });
+	.refine((obj) => Object.keys(obj).length > 0, {
+		message: 'patch must include at least one field'
+	});
 
 export const GET = createHandler(({ params }) => {
 	const id = params.id;

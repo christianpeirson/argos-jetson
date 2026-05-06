@@ -4,10 +4,10 @@ This document maps Carbon SkeletonText's visual treatment to Lunaris tokens. Per
 
 ## Carbon source-of-truth files
 
-| File | Purpose |
-|---|---|
+| File                                                                         | Purpose                                                                                                                     |
+| ---------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | `node_modules/carbon-components-svelte/src/SkeletonText/SkeletonText.svelte` | Component template (50 LOC) — class authority (`bx--skeleton__text`, `bx--skeleton__heading`) and width-randomization logic |
-| `node_modules/@carbon/styles/scss/components/skeleton/_skeleton.scss` | SCSS rules + token consumption — pulse animation timing, bar height/spacing, color tokens |
+| `node_modules/@carbon/styles/scss/components/skeleton/_skeleton.scss`        | SCSS rules + token consumption — pulse animation timing, bar height/spacing, color tokens                                   |
 
 Upstream source mirrored at https://github.com/carbon-design-system/carbon-components-svelte/blob/v0.107.0/src/SkeletonText/SkeletonText.svelte.
 
@@ -32,7 +32,10 @@ Where `rand1/rand2/rand3` come from Carbon's deterministic `RANDOM = [0.973, 0.1
 	class="bx--skeleton__text"
 	style:width="100%"
 	{...$$restProps}
-	on:click on:mouseover on:mouseenter on:mouseleave
+	on:click
+	on:mouseover
+	on:mouseenter
+	on:mouseleave
 ></p>
 ```
 
@@ -46,11 +49,11 @@ The Lunaris wrapper introduces no extra DOM — it forwards directly into `Carbo
 
 These overrides live (or will live) in `src/lib/styles/lunaris-carbon-theme.scss`. **Token additions are DEFERRED** until visual diff exposes drift — matches Phase 4 PR-A discipline.
 
-| Carbon token | Lunaris value | Used by | Citation |
-|---|---|---|---|
-| `$skeleton-background` | `var(--bg-2)` | Skeleton bar fill base color | `_skeleton.scss` `.bx--skeleton__text` |
-| `$skeleton-element` | `var(--bg-3)` | Skeleton bar pulse-highlight color | `_skeleton.scss` `.bx--skeleton__text::after` (animated) |
-| (timing) `1000ms` | unchanged | Pulse animation duration | hardcoded in Carbon SCSS |
+| Carbon token           | Lunaris value | Used by                            | Citation                                                 |
+| ---------------------- | ------------- | ---------------------------------- | -------------------------------------------------------- |
+| `$skeleton-background` | `var(--bg-2)` | Skeleton bar fill base color       | `_skeleton.scss` `.bx--skeleton__text`                   |
+| `$skeleton-element`    | `var(--bg-3)` | Skeleton bar pulse-highlight color | `_skeleton.scss` `.bx--skeleton__text::after` (animated) |
+| (timing) `1000ms`      | unchanged     | Pulse animation duration           | hardcoded in Carbon SCSS                                 |
 
 ## Animation timing
 
@@ -58,9 +61,15 @@ Carbon's pulse animation:
 
 ```scss
 @keyframes skeleton {
-	0% { opacity: 0.3; }
-	50% { opacity: 1; }
-	100% { opacity: 0.3; }
+	0% {
+		opacity: 0.3;
+	}
+	50% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0.3;
+	}
 }
 
 .bx--skeleton__text {
@@ -74,11 +83,11 @@ Argos's previous bespoke `.skeleton-row` rule used `pulse 1.6s ease-in-out infin
 
 ## Sizing
 
-| Variant | Bar height | Source |
-|---|---|---|
-| Default text (`paragraph={false}`, `heading={false}`) | 14 px | `_skeleton.scss` `.bx--skeleton__text` `height` |
-| Heading (`heading={true}`) | 24 px | `_skeleton.scss` `.bx--skeleton__heading` `height` |
-| Paragraph (`paragraph={true}`) line | 14 px each, gap 8 px | inherited from `.bx--skeleton__text` + `<p>` margin |
+| Variant                                               | Bar height           | Source                                              |
+| ----------------------------------------------------- | -------------------- | --------------------------------------------------- |
+| Default text (`paragraph={false}`, `heading={false}`) | 14 px                | `_skeleton.scss` `.bx--skeleton__text` `height`     |
+| Heading (`heading={true}`)                            | 24 px                | `_skeleton.scss` `.bx--skeleton__heading` `height`  |
+| Paragraph (`paragraph={true}`) line                   | 14 px each, gap 8 px | inherited from `.bx--skeleton__text` + `<p>` margin |
 
 **Argos comparison**: previous bespoke `.skeleton-row` was `28 px` tall (table-row sized). Carbon's 14 px text-shaped bars are SHORTER but more semantically accurate ("this is text loading" vs "this is a row loading"). Visual diff will catch any consumer that relies on the 28 px height.
 

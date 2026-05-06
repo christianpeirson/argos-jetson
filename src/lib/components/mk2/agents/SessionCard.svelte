@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Tag from '$lib/components/chassis/forms/Tag.svelte';
-	import type { SessionState,TmuxSession } from '$lib/types/agents';
+	import type { SessionState, TmuxSession } from '$lib/types/agents';
 
 	interface Props {
 		session: TmuxSession;
@@ -118,10 +118,18 @@
 		display: inline-block;
 	}
 
-	.dot--active { background: var(--mk2-green); }
-	.dot--paused { background: var(--mk2-amber); }
-	.dot--idle { background: var(--mk2-ink-4); }
-	.dot--dead { background: var(--mk2-red); }
+	.dot--active {
+		background: var(--mk2-green);
+	}
+	.dot--paused {
+		background: var(--mk2-amber);
+	}
+	.dot--idle {
+		background: var(--mk2-ink-4);
+	}
+	.dot--dead {
+		background: var(--mk2-red);
+	}
 
 	.att {
 		font-size: var(--mk2-fs-1);

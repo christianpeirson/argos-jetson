@@ -26,6 +26,7 @@ function parseStored(raw: string): string[] | null {
 
 function load(): void {
 	if (_hydrated) return;
+	if (typeof window === 'undefined') return;
 	_hydrated = true;
 	const raw = localStorage.getItem(STORAGE_KEY);
 	if (!raw) return;
@@ -34,6 +35,7 @@ function load(): void {
 }
 
 function persist(): void {
+	if (typeof window === 'undefined') return;
 	try {
 		localStorage.setItem(STORAGE_KEY, JSON.stringify(_ids));
 	} catch {

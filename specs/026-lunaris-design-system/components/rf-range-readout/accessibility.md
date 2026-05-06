@@ -12,11 +12,11 @@ If the readout ever becomes part of an editable composite (e.g., wrapped by a cl
 
 ```html
 <div class="rf-range-readout">
-  <span class="label">LNA</span>
-  <span class="value">
-    24
-    <span class="unit">dB</span>
-  </span>
+	<span class="label">LNA</span>
+	<span class="value">
+		24
+		<span class="unit">dB</span>
+	</span>
 </div>
 ```
 
@@ -24,11 +24,11 @@ If the readout ever becomes part of an editable composite (e.g., wrapped by a cl
 
 ## Visual contrast
 
-| Element | Token | Background | Ratio | Status |
-|---|---|---|---|---|
-| Label (ink-3 #A0A0A0) | `--mk2-ink-3` | `--mk2-bg` (#0A0A0A) | 8.9:1 | WCAG AAA |
-| Value (ink #E6E6E6) | `--mk2-ink` | `--mk2-bg` | 14.6:1 | WCAG AAA |
-| Unit (ink-4 #707070) | `--mk2-ink-4` | `--mk2-bg` | 4.7:1 | WCAG AA (large text border) |
+| Element               | Token         | Background           | Ratio  | Status                      |
+| --------------------- | ------------- | -------------------- | ------ | --------------------------- |
+| Label (ink-3 #A0A0A0) | `--mk2-ink-3` | `--mk2-bg` (#0A0A0A) | 8.9:1  | WCAG AAA                    |
+| Value (ink #E6E6E6)   | `--mk2-ink`   | `--mk2-bg`           | 14.6:1 | WCAG AAA                    |
+| Unit (ink-4 #707070)  | `--mk2-ink-4` | `--mk2-bg`           | 4.7:1  | WCAG AA (large text border) |
 
 Unit suffix sits at the AA threshold for normal text (4.5:1). Acceptable because unit is **redundant context** — the label already states what parameter the value represents (LNA dB, VGA dB are obvious). Unit could be removed entirely without information loss; it's a glanceable affordance, not the primary information channel.
 
@@ -41,6 +41,7 @@ None. The component is not focusable and produces no tab stops. Keyboard navigat
 ## Screen reader behavior
 
 NVDA / VoiceOver / JAWS read in order:
+
 1. Label text (e.g., "LNA")
 2. Value text (e.g., "24")
 3. Unit text (e.g., "dB")
@@ -55,15 +56,15 @@ Information is **never conveyed by color alone**. The label, value, and unit all
 
 ## WCAG 2.1 AA criteria
 
-| Criterion | Status | Notes |
-|---|---|---|
-| 1.3.1 Info and Relationships | PASS | Programmatic association via DOM proximity |
-| 1.4.3 Contrast (Minimum) | PASS | All foregrounds ≥ 4.5:1 against bg |
-| 1.4.4 Resize Text | PASS | rem-relative sizing via Lunaris fs tokens |
-| 1.4.10 Reflow | PASS | No fixed widths; flex strip wraps |
-| 1.4.11 Non-text Contrast | N/A | No interactive UI components |
-| 2.4.6 Headings and Labels | PASS | Label clearly identifies parameter |
-| 4.1.2 Name, Role, Value | PASS | Plain text content; no role/state required |
+| Criterion                    | Status | Notes                                      |
+| ---------------------------- | ------ | ------------------------------------------ |
+| 1.3.1 Info and Relationships | PASS   | Programmatic association via DOM proximity |
+| 1.4.3 Contrast (Minimum)     | PASS   | All foregrounds ≥ 4.5:1 against bg         |
+| 1.4.4 Resize Text            | PASS   | rem-relative sizing via Lunaris fs tokens  |
+| 1.4.10 Reflow                | PASS   | No fixed widths; flex strip wraps          |
+| 1.4.11 Non-text Contrast     | N/A    | No interactive UI components               |
+| 2.4.6 Headings and Labels    | PASS   | Label clearly identifies parameter         |
+| 4.1.2 Name, Role, Value      | PASS   | Plain text content; no role/state required |
 
 ## Testing
 

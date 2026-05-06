@@ -176,13 +176,13 @@ Lunaris tokens flow through automatically — the wrapper is a thin convenience 
 
 Per audit on 2026-05-04:
 
-| File                                                              | Line | Site description                                            | Size    |
-| ----------------------------------------------------------------- | ---- | ----------------------------------------------------------- | ------- |
-| `src/lib/components/dashboard/views/AgentsView.svelte`            | TBD  | filter tabs (ALL / ACTIVE / IDLE / DEAD)                    | default |
-| `src/lib/components/dashboard/views/AgentsView.svelte`            | TBD  | view-mode toggle (GRID / LIST / SPLIT) icon-only            | default |
-| `src/lib/components/dashboard/panels/SpectrumControls.svelte`     | TBD  | mode toggle (PEAK / AVG / LIVE)                             | sm      |
-| `src/lib/components/dashboard/panels/FilterBar.svelte`            | TBD  | quick-filter chips                                          | sm      |
-| `src/lib/components/dashboard/views/ReportsView.svelte`           | TBD  | export-format (PDF / CSV / JSON)                            | default |
+| File                                                          | Line | Site description                                 | Size    |
+| ------------------------------------------------------------- | ---- | ------------------------------------------------ | ------- |
+| `src/lib/components/dashboard/views/AgentsView.svelte`        | TBD  | filter tabs (ALL / ACTIVE / IDLE / DEAD)         | default |
+| `src/lib/components/dashboard/views/AgentsView.svelte`        | TBD  | view-mode toggle (GRID / LIST / SPLIT) icon-only | default |
+| `src/lib/components/dashboard/panels/SpectrumControls.svelte` | TBD  | mode toggle (PEAK / AVG / LIVE)                  | sm      |
+| `src/lib/components/dashboard/panels/FilterBar.svelte`        | TBD  | quick-filter chips                               | sm      |
+| `src/lib/components/dashboard/views/ReportsView.svelte`       | TBD  | export-format (PDF / CSV / JSON)                 | default |
 
 Total: ~5-7 sites. Migration order: SPECTRUM mode first (highest visibility, simplest mapping) → AGENTS filter → AGENTS view-mode (icon-only validation) → FilterBar → ReportsView.
 

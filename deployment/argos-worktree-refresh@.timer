@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily Argos worktree refresh (instance %i)
+
+[Timer]
+OnCalendar=*-*-* 04:00:00
+Persistent=true
+RandomizedDelaySec=300
+Unit=argos-worktree-refresh@%i.service
+
+[Install]
+WantedBy=timers.target

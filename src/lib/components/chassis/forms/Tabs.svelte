@@ -37,7 +37,12 @@
 		onChange
 	}: Props = $props();
 
-	const selectedIndex = $derived(Math.max(0, tabs.findIndex((t) => t.id === selectedId)));
+	const selectedIndex = $derived(
+		Math.max(
+			0,
+			tabs.findIndex((t) => t.id === selectedId)
+		)
+	);
 
 	$effect(() => {
 		if (tabs.length === 0) {
@@ -78,7 +83,9 @@
 			{#if tab.badge !== undefined}
 				<span class="lunaris-tab-with-badge">
 					<span>{tab.label}</span>
-					<span class="lunaris-tab-badge" aria-label={`${tab.badge} items`}>{tab.badge}</span>
+					<span class="lunaris-tab-badge" aria-label={`${tab.badge} items`}
+						>{tab.badge}</span
+					>
 				</span>
 			{:else}
 				{tab.label}
@@ -88,7 +95,9 @@
 </CarbonTabs>
 
 <style>
-	:global(.bx--tabs__nav-item.lunaris-has-items:not(.bx--tabs__nav-item--selected) .bx--tabs__nav-link) {
+	:global(
+		.bx--tabs__nav-item.lunaris-has-items:not(.bx--tabs__nav-item--selected) .bx--tabs__nav-link
+	) {
 		color: var(--warning);
 	}
 

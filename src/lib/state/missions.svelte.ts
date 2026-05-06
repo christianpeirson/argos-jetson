@@ -86,7 +86,9 @@ async function fetchLoad(ops: StoreOps): Promise<void> {
 
 async function fetchSetActive(ops: StoreOps, id: string): Promise<void> {
 	try {
-		const res = await fetch(`/api/missions/${encodeURIComponent(id)}/activate`, { method: 'POST' });
+		const res = await fetch(`/api/missions/${encodeURIComponent(id)}/activate`, {
+			method: 'POST'
+		});
 		const m = unwrapMission(await readJson<MissionResponse>(res));
 		ops.replaceMission(m);
 		ops.clearError();
@@ -101,11 +103,7 @@ async function fetchSetActive(ops: StoreOps, id: string): Promise<void> {
 	}
 }
 
-async function fetchPatch(
-	ops: StoreOps,
-	id: string,
-	body: MissionPatch
-): Promise<Mission | null> {
+async function fetchPatch(ops: StoreOps, id: string, body: MissionPatch): Promise<Mission | null> {
 	if (Object.keys(body).length === 0) return null;
 	try {
 		const res = await fetch(`/api/missions/${encodeURIComponent(id)}`, {

@@ -142,9 +142,15 @@
 		color: var(--mk2-ink-3);
 	}
 
-	.ev-code[data-level='info'] { color: var(--mk2-ink-3); }
-	.ev-code[data-level='warn'] { color: var(--mk2-amber); }
-	.ev-code[data-level='error'] { color: var(--mk2-red); }
+	.ev-code[data-level='info'] {
+		color: var(--mk2-ink-3);
+	}
+	.ev-code[data-level='warn'] {
+		color: var(--mk2-amber);
+	}
+	.ev-code[data-level='error'] {
+		color: var(--mk2-red);
+	}
 
 	.ev-src {
 		color: var(--mk2-ink-3);

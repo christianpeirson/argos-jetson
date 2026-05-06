@@ -29,8 +29,8 @@ From `docs/carbon-design-system/packages/styles/scss/components/accordion/_accor
 	justify-content: flex-start;
 	inline-size: 100%;
 	min-block-size: convert.to-rem(40px); // default; sm 32px; xl 48px
-	padding-block: $spacing-04;            // 12px
-	padding-inline: $spacing-05;           // 16px
+	padding-block: $spacing-04; // 12px
+	padding-inline: $spacing-05; // 16px
 	background-color: transparent;
 	color: $text-primary;
 	cursor: pointer;
@@ -81,17 +81,17 @@ Key shape:
 
 ## Lunaris token map
 
-| Carbon token                     | Lunaris value                             | Notes                                                              |
-| -------------------------------- | ----------------------------------------- | ------------------------------------------------------------------ |
-| `$text-primary` (heading text)   | `var(--ink)` for active, `var(--ink-2)` collapsed | Active item heading slightly brighter to signal "you're here"      |
-| `$text-disabled` (disabled head) | `var(--ink-5)`                            | Most-muted ink                                                     |
-| `$border-subtle` (item sep)      | `var(--border)` (#2E2E2E) 1 px            | Quiet rule between items                                           |
-| `$layer-hover` (heading hover)   | `var(--bg-1)` (#161616)                   | Subtle lift on hover                                               |
-| `$icon-primary` (chevron)        | `var(--ink-2)`                            | Default chevron                                                    |
-| `$focus`                         | `var(--accent)`                           | 2-px outline on focused heading button                              |
-| `$layer` (heading bg)            | transparent                               | Heading sits flush on parent panel — no card-on-card               |
-| `body-compact-01` heading text   | `var(--mk2-fs-3) / 1.4 var(--mk2-f-mono)` | Geist Mono UPPERCASE for tactical accordions (Workflows / Tools)   |
-| `body-01` heading text (prose)   | `var(--mk2-fs-3) / 1.4 var(--mk2-f-sans)` | Geist sans for prose-heavy accordions (Reports / Tweaks)           |
+| Carbon token                     | Lunaris value                                     | Notes                                                            |
+| -------------------------------- | ------------------------------------------------- | ---------------------------------------------------------------- |
+| `$text-primary` (heading text)   | `var(--ink)` for active, `var(--ink-2)` collapsed | Active item heading slightly brighter to signal "you're here"    |
+| `$text-disabled` (disabled head) | `var(--ink-5)`                                    | Most-muted ink                                                   |
+| `$border-subtle` (item sep)      | `var(--border)` (#2E2E2E) 1 px                    | Quiet rule between items                                         |
+| `$layer-hover` (heading hover)   | `var(--bg-1)` (#161616)                           | Subtle lift on hover                                             |
+| `$icon-primary` (chevron)        | `var(--ink-2)`                                    | Default chevron                                                  |
+| `$focus`                         | `var(--accent)`                                   | 2-px outline on focused heading button                           |
+| `$layer` (heading bg)            | transparent                                       | Heading sits flush on parent panel — no card-on-card             |
+| `body-compact-01` heading text   | `var(--mk2-fs-3) / 1.4 var(--mk2-f-mono)`         | Geist Mono UPPERCASE for tactical accordions (Workflows / Tools) |
+| `body-01` heading text (prose)   | `var(--mk2-fs-3) / 1.4 var(--mk2-f-sans)`         | Geist sans for prose-heavy accordions (Reports / Tweaks)         |
 
 ---
 
@@ -99,12 +99,12 @@ Key shape:
 
 Carbon ships three sizes via `size` prop. Lunaris adopts all three.
 
-| Argos surface              | Density | Carbon size | Heading height | Heading text                            |
-| -------------------------- | ------- | ----------- | -------------- | --------------------------------------- |
-| Workflows panel categories | compact | `"sm"`      | 32 px          | `code-compact-01` UPPER mono            |
-| Tools flyout sub-categories | compact | `"sm"`      | 32 px          | `code-compact-01` UPPER mono            |
-| Advanced settings (Tweaks)  | normal  | default     | 40 px          | `body-compact-01` mixed-case sans       |
-| Mission report sections    | normal  | default     | 40 px          | `body-compact-01` mixed-case sans       |
+| Argos surface               | Density | Carbon size | Heading height | Heading text                      |
+| --------------------------- | ------- | ----------- | -------------- | --------------------------------- |
+| Workflows panel categories  | compact | `"sm"`      | 32 px          | `code-compact-01` UPPER mono      |
+| Tools flyout sub-categories | compact | `"sm"`      | 32 px          | `code-compact-01` UPPER mono      |
+| Advanced settings (Tweaks)  | normal  | default     | 40 px          | `body-compact-01` mixed-case sans |
+| Mission report sections     | normal  | default     | 40 px          | `body-compact-01` mixed-case sans |
 
 Touch-target compliance is achieved via full-width heading hitboxes — see `accessibility.md` for WCAG 2.5.8 reasoning.
 
@@ -122,14 +122,14 @@ Touch-target compliance is achieved via full-width heading hitboxes — see `acc
 
 Per Carbon `accordion/style.mdx` confirmed against source SCSS:
 
-| State                | Border (Lunaris)                        | Heading bg     | Heading text                       | Chevron          |
-| -------------------- | --------------------------------------- | -------------- | ---------------------------------- | ---------------- |
-| Collapsed (default)  | `var(--border)` 1 px top                | transparent    | `var(--ink-2)`                     | -90° `var(--ink-2)` |
-| Hover (collapsed)    | unchanged                               | `var(--bg-1)`  | `var(--ink)`                       | -90° `var(--ink)` |
-| Expanded             | unchanged                               | transparent    | `var(--ink)`                       | 0° `var(--ink)`   |
-| Hover (expanded)     | unchanged                               | `var(--bg-1)`  | `var(--ink)`                       | 0° `var(--ink)`   |
-| Focus (any)          | + 2-px ring `var(--accent)` outside heading | unchanged   | unchanged                          | unchanged        |
-| Disabled             | unchanged                               | transparent    | `var(--ink-5)`                     | -90° `var(--ink-5)` |
+| State               | Border (Lunaris)                            | Heading bg    | Heading text   | Chevron             |
+| ------------------- | ------------------------------------------- | ------------- | -------------- | ------------------- |
+| Collapsed (default) | `var(--border)` 1 px top                    | transparent   | `var(--ink-2)` | -90° `var(--ink-2)` |
+| Hover (collapsed)   | unchanged                                   | `var(--bg-1)` | `var(--ink)`   | -90° `var(--ink)`   |
+| Expanded            | unchanged                                   | transparent   | `var(--ink)`   | 0° `var(--ink)`     |
+| Hover (expanded)    | unchanged                                   | `var(--bg-1)` | `var(--ink)`   | 0° `var(--ink)`     |
+| Focus (any)         | + 2-px ring `var(--accent)` outside heading | unchanged     | unchanged      | unchanged           |
+| Disabled            | unchanged                                   | transparent   | `var(--ink-5)` | -90° `var(--ink-5)` |
 
 ---
 
@@ -137,12 +137,12 @@ Per Carbon `accordion/style.mdx` confirmed against source SCSS:
 
 Carbon's default chevron alignment is `align="end"` (chevron on the trailing edge). Tree-view + nav patterns expect chevron-leading (`align="start"`) so the expand affordance reads top-down with the title to the right.
 
-| Surface                     | `align`   | Reason                                         |
-| --------------------------- | --------- | ---------------------------------------------- |
-| Workflows panel categories  | `"start"` | Tree-view nav pattern; chevron-leading         |
-| Tools flyout sub-categories | `"start"` | Tree-view nav pattern                          |
-| Advanced settings (Tweaks)  | `"end"`   | Prose disclosure; Carbon default reads better  |
-| Mission report sections     | `"end"`   | Prose disclosure                               |
+| Surface                     | `align`   | Reason                                        |
+| --------------------------- | --------- | --------------------------------------------- |
+| Workflows panel categories  | `"start"` | Tree-view nav pattern; chevron-leading        |
+| Tools flyout sub-categories | `"start"` | Tree-view nav pattern                         |
+| Advanced settings (Tweaks)  | `"end"`   | Prose disclosure; Carbon default reads better |
+| Mission report sections     | `"end"`   | Prose disclosure                              |
 
 ---
 

@@ -79,16 +79,63 @@ async function computeHumanAuthoredLOC() {
 	return { lineCount: Math.max(0, total - generated), generated };
 }
 
-function reportPrSize(lineCount, generated) {
-	if (lineCount > PR_SIZE_HARD) {
+// Format-only commits are deterministic prettier / formatter output. No
+// review value is added by capping their LOC — re-running the same tool on
+// the pre-commit state reproduces the diff exactly. Detected by Conventional
+// Commits subject pattern: `style(<scope>): prettier ...` or
+// `style(<scope>): format ...`. Authors opt in by using these subjects for
+// pure formatter sweeps. Mixed PRs (format commit + non-format commit) get
+// per-commit subtraction: the format commit's LOC contribution is excluded
+// while non-format commits' LOC still counts toward the cap.
+//
+// Discovered 2026-05-06: PR #115 was a 6031-LOC bundle of which ~5800 was a
+// single `npm run format` sweep on Phase 9 spec docs + .svelte files.
+// Splitting an auto-format diff into per-file PRs adds zero review signal
+// at >100× CI cost. Codifying the carve-out in `dangerfile.js` is the
+// professional alternative to admin-bypassing the gate (see
+// `feedback_no_admin_bypass_daily_loc_cap.md`).
+const FORMAT_COMMIT_RE = /^style\([^)]+\):\s+(prettier|format)\b/;
+const { execSync } = require('node:child_process');
+
+function computeFormatOnlyLOC() {
+	const commits = (danger.git && danger.git.commits) || [];
+	let total = 0;
+	const matched = [];
+	for (const c of commits) {
+		const subject = ((c && c.message) || '').split('\n')[0];
+		if (!FORMAT_COMMIT_RE.test(subject)) continue;
+		try {
+			const out = execSync(`git show --shortstat --format="" ${c.sha}`, {
+				encoding: 'utf8'
+			});
+			const ins = Number((out.match(/(\d+) insertion/) || ['', 0])[1]);
+			const del = Number((out.match(/(\d+) deletion/) || ['', 0])[1]);
+			total += ins + del;
+			matched.push({ sha: c.sha.slice(0, 7), subject, loc: ins + del });
+		} catch {
+			// Conservative: a commit whose stat we can't read counts toward cap.
+		}
+	}
+	return { total, matched };
+}
+
+function reportPrSize(lineCount, generated, formatOnly) {
+	const reviewable = Math.max(0, lineCount - formatOnly.total);
+	if (formatOnly.total > 0) {
+		const list = formatOnly.matched.map((m) => `\`${m.sha}\` (${m.loc} LOC)`).join(', ');
+		warn(
+			`Excluding ${formatOnly.total} format-only LOC from size cap (commits matching \`^style(<scope>): prettier|format ...\`): ${list}. Reviewer can verify by re-running \`npm run format\` on the PR head — diff should be empty.`
+		);
+	}
+	if (reviewable > PR_SIZE_HARD) {
 		fail(
-			`PR is ${lineCount} human-authored lines (> ${PR_SIZE_HARD}). Split into smaller PRs — reviewers cannot meaningfully review at this scale. Generated files excluded: ${generated} lines.`
+			`PR is ${reviewable} reviewable lines (> ${PR_SIZE_HARD}). Split into smaller PRs — reviewers cannot meaningfully review at this scale. Generated files excluded: ${generated} lines. Format-only excluded: ${formatOnly.total} lines.`
 		);
 		return;
 	}
-	if (lineCount > PR_SIZE_SOFT) {
+	if (reviewable > PR_SIZE_SOFT) {
 		warn(
-			`PR is ${lineCount} human-authored lines (> ${PR_SIZE_SOFT}). Consider splitting for easier review.`
+			`PR is ${reviewable} reviewable lines (> ${PR_SIZE_SOFT}). Consider splitting for easier review.`
 		);
 	}
 }
@@ -96,7 +143,8 @@ function reportPrSize(lineCount, generated) {
 schedule(async () => {
 	try {
 		const { lineCount, generated } = await computeHumanAuthoredLOC();
-		reportPrSize(lineCount, generated);
+		const formatOnly = computeFormatOnlyLOC();
+		reportPrSize(lineCount, generated, formatOnly);
 	} catch (err) {
 		// Git metadata occasionally missing in CI (e.g. shallow clone edge cases).
 		// Fail loud with the error so the operator can retry or widen fetch-depth

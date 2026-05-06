@@ -30,6 +30,15 @@ declare global {
 	var __argos_rfdatabase: import('$lib/server/db/database').RFDatabase | undefined;
 	var __argos_wiresharkVnc_state: WiresharkVncState | undefined;
 	var __argos_wiresharkVnc_shutdown_registered: boolean | undefined;
+	var __argos_gnuradioVnc_state:
+		| {
+				xvncProcess: import('child_process').ChildProcess | null;
+				grcProcess: import('child_process').ChildProcess | null;
+				websockifyProcess: import('child_process').ChildProcess | null;
+				currentFlowgraph: string | null;
+				spawnError: Error | null;
+		  }
+		| undefined;
 
 	namespace App {
 		// interface Error {}

@@ -16,7 +16,7 @@ This is the SECOND bespoke chassis primitive in spec-026 (after `PanelStatus`, P
 import type { Snippet } from 'svelte';
 
 export interface EditorTab {
-	id: string;             // stable across renders
+	id: string; // stable across renders
 	title: string;
 	icon?: Snippet;
 }
@@ -26,28 +26,32 @@ interface Props {
 	activeId: string;
 	onActivate: (id: string) => void;
 	onClose?: (id: string) => void;
-	ariaLabel?: string;     // default 'Editor tabs'
-	trailing?: Snippet;     // hosted at end of the toolbar
+	ariaLabel?: string; // default 'Editor tabs'
+	trailing?: Snippet; // hosted at end of the toolbar
 	class?: string;
 }
 ```
 
-| Prop | Type | Default | Description |
-|---|---|---|---|
-| `tabs` | `EditorTab[]` | **REQUIRED** | Ordered list of tabs. `id` MUST be stable across renders |
-| `activeId` | `string` | **REQUIRED** | The `id` of the currently selected tab. Drives `aria-selected` + initial roving cursor |
-| `onActivate` | `(id: string) => void` | **REQUIRED** | Fired on click / Enter / Space on a tab |
-| `onClose` | `(id: string) => void` | `undefined` | Fired on click / Enter / Space on a close button. Omit to suppress close affordance entirely (tabs render without close-X) |
-| `ariaLabel` | `string` | `'Editor tabs'` | Accessible name for the toolbar |
-| `trailing` | `Snippet` | `undefined` | Trailing slot for "+ new" button / dropdown. Renders AFTER all tabs |
-| `class` | `string` | `undefined` | Extra class on outer `<div>` |
+| Prop         | Type                   | Default         | Description                                                                                                                |
+| ------------ | ---------------------- | --------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `tabs`       | `EditorTab[]`          | **REQUIRED**    | Ordered list of tabs. `id` MUST be stable across renders                                                                   |
+| `activeId`   | `string`               | **REQUIRED**    | The `id` of the currently selected tab. Drives `aria-selected` + initial roving cursor                                     |
+| `onActivate` | `(id: string) => void` | **REQUIRED**    | Fired on click / Enter / Space on a tab                                                                                    |
+| `onClose`    | `(id: string) => void` | `undefined`     | Fired on click / Enter / Space on a close button. Omit to suppress close affordance entirely (tabs render without close-X) |
+| `ariaLabel`  | `string`               | `'Editor tabs'` | Accessible name for the toolbar                                                                                            |
+| `trailing`   | `Snippet`              | `undefined`     | Trailing slot for "+ new" button / dropdown. Renders AFTER all tabs                                                        |
+| `class`      | `string`               | `undefined`     | Extra class on outer `<div>`                                                                                               |
 
 ## Module-level type export
 
 ```svelte
 <script lang="ts" module>
 	import type { Snippet } from 'svelte';
-	export interface EditorTab { id: string; title: string; icon?: Snippet; }
+	export interface EditorTab {
+		id: string;
+		title: string;
+		icon?: Snippet;
+	}
 </script>
 ```
 
@@ -67,14 +71,14 @@ Consumers import the `EditorTab` type:
 
 The chassis maintains a `cursorIdx: number` ($state) referencing the currently focused item in the flat ordered list `[tab0, close0, tab1, close1, …]`. Trailing-snippet content is NOT in the roving list (Tab-reachable, not arrow-reachable — per APG Toolbar's "multi-stop toolbar" allowance).
 
-| Key | Effect |
-|---|---|
-| ArrowRight | `cursorIdx = (cursorIdx + 1) % len` |
-| ArrowLeft | `cursorIdx = (cursorIdx - 1 + len) % len` |
-| Home | `cursorIdx = 0` |
-| End | `cursorIdx = len - 1` |
+| Key           | Effect                                                          |
+| ------------- | --------------------------------------------------------------- |
+| ArrowRight    | `cursorIdx = (cursorIdx + 1) % len`                             |
+| ArrowLeft     | `cursorIdx = (cursorIdx - 1 + len) % len`                       |
+| Home          | `cursorIdx = 0`                                                 |
+| End           | `cursorIdx = len - 1`                                           |
 | Enter / Space | If item is a tab → `onActivate(id)`; if close → `onClose?.(id)` |
-| Tab | Native — exits the toolbar |
+| Tab           | Native — exits the toolbar                                      |
 
 `tabindex` is `0` only on the item at `cursorIdx`; all others are `-1`. After arrow movement, an `$effect` calls `.focus()` on the new item via `bind:this` element refs.
 
@@ -108,7 +112,10 @@ N/A — this chassis does not wrap a Carbon primitive. It IS the design source o
 
 ```svelte
 <EditorTabBar
-	tabs={[{ id: '1', title: 'Tab one' }, { id: '2', title: 'Tab two' }]}
+	tabs={[
+		{ id: '1', title: 'Tab one' },
+		{ id: '2', title: 'Tab two' }
+	]}
 	activeId={'1'}
 	onActivate={(id) => console.log('activate', id)}
 />
@@ -125,14 +132,24 @@ N/A — this chassis does not wrap a Carbon primitive. It IS the design source o
 		terminalSessions
 	} from '$lib/stores/dashboard/terminal-store';
 
-	let { availableShells, showShellDropdown, onCreateSession, onCloseSession, onToggleShellDropdown } = $props();
+	let {
+		availableShells,
+		showShellDropdown,
+		onCreateSession,
+		onCloseSession,
+		onToggleShellDropdown
+	} = $props();
 
 	const tabs = $derived<EditorTab[]>(
 		$terminalSessions.map((s) => ({ id: s.id, title: s.title }))
 	);
 
-	function activate(id: string) { setActiveSession(id); }
-	function close(id: string) { onCloseSession(new MouseEvent('click'), id); }
+	function activate(id: string) {
+		setActiveSession(id);
+	}
+	function close(id: string) {
+		onCloseSession(new MouseEvent('click'), id);
+	}
 </script>
 
 <EditorTabBar
@@ -147,7 +164,9 @@ N/A — this chassis does not wrap a Carbon primitive. It IS the design source o
 		{#if showShellDropdown}
 			<div class="dropdown-menu">
 				{#each availableShells as shell}
-					<button class="dropdown-item" onclick={() => onCreateSession(shell.path)}>{shell.name}</button>
+					<button class="dropdown-item" onclick={() => onCreateSession(shell.path)}
+						>{shell.name}</button
+					>
 				{/each}
 			</div>
 		{/if}

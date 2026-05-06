@@ -14,13 +14,13 @@ Loading has NO events and NO slots — passthrough is trivial.
 
 ## Public API — Props
 
-| Prop | Type | Default | Description |
-| ---- | ---- | ------- | ----------- |
-| `small` | `boolean` | `false` | Use the compact spinner variant (~24px) instead of large (~44px). |
-| `active` | `boolean` | `true` | Whether the spinner animates. `false` shows the stopped state with `aria-live="off"`. |
-| `withOverlay` | `boolean` | `true` | Render with a semi-transparent backdrop blocking interaction. `false` for inline spinner. |
-| `description` | `string` | `'Loading'` | SVG `<title>` text — screen-reader announcement, not visible. |
-| `class` | `string \| undefined` | `undefined` | Extra class forwarded to Carbon's outer wrapper. |
+| Prop          | Type                  | Default     | Description                                                                               |
+| ------------- | --------------------- | ----------- | ----------------------------------------------------------------------------------------- |
+| `small`       | `boolean`             | `false`     | Use the compact spinner variant (~24px) instead of large (~44px).                         |
+| `active`      | `boolean`             | `true`      | Whether the spinner animates. `false` shows the stopped state with `aria-live="off"`.     |
+| `withOverlay` | `boolean`             | `true`      | Render with a semi-transparent backdrop blocking interaction. `false` for inline spinner. |
+| `description` | `string`              | `'Loading'` | SVG `<title>` text — screen-reader announcement, not visible.                             |
+| `class`       | `string \| undefined` | `undefined` | Extra class forwarded to Carbon's outer wrapper.                                          |
 
 ## Public API — Callback props
 
@@ -32,11 +32,11 @@ None.
 
 ## Carbon → chassis API mapping
 
-| Carbon prop | Chassis prop |
-| ----------- | ------------ |
-| `small` | `small` |
-| `active` | `active` |
-| `withOverlay` | `withOverlay` |
+| Carbon prop   | Chassis prop                                                |
+| ------------- | ----------------------------------------------------------- |
+| `small`       | `small`                                                     |
+| `active`      | `active`                                                    |
+| `withOverlay` | `withOverlay`                                               |
 | `description` | `description` (default `'Loading'` vs Carbon's `'loading'`) |
 
 ## Paste-ready snippets
