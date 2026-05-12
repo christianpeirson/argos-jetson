@@ -71,16 +71,20 @@ These four reduce to one operational rule: **fast feedback locally, definitive e
 ├──────────────────────────────────────────────────────────────────────┤
 │ LAYER 3 — GitHub Actions (REMOTE, authoritative)                     │
 │   • lint.yml      — ESLint full-repo (cached) + commitlint + gitleaks│
-│   • ci.yml        — typecheck + format:check + full vitest + build;  │
-│                     triggers: PR→main, push→main, AND merge_group    │
-│                     (the required check the dev merge queue waits on)│
+│   • ci.yml        — typecheck + format:check + full vitest + build   │
+│                     (triggers: PR→main, push→main)                   │
 │   • commitlint.yml— wagoid/commitlint-github-action (PR-level)       │
 │   • danger.yml    — PR shape (size, sprawl, tests-required)          │
+│   • fallow.yml    — baseline-aware audit (parity period; PR-visible  │
+│                     log; no SARIF upload)                            │
 │   • trunk.yml     — trunk check --upstream (annotations only)        │
 │   • semantic-release.yml — tag + CHANGELOG on push to main           │
 │   • release.yml   — tarball on `v*.*.*` tag                          │
-│   Branch protection (dev): require ci.yml + up-to-date-with-base +   │
-│     linear history; merge queue enabled (conflict-avoidance L3/L4).  │
+│   Branch protection: `dev` requires ESLint+gitleaks+commitlint+      │
+│     danger+fallow checks; `main` requires ci.yml; both `strict`      │
+│     (up-to-date-with-base). No merge queue (declined — §4.4 L4).     │
+│     conflict-avoidance L1 = .husky/pre-push freshness gate,          │
+│     L2 = scripts/claude-hooks/worktree-refresh.sh fan-out.           │
 ├──────────────────────────────────────────────────────────────────────┤
 │ LAYER 4 — CodeRabbit (REMOTE, AI review on every PR)                 │
 │   Server-side review on PR open/sync. Argos workflow: feature → dev  │
@@ -350,12 +354,29 @@ Mitigation (in place): `scripts/ops/mem-guard.sh` uses `flock` (kernel-atomic si
 
 Argos development runs N parallel Claude Code instances, each in its own tmux session (`aoe`) on its own git worktree under `../Argos-worktrees/<branch>`, all sharing one `.git` object store. Feature branches finish at different times, so a strategy is needed to keep them from drifting / colliding when they each merge to `dev`. Four layers, defence-in-depth:
 
-- **L1 — pre-push freshness gate** (`.husky/pre-push` step 1b). Blocks the push if `HEAD` is > `FRESHNESS_MAX_BEHIND` (default 25) commits behind `origin/dev`, or if the worktree carries a `.needs-rebase` marker. Remediation message tells the dev to `git rebase origin/dev`. Bypass `SKIP_FRESHNESS=1`. This is the per-branch "stay healthy" gate (Fowler: low *Diff Debt* / *Healthy Branch*).
-- **L2 — post-merge fan-out** (`scripts/claude-hooks/worktree-refresh.sh`, invoked by Claude right after `mcp__github__merge_pull_request`, prompted by the `post-push-pr-flow.sh` hook). Fetches `origin`, then for every *other* worktree on a non-protected branch: if its tree is clean, `git rebase origin/dev`; if dirty or the rebase conflicts, abort and drop a `.needs-rebase` marker (→ caught by L1 on that worktree's next push). Also deletes the merged PR's now-orphaned local branch. Always exits 0; prints a summary. This is Fowler's high-frequency *Mainline Integration* applied mechanically across worktrees.
-- **L3 — `dev` branch protection** (GitHub settings, not in-repo). Require `ci.yml` status, "branches must be up to date before merging", linear history. Standard protected-branch config.
-- **L4 — GitHub merge queue on `dev`** (GitHub settings + `ci.yml` `merge_group:` trigger, both shipped). Serialises the rare PR-vs-PR race: GitHub rebases each queued PR on the latest base, runs `ci.yml` via the `merge_group` event, merges in order. Lineage: the "Not Rocket Science Rule" → bors / GitLab merge trains / GitHub merge queue.
+- **L1 — pre-push freshness gate** (`.husky/pre-push` step 1b). Blocks the push if `HEAD` is > `FRESHNESS_MAX_BEHIND` (default 25) commits behind `origin/dev`, or if the worktree carries a `.needs-rebase` marker. Remediation message tells the dev to `git rebase origin/dev`. Bypass `SKIP_FRESHNESS=1`. This is the per-branch "stay healthy" gate (Fowler: low _Diff Debt_ / _Healthy Branch_).
+- **L2 — post-merge fan-out** (`scripts/claude-hooks/worktree-refresh.sh`, invoked by Claude right after `mcp__github__merge_pull_request`, prompted by the `post-push-pr-flow.sh` hook). Fetches `origin`, then for every _other_ worktree on a non-protected branch: if its tree is clean, `git rebase origin/dev`; if dirty or the rebase conflicts, abort and drop a `.needs-rebase` marker (→ caught by L1 on that worktree's next push). Also deletes the merged PR's now-orphaned local branch. Always exits 0; prints a summary. This is Fowler's high-frequency _Mainline Integration_ applied mechanically across worktrees.
+- **L3 — `dev` and `main` branch protection** (GitHub settings; shipped 2026-05-12 — see the inventory below). `dev` requires the five always-on PR checks (`ESLint full-repo scan`, `Secret scan (gitleaks)`, `Validate PR commits`, `PR shape rules`, `Fallow audit (…)`) + `strict: true` ("branches must be up to date before merging"). `main` requires `Validate Code, Tests, and Build` (`ci.yml`, which runs on PR→`main`) + `strict: true`. `required_linear_history` is **off** on both — the feature→dev / dev→main flows use merge commits. `enforce_admins` is **off** — break-glass kept; "no admin bypass on feature→dev" stays a workflow-discipline rule.
+- **L4 — GitHub merge queue: evaluated and DECLINED.** A merge queue validates the required checks on a synthetic `merge_group` ref with no PR attached, but `commitlint.yml` ("Validate PR commits") and `danger.yml` ("PR shape rules") are intrinsically PR-scoped — they need a PR to inspect — so a real queue would force dropping them as required checks. The only race a queue protects against (two PRs each green against an old base, both merge, `dev` breaks) is already prevented by L3's `strict: true` (a stale PR can't merge — you rebase, CI re-runs). For a solo dev pushing ~1 PR/day that race effectively never happens. The `merge_group:` trigger PR #121 added to `ci.yml` was removed. (Lineage if ever revisited: the "Not Rocket Science Rule" → bors / GitLab merge trains / GitHub merge queue.)
 
-L1+L2 are the workhorses (they keep the working worktrees in sync day-to-day); L3+L4 are the server-side backstop. To enable L3/L4: `gh api -X PUT repos/Graveside2022/argos-jetson/branches/dev/protection` with required-status-checks `ci.yml`, `required_linear_history: true`, and enable the merge queue for `dev` in repo settings → Branches.
+L1+L2 are the workhorses (they keep the working worktrees in sync day-to-day); L3 is the server-side backstop; L4 was deemed unnecessary here.
+
+### 4.4.1 Branch security inventory (reproducible config)
+
+Server-side state set 2026-05-12 (mostly via `gh api`; a couple couldn't be toggled by the `gh` token — flagged UI-only):
+
+| Setting                                                   | State                                                                                                                                                                                                                                                                                                                             | How                                                                                         |
+| --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `dev` protection — required checks                        | `ESLint full-repo scan`, `Secret scan (gitleaks)`, `Validate PR commits`, `PR shape rules`, `Fallow audit (complexity + dupes + dead-code, baseline-aware)`; `strict: true`; `enforce_admins: false`; `required_linear_history: false`; `required_pull_request_reviews: null`                                                     | `gh api -X PUT repos/christianpeirson/argos-jetson/branches/dev/protection --input <json>`  |
+| `main` protection — required checks                       | `Validate Code, Tests, and Build`; `strict: true`; same admin/linear/PR-review settings as `dev`                                                                                                                                                                                                                                  | `gh api -X PUT repos/christianpeirson/argos-jetson/branches/main/protection --input <json>` |
+| Dependabot security updates                               | enabled (vulnerability alerts + automated security fixes)                                                                                                                                                                                                                                                                         | `gh api -X PUT .../vulnerability-alerts` + `gh api -X PUT .../automated-security-fixes`     |
+| Secret scanning + push protection                         | enabled (pre-existing)                                                                                                                                                                                                                                                                                                            | —                                                                                           |
+| Secret scanning — non-provider patterns + validity checks | **NOT enabled** — `PATCH /repos` silently no-ops on these for this repo/token. **UI: Settings → Code security → "Secret protection".**                                                                                                                                                                                            | UI-only                                                                                     |
+| CodeQL default code scanning                              | **NOT configured** — `PUT .../code-scanning/default-setup` 404s for this token. **UI: Settings → Code security → Code scanning → Set up → Default.** Then add a `code_scanning` ruleset rule (`POST .../rulesets`, rule type `code_scanning`, tool `CodeQL`, `security_alerts_threshold: high_or_higher`) targeting `dev`+`main`. | UI-only                                                                                     |
+| Repository rulesets                                       | **none** — `commit_message_pattern` (server-side Conventional-Commits enforcement at push) is **GitHub Enterprise-only** (422s on this personal repo); `commitlint.yml` (PR-level) remains the CC gate. A push `file_size_restriction` ruleset is a marginal follow-up (Settings → Rules → New ruleset → Push).                   | —                                                                                           |
+| `fallow` code-scanning check                              | removed — `fallow.yml`'s SARIF→Code-Scanning upload step dropped (it left a `fallow` tool check stuck `queued` on PR heads); the `Fallow audit (…)` workflow-job check is the gate.                                                                                                                                               | this PR                                                                                     |
+
+SSH-signed commits (`required_signatures`) considered and skipped (solo dev). `enforce_admins`/no-bypass left off (break-glass).
 
 ### 4.5 Native addons (better-sqlite3, node-pty)
 
