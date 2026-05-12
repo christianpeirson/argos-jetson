@@ -26,8 +26,11 @@ on:
 # Least-privilege permissions — checkout only. (The SARIF→Code-Scanning upload
 # was removed: it registered a `fallow` code-scanning tool whose check would
 # sit `queued` indefinitely on PR heads; the workflow-job check below
-# — "Fallow audit (…)" — is the real gate. CodeQL default setup owns code
-# scanning. See docs/ci-cd-pipeline-spec.md §4.4.)
+# — "Fallow audit (…)" — is the real gate. Code Scanning itself is intended to
+# be owned by CodeQL default setup, which is a Settings → Code-security UI
+# toggle that is still PENDING — see docs/ci-cd-pipeline-spec.md §4.4.1. Until
+# it's enabled the repo simply has no Code-Scanning analysis, which is the
+# same state it was in before this workflow ever uploaded SARIF.)
 permissions:
   contents: read
 

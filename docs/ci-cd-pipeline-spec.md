@@ -1,5 +1,5 @@
 ---
-last_validated: 2026-05-04
+last_validated: 2026-05-12
 gate_matrix_version: 2
 canonical_authorities:
     - https://typicode.github.io/husky/
@@ -24,7 +24,7 @@ context7_library_ids:
 
 # Argos CI/CD Pipeline Specification
 
-**Status**: canonical reference. Last updated 2026-04-29.
+**Status**: canonical reference. Last updated 2026-05-12.
 **Scope**: every quality gate that runs on a commit, push, PR, or release tag.
 **Audience**: every future change to `.husky/`, `.github/workflows/`, or pipeline tooling cites this document or amends it.
 
@@ -258,11 +258,10 @@ Each section: (a) what it is (b) official docs (c) Argos use today (d) industry 
 (a) Rust-based code-intelligence CLI (Oxc parser, syntactic-only). Runs five detector families in one binary: `health` (cyclomatic + cognitive + CRAP), `dupes` (semantic clone detection), `dead-code` (cross-module unused exports/files/types/class-members/deps + circular deps), and `audit` (combined diff-aware runner). Aarch64 prebuilt confirmed working on Jetson AGX Orin.
 (b) https://docs.fallow.tools/ ; https://github.com/fallow-rs/fallow (MIT, v2.63.0 as of install).
 (c) Installed via `npm install --save-dev --save-exact fallow` (no caret, exact pin enforced by `audit-pipeline-config.sh` check 7). Config lives in `.fallowrc.json` at repo root with `health.maxCyclomatic=5`, `health.maxCognitive=5`, `health.maxCrap=30`, `duplicates.mode=semantic`. Day-1 baseline files (`.fallow-{deadcode,health,dupes}-baseline.json`) committed to repo root grandfather pre-existing findings (244 complexity, 129 dupe groups, 223 dead exports as of 2026-05-04).
-(d) Three fire-points:
+(d) Two fire-points (pre-commit step 1c was removed 2026-05-04 — see "Gate-semantic refinement" below):
 
-- **Pre-commit** — `.husky/pre-commit` step 1c runs `fallow audit --quiet --format compact`. Diff-aware (auto-detected base branch). `SKIP_FALLOW=1` bypass.
-- **Pre-push** — `.husky/pre-push` step 4 runs the same audit at branch level. Same bypass env var.
-- **CI** — `.github/workflows/fallow.yml` runs `fallow audit --format sarif` on every PR + push, uploads SARIF to GitHub Code Scanning under category `fallow`. **Marked `continue-on-error: true` during 14-day parity period (2026-05-04 → 2026-05-18); cutover PR removes the flag.**
+- **Pre-push** — `.husky/pre-push` step 4 runs `fallow audit --changed-since @{u} --gate all` at branch level. `SKIP_FALLOW=1` bypass.
+- **CI** — `.github/workflows/fallow.yml` runs `fallow audit --format compact` on every PR + push and emits a PR-visible workflow log. SARIF→GitHub-Code-Scanning upload was **removed 2026-05-12** (it registered a `fallow` code-scanning tool whose check sat `queued` on PR heads; CodeQL default setup is the intended Code-Scanning owner — a pending UI toggle, see §4.4.1). **Marked `continue-on-error: true` during the parity period (2026-05-04 → 2026-05-18); cutover PR removes the flag** and promotes the `Fallow audit (…)` check to a hard gate.
 
 Per-developer Claude PreToolUse gate via `fallow hooks install --target agent` is **NOT auto-installed** by the `package.json` `prepare` script. Originally Path 4 (auto-install via prepare) was chosen, but a fallow v2.63.0 upstream bug forced reversal: the auto-installed `.claude/hooks/fallow-gate.sh` calls `fallow audit --gate new-only` which materializes the base branch into a tempdir for "introduced vs inherited" attribution, and that materialization leaks index entries back into the parent worktree's `.git/index` (staging hundreds of phantom file deletions in subsequent `git commit`s). Developers who want the agent gate can install manually: `npx fallow hooks install --target agent --agent claude` then patch the generated `.claude/hooks/fallow-gate.sh` with the same index snapshot/restore wrap used in `.husky/pre-commit`/`.husky/pre-push`.
 
@@ -272,7 +271,7 @@ Per-developer Claude PreToolUse gate via `fallow hooks install --target agent` i
 
 - **`.husky/pre-commit` step 1c REMOVED.** Fallow audit's base-snapshot semantic doesn't fit pre-commit (every viable invocation either hits the HEAD-temp-worktree error or floods with the full branch backlog). Per-detector commands (`fallow health/dupes/dead-code`) avoid the temp-worktree dance but scan the whole project (~10-30 s × 3 detectors per commit — too slow for the lean pre-commit gate). Pre-commit retains its other gates (lint-staged, secret scan, ruff, bash size, trunk).
 - **`.husky/pre-push` step 4** uses `fallow audit --changed-since @{u} --gate all`. `@{u}` (upstream tracking ref, e.g. `origin/dev`) is a different ref than HEAD so the temp-worktree creation works; it scopes the file set to commits being pushed. `--gate all` skips the attribution pass (also avoiding the leak on the source side, complementing the snapshot/restore wrap on the destination side). Per-detector baselines in `.fallowrc.json` `audit` section still grandfather pre-existing findings, so only NEW violations vs baseline fail. Fallback for first-push of a brand-new branch (no `@{u}`): omit `--changed-since` and let fallow auto-detect base.
-- **`.github/workflows/fallow.yml`** keeps default `fallow audit --format sarif` — CI runs each PR in an ephemeral runner so leak isn't a concern; SARIF flows to GitHub Code Scanning.
+- **`.github/workflows/fallow.yml`** runs `fallow audit --format compact` (PR-visible log only) — CI runs each PR in an ephemeral runner so the `.git/index` leak isn't a concern. The SARIF→Code-Scanning upload step was removed 2026-05-12 (see §4.4.1 / the `(d)` CI bullet above).
 
 Net coverage: 2 fallow firings (pre-push + CI) instead of 3. Defense remains layered; pre-commit becomes faster.
 
