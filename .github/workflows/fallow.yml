@@ -2,12 +2,14 @@ name: 'Fallow: Code Quality Audit (parity period)'
 
 # Server-side fallow audit — baseline-aware code-intelligence gate.
 # Runs `fallow audit` against the diff vs the auto-detected base branch and
-# uploads SARIF findings to GitHub Code Scanning so they appear in the PR
-# Files-changed view + the Security tab.
+# prints the findings as a PR-visible log. (The SARIF→GitHub-Code-Scanning
+# upload was removed 2026-05-12 — it registered a `fallow` code-scanning tool
+# whose check sat `queued` indefinitely on PR heads; CodeQL default setup owns
+# code scanning now.)
 #
 # PARITY PERIOD (2026-05-04 → 2026-05-18): the audit step is marked
 # continue-on-error so the job doesn't block PRs while we measure divergence
-# vs ESLint complexity + sonarjs cognitive. SARIF is still uploaded for visibility.
+# vs ESLint complexity + sonarjs cognitive.
 # CUTOVER (2026-05-18, Phase 3): remove `continue-on-error` AND drop ESLint's
 # `complexity` rule + the `eslint-plugin-sonarjs` plugin in the same PR.
 #
@@ -21,12 +23,16 @@ on:
   pull_request:
     branches: ['**']
 
-# Least-privilege permissions
-# - contents: read     — checkout the source
-# - security-events: write — upload SARIF to Code Scanning
+# Least-privilege permissions — checkout only. (The SARIF→Code-Scanning upload
+# was removed: it registered a `fallow` code-scanning tool whose check would
+# sit `queued` indefinitely on PR heads; the workflow-job check below
+# — "Fallow audit (…)" — is the real gate. Code Scanning itself is intended to
+# be owned by CodeQL default setup, which is a Settings → Code-security UI
+# toggle that is still PENDING — see docs/ci-cd-pipeline-spec.md §4.4.1. Until
+# it's enabled the repo simply has no Code-Scanning analysis, which is the
+# same state it was in before this workflow ever uploaded SARIF.)
 permissions:
   contents: read
-  security-events: write
 
 concurrency:
   group: fallow-${{ github.ref }}
@@ -63,34 +69,13 @@ jobs:
         # misses the $lib/ alias, causing false-positive dead-exports.
         run: npx svelte-kit sync
 
-      - name: 'Fallow audit — emit SARIF'
-        # PARITY PERIOD: continue-on-error so SARIF still uploads even if the
-        # audit finds NEW violations vs baseline. Drop on day 15 cutover.
-        continue-on-error: true
-        # Use `|| true` so a non-zero exit doesn't drop us into a partial-output
-        # state. Then guarantee a valid empty SARIF if the file ended up empty
-        # (otherwise github/codeql-action/upload-sarif fails with "Unexpected
-        # end of JSON input" on the empty file).
-        run: |
-          npx --no-install fallow audit --format sarif > fallow.sarif || true
-          if [ ! -s fallow.sarif ]; then
-            echo '{"$schema":"https://json.schemastore.org/sarif-2.1.0.json","version":"2.1.0","runs":[{"tool":{"driver":{"name":"fallow","informationUri":"https://docs.fallow.tools/"}},"results":[]}]}' > fallow.sarif
-          fi
-
       - name: 'Fallow audit — human-readable log (PR view)'
+        # PARITY PERIOD (until 2026-05-18): continue-on-error so the job doesn't
+        # block PRs while divergence vs ESLint complexity + sonarjs is measured.
+        # CUTOVER (Phase 3): drop `continue-on-error` here AND drop ESLint's
+        # `complexity` rule + the `eslint-plugin-sonarjs` plugin in the same PR.
         continue-on-error: true
         run: npx --no-install fallow audit --format compact
-
-      - name: 'Upload SARIF to GitHub Code Scanning'
-        # Always run so findings appear in Code Scanning even if audit "failed"
-        if: always()
-        # github/codeql-action/upload-sarif v3 (first-party, version-tagged is OK
-        # per audit-pipeline-config.sh check 4 allowlist for actions/* + github/*)
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: fallow.sarif
-          # Distinct category so fallow findings don't overwrite other SARIF uploads
-          category: fallow
 
       - name: 'Archive baseline files (debug aid)'
         # Non-blocking diagnostic upload so a failed audit can be reproduced
