@@ -43,6 +43,10 @@ Verify with `claude mcp list`. Authoritative config: `~/.claude.json` + each plu
 
 Skill names must match the system-reminder `available-skills` list. Editing plugin config requires `/reload-plugins` to respawn subprocesses; kill stale `pgrep chrome-devtools-mcp` if needed.
 
+## aoe — parallel session / worktree manager (CLI, not an MCP)
+
+`aoe` (Agent of Empires, v1.6.2, `~/.local/bin/aoe`; config `~/.config/agent-of-empires/config.toml`) owns the tmux-session + git-worktree lifecycle for parallel Claude Code instances. Worktree path layout: `../{repo}-worktrees/{branch}`. Key commands: `aoe add --worktree <branch> [--new-branch] [--launch] [--trust-hooks]` (create worktree + tmux session, optionally start Claude, optionally pre-trust hooks); `aoe list` / `aoe status` / `aoe session {attach,show,stop,restart,current}`; `aoe worktree {list,info,cleanup}`; `aoe remove <s> [--delete-worktree] [--delete-branch]`. Argos wraps `aoe add` in `./scripts/ops/spin-worktree.sh <slug>` (adds the off-`origin/dev` branch creation + node_modules/.env/.svelte-kit symlinks aoe doesn't do). Full dev loop + conflict-avoidance layers: see `platform-and-deps.md` "Git workflow" + memory `project_aoe_workflow.md` / `feedback_worktree_conflict_strategy.md`.
+
 ## Svelte MCP + LSP sequence
 
 Plugin `svelte` v1.0.4+. One-time: `npm i -g svelte-language-server`. Sequence on every `.svelte` edit:

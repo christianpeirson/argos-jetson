@@ -7,6 +7,12 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  # GitHub merge queue: when a PR is queued for `dev` (or `main`), GitHub builds
+  # a temporary `gh-readonly-queue/<base>/...` branch with the PR rebased on the
+  # latest base and dispatches `merge_group`. This job is the required check the
+  # queue waits on before merging (conflict-avoidance layer L4). Enable the queue
+  # in branch-protection settings for `dev`; see docs/ci-cd-pipeline-spec.md.
+  merge_group:
 
 # Least-privilege default
 # https://docs.github.com/en/actions/security-guides/automatic-token-authentication

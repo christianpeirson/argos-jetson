@@ -66,7 +66,7 @@ For ANY question about a third-party library, framework, SDK, or CLI tool (React
 
 Every PR is bracketed by sentrux. Bracketing is **per-branch**, not per-phase or per-commit. Under the batched-commit cadence (Rule 10), `session_start` fires ONCE at branch creation and `session_end` + `rescan` + `check_rules` fire ONCE pre-merge — even when the branch contains multiple phases worth of commits. Mid-session optional rescan is allowed after structurally-risky phases (chassis additions, deletions of >5 files) but is not required.
 
-1. **Worktree entry / branch refresh**: when starting work in `Argos-session-N` (or after a fresh `scripts/ops/spin-worktree.sh <slug>`), call `mcp__plugin_sentrux_sentrux__session_start` (captures pre-change graph baseline).
+1. **Worktree entry**: when starting work in a freshly spun feature worktree (`scripts/ops/spin-worktree.sh <slug>` → `aoe add --worktree …`), call `mcp__plugin_sentrux_sentrux__session_start` (captures pre-change graph baseline).
 2. **Pre-merge**: before `mcp__github__merge_pull_request` (mergeMethod: "squash"), call in order:
     - `mcp__plugin_sentrux_sentrux__rescan` (re-walk after final commit)
     - `mcp__plugin_sentrux_sentrux__session_end` (delta report)
@@ -180,10 +180,10 @@ Assistant MUST NOT auto-proceed to the next phase. Prompt is non-skippable.
 4. Sentrux pre-push gate: `rescan` → `scan` → `check_rules` (quality_signal must not regress).
 5. `npm run build` in background (per `feedback_argos_commit_always_bg.md`). Do parallel work per Rule 9 while build runs.
 6. `git push -u origin <branch>` (pre-push hook fires once for the whole bundle ~13-25s).
-7. **PRE-PR LOC GATE** — run `git diff --stat origin/dev...HEAD | tail -1`. If `(insertions + deletions) > 2000`, **STOP**. Do NOT open one mega-PR. Split bundle along phase boundaries into N session-N PRs, each ≤2000 LOC, opened/merged sequentially. See `feedback_no_admin_bypass_daily_loc_cap.md` for the split protocol. Admin-bypass on session-N → dev PRs is **FORBIDDEN**.
+7. **PRE-PR LOC GATE** — run `git diff --stat origin/dev...HEAD | tail -1`. If `(insertions + deletions) > 2000`, **STOP**. Do NOT open one mega-PR. Split bundle along phase boundaries into N feature PRs, each ≤2000 LOC, opened/merged sequentially. See `feedback_no_admin_bypass_daily_loc_cap.md` for the split protocol. Admin-bypass on feature → dev PRs is **FORBIDDEN**.
 8. `mcp__github__create_pull_request` with body listing all bundled phases + per-phase commit SHAs + sentrux delta. (Repeat per split slice.)
 9. CR loop per `feedback_pr_wait_pattern.md` — `ScheduleWakeup ~270s` then dual-check `mcp__github__pull_request_read` (status-check rollup) AND CR reviewThreads.
-10. Merge ONLY when ALL required checks green. Admin override is reserved for `dev → main` rollup PRs only (per `feedback_rollup_pr_admin_squash.md`); session-N → dev PRs always wait for green CI. Doc-only PRs with green CI + no actionable CR may merge without further wait.
+10. Merge ONLY when ALL required checks green. Admin override is reserved for `dev → main` rollup PRs only (per `feedback_rollup_pr_admin_squash.md`); feature → dev PRs always wait for green CI. Doc-only PRs with green CI + no actionable CR may merge without further wait.
 11. Tag end-of-day: `git tag eod-YYYY-MM-DD <sha> && git push origin <tag>` (after FINAL slice if split).
 12. Cleanup worktree + post-merge sentrux scan from main checkout.
 13. ONE memory entry covering the full daily batch. ONE pointer line in MEMORY.md.
@@ -201,6 +201,6 @@ Is the diff > 1500 LOC OR touches src/lib/state/ OR src/app.css OR > 6 files in 
 
 **Per-PR cadence (one PR per phase) is RESERVED for**: (a) urgent hotfixes, (b) PR that needs isolated rollback granularity, (c) cross-subsystem changes that exceed Danger 2000-LOC cap, (d) explicit user override.
 
-**Worktree model**: 1-10 stable sibling worktrees at `/home/jetson2/code/Argos-session-N`, each permanently tracking branch `session-N` off `dev`. Daily atomic commits land on `session-N`; PR `session-N` → `dev` → merge → `git fetch origin && git reset --hard origin/dev` to refresh the worktree branch for the next cycle. `node_modules` and `.env` symlinked once per `project_argos_worktree_pattern.md`. Topic branches (`feature/`, `chore/`, etc.) are the EXCEPTION — only spin a fresh worktree when the work is orthogonal to every session-N.
+**Worktree model**: one `aoe` worktree per feature under `../Argos-worktrees/<branch>`, branch `feature/<slug>` (or prefixed verbatim) off `origin/dev`. Spin via `./scripts/ops/spin-worktree.sh <slug>` (→ `aoe add --worktree … --launch --trust-hooks` + node_modules/.env/.svelte-kit symlinks). Commit on the feature branch; PR → `dev` → CodeRabbit autofix loop → auto-merge → `bash scripts/claude-hooks/worktree-refresh.sh <branch>` to fan the new `dev` out to the other worktrees → `aoe remove <s> --delete-worktree` when done. Conflict avoidance is the 4-layer L1–L4 stack in `platform-and-deps.md` (pre-push freshness gate + post-merge fan-out + `dev` branch protection + GitHub merge queue). `dev → main` is still a manual rollup PR. The legacy `Argos-session-*` worktrees are deprecated; drain and `aoe worktree cleanup` them.
 
-Catalogue: `feedback_batched_commit_cadence.md`.
+Catalogue: `feedback_batched_commit_cadence.md`, `feedback_worktree_conflict_strategy.md`, `project_aoe_workflow.md`.

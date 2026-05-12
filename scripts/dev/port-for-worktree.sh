@@ -1,46 +1,63 @@
 #!/usr/bin/env bash
-# port-for-worktree.sh — derive Vite dev port from worktree directory name.
+# port-for-worktree.sh — derive a stable, non-colliding Vite dev port for the
+# current worktree.
 #
-# Stable mapping ensures `npm run dev` from any worktree binds a non-colliding
-# port. Combined with `--strictPort`, this makes accidental port collisions
-# (e.g., colliding with argos-final on 5173 or argos-dev on 5174) impossible:
-# vite exits cleanly instead of fighting for the same socket.
+# Argos development now runs many parallel worktrees (one per feature, created
+# by `scripts/ops/spin-worktree.sh` → `aoe add --worktree …`, living under
+# ../Argos-worktrees/<branch>). Each `npm run dev` must bind a unique port so
+# they don't fight over a socket. Combined with Vite's `--strictPort`, a
+# collision makes Vite exit cleanly instead of stomping another instance.
 #
-# Mapping:
-#   Argos             → 5174  (argos-dev.service — v2 production-tracking dev)
-#   Argos-session-2   → 5175  (argos-newui-dev.service — active v2 dev work)
-#   Argos-session-N   → 5180 + N for N in {1,3..9}; session-10 → 5190
-#                       (avoids 5173/5174/5175; reserved for parallel topic work)
-#   Argos-v1          → refuse (argos-final.service owns :5173)
-#   <anything else>   → 5191
+# Reserved ports (never auto-assigned):
+#   5173  argos-final.service        (v1 production — Argos-v1 worktree)
+#   5174  argos-dev.service          (v2 production-tracking dev — main checkout)
+#   5175  argos-newui-dev.service    (legacy session-2 worktree)
+#
+# Assignment:
+#   main checkout (basename "Argos")         → 5174
+#   legacy "Argos-v1"                        → refuse (production owns :5173)
+#   legacy "Argos-session-2"                 → 5175
+#   legacy "Argos-session-N" (N∈{1,3..9})    → 5180 + N ; session-10 → 5190
+#   anything else (aoe feature worktree)     → 5191 + (hash(branch) mod 79)  ∈ [5191, 5269]
+#
+# The feature-worktree port is a hash of the *branch name* (not the directory),
+# so it's stable across rename/move and identical for the same branch wherever
+# it's checked out. Range chosen to avoid 5173–5175 and the session-N band.
 #
 # Caller: VITE_PORT="$(./scripts/dev/port-for-worktree.sh)"
-# Exits non-zero with explanatory message on the refuse path.
+# Exits non-zero with an explanatory message on the refuse path.
 
 set -euo pipefail
 
 cwd="$(pwd -P)"
 name="$(basename "$cwd")"
 
+# Legacy fixed mappings (kept until the old worktrees are drained).
 case "$name" in
 	Argos)
 		echo 5174
+		exit 0
+		;;
+	Argos-v1)
+		echo "[port-for-worktree] $name is the v1 production worktree (argos-final on :5173). Refusing dev." >&2
+		exit 1
 		;;
 	Argos-session-2)
 		echo 5175
+		exit 0
 		;;
 	Argos-session-10)
 		echo 5190
+		exit 0
 		;;
 	Argos-session-[0-9])
-		n="${name##*-}"
-		echo $((5180 + n))
-		;;
-	Argos-v1)
-		echo "[port-for-worktree] $name is the production worktree (argos-final on :5173). Refusing dev." >&2
-		exit 1
-		;;
-	*)
-		echo 5191
+		echo $((5180 + ${name##*-}))
+		exit 0
 		;;
 esac
+
+# aoe feature worktree (../Argos-worktrees/<branch>) — hash the branch name.
+branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "$name")"
+# Stable 32-bit-ish hash via cksum (POSIX, no external hash tool needed).
+h="$(printf '%s' "$branch" | cksum | cut -d' ' -f1)"
+echo $((5191 + h % 79))

@@ -11,14 +11,18 @@ Loaded into every session (no `paths:` — these constraints apply to every inte
 
 ## Git workflow
 
-**Worktree-per-session model** (cognitively simple, default for daily work):
+**One aoe worktree per feature** (replaces the old hard-coded `session-N` model):
 
-- 1-10 stable sibling worktrees at `/home/jetson2/code/Argos-session-N` (N = 1…10), each permanently tracking its own branch `session-N` off `dev`. Created once via `scripts/ops/spin-worktree.sh session-N` and then reused indefinitely. Never `git checkout` a different branch inside a session worktree — it defeats the per-session isolation.
-- Daily flow: ssh in → `cd Argos-session-N` → work → commit on `session-N` → PR `session-N` → `dev` → merge. After merge, refresh the worktree branch with `git fetch origin && git reset --hard origin/dev` (or `git pull --ff-only` if the merge was non-squash) so the next day's work starts from current `dev`.
-- Topic branches (`feature/<slug>`, `chore/<slug>`, `fix/<slug>`) are the EXCEPTION — only use one when the work is genuinely orthogonal to all session worktrees (e.g., a long-lived spec migration that needs its own worktree). Spin via `scripts/ops/spin-worktree.sh <slug>` — that creates `Argos-<slug>` + branch `<slug>` (or `feature/<slug>` if no prefix is given).
-- Commit format: `type(scope): description` (Conventional Commits). Subject lowercase (commitlint enforced). Atomic commits — one logical change per commit.
-- Forbidden: WIP commits, mega commits, generic messages, force-push to `dev`/`main`. Force-push to your own session-N branch is fine if upstream isn't shared.
+- Parallel development runs through **`aoe` (Agent of Empires)**: `cd ~/code/Argos`, start `aoe`, then each feature in flight gets its own tmux session on its own git worktree under `../Argos-worktrees/<branch>`. All worktrees share one `.git` object store, so a fetch in any of them makes the new `dev` visible everywhere.
+- Spin a feature worktree with `./scripts/ops/spin-worktree.sh <slug>` — fetches `origin`, creates branch `feature/<slug>` (or `<slug>` verbatim if it already has a `feature/ fix/ chore/ spike/ docs/ test/ refactor/` prefix) off `origin/dev`, hands it to `aoe add --worktree <branch> --launch --trust-hooks`, and symlinks `node_modules` / `.env` / `.svelte-kit` from the main checkout (aoe doesn't do that — without it each worktree needs its own multi-minute `npm ci`).
+- Daily flow: spin a worktree → work in its Claude session → `git push` → `post-push-pr-flow.sh` opens/finds the PR → `dev`, runs the CodeRabbit autofix loop, auto-merges. **On merge, run `bash scripts/claude-hooks/worktree-refresh.sh <branch>`** — it rebases every other clean worktree onto the new `dev` and marks dirty ones `.needs-rebase`. When the feature's done: `aoe session stop <s> && aoe remove <s> --delete-worktree`.
+- `dev → main` stays a **manual rollup PR** with admin-squash (per `feedback_rollup_pr_admin_squash.md`) — never automated.
+- **Conflict avoidance, 4 layers**: **L1** pre-push freshness gate (`.husky/pre-push` step 1b — blocks if HEAD is > `FRESHNESS_MAX_BEHIND` (25) commits behind `origin/dev`, or if `.needs-rebase` is present; bypass `SKIP_FRESHNESS=1`). **L2** post-merge fan-out (`scripts/claude-hooks/worktree-refresh.sh` — auto-rebases sibling worktrees). **L3** `dev` branch protection (require CI green + up-to-date-with-base + linear history). **L4** GitHub merge queue on `dev` (`ci.yml` runs on `merge_group`; serialises the rare PR-vs-PR race). L1+L2 are the workhorses; L3/L4 are the server-side backstop. See `feedback_worktree_conflict_strategy.md` and `feedback_branch_freshness_gate.md`.
+- Commit format: `type(scope): description` (Conventional Commits). Subject lowercase (commitlint enforced). Atomic commits — one logical change per commit. One PR per feature; split if Danger's 2000-LOC cap blocks (`feedback_no_admin_bypass_daily_loc_cap.md`).
+- Forbidden: WIP commits, mega commits, generic messages, force-push to `dev`/`main`. Force-push to your own feature branch is fine before the PR opens.
 - Spec-kit: `spec.md` → `plan.md` → `tasks.md` in `specs/NNN-*/`. CLAUDE.md auto-update is BLOCKED by the SKIP AUTO-UPDATE marker in CLAUDE.md.
+
+> The 10 legacy `Argos-session-*` worktrees aren't force-deleted — drain them, then `aoe worktree cleanup` / `git worktree remove`. `port-for-worktree.sh` keeps back-compat ports for them in the meantime.
 
 ## Dependencies
 

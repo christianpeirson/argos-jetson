@@ -60,20 +60,27 @@ These four reduce to one operational rule: **fast feedback locally, definitive e
 │ LAYER 2 — pre-push (LOCAL, ~30–180 s)                                │
 │   Husky hook: .husky/pre-push                                        │
 │   • Protected-branch guard (main, master)                            │
+│   • Branch-freshness gate (block if >25 behind origin/dev, or if a   │
+│     post-merge fan-out marked the worktree .needs-rebase)            │
 │   • Full-repo svelte-check + tsc (mem-guard tier)                    │
+│   • Prettier format:check                                            │
 │   • Full-repo ESLint --cache (.eslintcache)                          │
-│   • vitest related (scoped to upstream diff)                         │
-│   Bypass: ALLOW_MAIN_PUSH / SKIP_FULL_LINT / SKIP_TESTS /            │
-│           --no-verify                                                │
+│   • Fallow audit (baseline-aware, --changed-since @{u})              │
+│   Bypass: ALLOW_MAIN_PUSH / SKIP_FRESHNESS / SKIP_FORMAT_CHECK /     │
+│           SKIP_FULL_LINT / SKIP_FALLOW / --no-verify                 │
 ├──────────────────────────────────────────────────────────────────────┤
 │ LAYER 3 — GitHub Actions (REMOTE, authoritative)                     │
 │   • lint.yml      — ESLint full-repo (cached) + commitlint + gitleaks│
-│   • ci.yml        — typecheck + format:check + full vitest + build   │
+│   • ci.yml        — typecheck + format:check + full vitest + build;  │
+│                     triggers: PR→main, push→main, AND merge_group    │
+│                     (the required check the dev merge queue waits on)│
 │   • commitlint.yml— wagoid/commitlint-github-action (PR-level)       │
 │   • danger.yml    — PR shape (size, sprawl, tests-required)          │
 │   • trunk.yml     — trunk check --upstream (annotations only)        │
 │   • semantic-release.yml — tag + CHANGELOG on push to main           │
 │   • release.yml   — tarball on `v*.*.*` tag                          │
+│   Branch protection (dev): require ci.yml + up-to-date-with-base +   │
+│     linear history; merge queue enabled (conflict-avoidance L3/L4).  │
 ├──────────────────────────────────────────────────────────────────────┤
 │ LAYER 4 — CodeRabbit (REMOTE, AI review on every PR)                 │
 │   Server-side review on PR open/sync. Argos workflow: feature → dev  │
@@ -339,7 +346,18 @@ Symptom: parallel `npm run typecheck` invocations OOM the system (svelte-check ~
 
 Mitigation (in place): `scripts/ops/mem-guard.sh` uses `flock` (kernel-atomic single global lock). Per memory `feedback_mem_guard_authoritative.md`, **always** use `npm run test:*` and `npm run typecheck` (which wrap mem-guard); never invoke `npx vitest` or `npx svelte-check` directly.
 
-### 4.4 Native addons (better-sqlite3, node-pty)
+### 4.4 Multi-worktree branch sync (aoe + conflict-avoidance L1–L4)
+
+Argos development runs N parallel Claude Code instances, each in its own tmux session (`aoe`) on its own git worktree under `../Argos-worktrees/<branch>`, all sharing one `.git` object store. Feature branches finish at different times, so a strategy is needed to keep them from drifting / colliding when they each merge to `dev`. Four layers, defence-in-depth:
+
+- **L1 — pre-push freshness gate** (`.husky/pre-push` step 1b). Blocks the push if `HEAD` is > `FRESHNESS_MAX_BEHIND` (default 25) commits behind `origin/dev`, or if the worktree carries a `.needs-rebase` marker. Remediation message tells the dev to `git rebase origin/dev`. Bypass `SKIP_FRESHNESS=1`. This is the per-branch "stay healthy" gate (Fowler: low *Diff Debt* / *Healthy Branch*).
+- **L2 — post-merge fan-out** (`scripts/claude-hooks/worktree-refresh.sh`, invoked by Claude right after `mcp__github__merge_pull_request`, prompted by the `post-push-pr-flow.sh` hook). Fetches `origin`, then for every *other* worktree on a non-protected branch: if its tree is clean, `git rebase origin/dev`; if dirty or the rebase conflicts, abort and drop a `.needs-rebase` marker (→ caught by L1 on that worktree's next push). Also deletes the merged PR's now-orphaned local branch. Always exits 0; prints a summary. This is Fowler's high-frequency *Mainline Integration* applied mechanically across worktrees.
+- **L3 — `dev` branch protection** (GitHub settings, not in-repo). Require `ci.yml` status, "branches must be up to date before merging", linear history. Standard protected-branch config.
+- **L4 — GitHub merge queue on `dev`** (GitHub settings + `ci.yml` `merge_group:` trigger, both shipped). Serialises the rare PR-vs-PR race: GitHub rebases each queued PR on the latest base, runs `ci.yml` via the `merge_group` event, merges in order. Lineage: the "Not Rocket Science Rule" → bors / GitLab merge trains / GitHub merge queue.
+
+L1+L2 are the workhorses (they keep the working worktrees in sync day-to-day); L3+L4 are the server-side backstop. To enable L3/L4: `gh api -X PUT repos/Graveside2022/argos-jetson/branches/dev/protection` with required-status-checks `ci.yml`, `required_linear_history: true`, and enable the merge queue for `dev` in repo settings → Branches.
+
+### 4.5 Native addons (better-sqlite3, node-pty)
 
 Symptom: native addons in `devDependencies` get bundled into ESM server chunk → `ReferenceError: __filename is not defined`.
 
