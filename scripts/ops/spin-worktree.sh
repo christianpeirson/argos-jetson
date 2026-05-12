@@ -13,8 +13,12 @@
 #   2. creates the feature branch off `origin/dev` (so the worktree starts fresh),
 #   3. hands the branch to `aoe add --worktree … --launch` (creates the worktree
 #      at ../Argos-worktrees/<branch> and starts a tmux session with Claude),
-#   4. symlinks `node_modules`, `.env`, and `.svelte-kit` from the main checkout
-#      so npm/dev tooling work immediately without a multi-minute `npm ci`,
+#   4. symlinks `node_modules` and `.env` from the main checkout so npm/dev
+#      tooling work immediately without a multi-minute `npm ci`, then runs
+#      `svelte-kit sync` so the worktree gets its OWN `.svelte-kit`
+#      (NEVER symlink `.svelte-kit` — `svelte-kit sync` writes through it and
+#      corrupts the shared `internal.js` with worktree-relative `node_modules`
+#      paths, 500ing whichever dev server owns the real one),
 #   5. prints the next-step hint.
 #
 # If `aoe` is not on PATH it falls back to a plain `git worktree add` — the
@@ -143,13 +147,31 @@ fi
 # --- symlink heavy/sensitive deps from the main checkout -------------------
 # aoe does NOT do this; without it each worktree needs its own `npm ci`
 # (multi-minute, RAM-heavy on the Jetson) and a copied .env.
-for link in node_modules .env .svelte-kit; do
+#
+# DO NOT symlink `.svelte-kit`. SvelteKit *writes* to `.svelte-kit/generated/`
+# (via `svelte-kit sync`, run automatically by `vite` and `svelte-check`), and
+# the generated `internal.js` contains `node_modules` import paths computed
+# RELATIVE TO THE WORKTREE'S `.svelte-kit` PATH. A symlinked `.svelte-kit`
+# therefore lets one worktree's sync clobber the shared one with a path that's
+# only valid from inside that worktree (e.g.
+# `../../../../../../Argos/node_modules/@sveltejs/kit/...`), and whichever dev
+# server owns the real `.svelte-kit` then 500s with "Failed to load url …".
+# Each worktree gets its OWN `.svelte-kit` via `svelte-kit sync` below — it's
+# cheap (~1–2 s), and `vite`/`svelte-check` regenerate it on first run anyway.
+for link in node_modules .env; do
 	src="$main_root/$link"
 	if [[ -e "$src" ]]; then
 		ln -sfn "$src" "$worktree_dir/$link"
 		echo "→ symlinked $link"
 	fi
 done
+
+# Generate this worktree's own .svelte-kit (NOT a symlink — see above).
+if [[ -f "$worktree_dir/package.json" ]] && command -v npx >/dev/null 2>&1; then
+	echo "→ svelte-kit sync (generating this worktree's own .svelte-kit)"
+	( cd "$worktree_dir" && npx svelte-kit sync >/dev/null 2>&1 ) \
+		|| echo "  (svelte-kit sync skipped — vite/svelte-check will regenerate on first run)"
+fi
 
 # --- done ------------------------------------------------------------------
 cat <<EOF

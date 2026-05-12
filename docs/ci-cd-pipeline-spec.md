@@ -328,12 +328,10 @@ Mitigation (all in place):
 - Bypass ladder: `SKIP_TESTS=1`, `SKIP_FULL_LINT=1`. CI is the safety net.
 - `vitest related` (file-scoped) — but this is the section being dropped per §3.8.
 
-Recommended fresh-worktree script (NEW):
+Fresh-worktree onboarding: `./scripts/ops/spin-worktree.sh <slug>` handles it — symlinks `node_modules` + `.env` from the main checkout and runs `svelte-kit sync` to give the worktree its **own** `.svelte-kit`. **Never symlink `.svelte-kit`** between worktrees: `svelte-kit sync` (run automatically by `vite`/`svelte-check`) writes through the symlink and corrupts the shared `.svelte-kit/generated/server/internal.js` with worktree-relative `node_modules` paths, 500ing whichever dev server owns the real one (`Failed to load url ../../../../../../Argos/node_modules/@sveltejs/kit/...`). To warm the heavy caches after spinning:
 
 ```bash
-# scripts/dev/warm-caches.sh
-ln -sf ../../node_modules .  # if worktree
-npm run typecheck             # populates .svelte-kit + tsbuildinfo
+npm run typecheck   # populates this worktree's own .svelte-kit/types + tsbuildinfo
 npx eslint . --config config/eslint.config.js --cache --cache-location .eslintcache
 ```
 
