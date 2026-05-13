@@ -7,6 +7,7 @@
  */
 
 import type { DiffResult, EmitterDelta, EmitterRow } from './emcon-diff';
+import { escapeMd } from './markdown-escape';
 import { dtgZulu } from './sitrep-template';
 import type { CaptureEmitterRow, CaptureRow, Mission } from './types';
 
@@ -19,14 +20,6 @@ export interface EmconInput {
 	postureEmitters: CaptureEmitterRow[];
 	narrative?: string;
 	serial: string;
-}
-
-function escapeMd(s: string | null | undefined): string {
-	if (s === null || s === undefined) return '—';
-	// Escape backslash FIRST, then pipe — otherwise a literal `\` in the input
-	// would be left bare and the subsequent `|` escape would chain with it,
-	// breaking Markdown table cells (CodeQL `js/incomplete-sanitization`).
-	return s.replace(/\\/g, '\\\\').replace(/\|/g, '\\|');
 }
 
 function freqMhz(hz: number | null): string {

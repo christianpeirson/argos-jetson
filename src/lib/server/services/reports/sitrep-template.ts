@@ -6,6 +6,7 @@
  * so a single file is self-contained for Quarto rendering.
  */
 
+import { escapeMd } from './markdown-escape';
 import type { CaptureEmitterRow, CaptureRow, Mission } from './types';
 
 export interface SitrepInput {
@@ -37,13 +38,8 @@ export function dtgZulu(ms: number): string {
 	return `${dd}${hh}${mm}Z${mon}${yy}`;
 }
 
-function escapeMd(s: string | null | undefined): string {
-	if (s === null || s === undefined) return '—';
-	// Escape backslash FIRST, then pipe — otherwise a literal `\` in the input
-	// would be left bare and the subsequent `|` escape would chain with it,
-	// breaking Markdown table cells (CodeQL `js/incomplete-sanitization`).
-	return s.replace(/\\/g, '\\\\').replace(/\|/g, '\\|');
-}
+// `escapeMd` is imported from `./markdown-escape` so emcon + sitrep templates
+// share one tested implementation (CodeQL `js/incomplete-sanitization`).
 
 function freqMhz(hz: number | null): string {
 	if (hz === null) return '—';
