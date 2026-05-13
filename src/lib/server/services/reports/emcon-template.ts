@@ -7,6 +7,7 @@
  */
 
 import type { DiffResult, EmitterDelta, EmitterRow } from './emcon-diff';
+import { escapeMd } from './markdown-escape';
 import { dtgZulu } from './sitrep-template';
 import type { CaptureEmitterRow, CaptureRow, Mission } from './types';
 
@@ -19,11 +20,6 @@ export interface EmconInput {
 	postureEmitters: CaptureEmitterRow[];
 	narrative?: string;
 	serial: string;
-}
-
-function escapeMd(s: string | null | undefined): string {
-	if (s === null || s === undefined) return '—';
-	return s.replace(/\|/g, '\\|');
 }
 
 function freqMhz(hz: number | null): string {

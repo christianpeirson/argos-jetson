@@ -1,3 +1,5 @@
+import { randomBytes } from 'node:crypto';
+
 import type { IncomingMessage } from 'http';
 import type { Duplex } from 'stream';
 import { WebSocket, WebSocketServer } from 'ws';
@@ -25,7 +27,11 @@ interface ParsedMessage {
 let wssSingleton: WebSocketServer | null = null;
 
 function newId(): string {
-	return Math.random().toString(36).substring(2, 9);
+	// CSPRNG-backed PTY session ID. `Math.random()` was the source CodeQL
+	// `js/insecure-randomness` flagged at this site — an attacker who can
+	// predict the ID could try to attach a WebSocket to an existing PTY.
+	// `randomBytes(8)` gives 64 bits of entropy, encoded as 16 hex chars.
+	return randomBytes(8).toString('hex');
 }
 
 function isPidAlive(pid: number): boolean {
