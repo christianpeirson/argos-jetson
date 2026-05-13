@@ -39,7 +39,10 @@ export function dtgZulu(ms: number): string {
 
 function escapeMd(s: string | null | undefined): string {
 	if (s === null || s === undefined) return '—';
-	return s.replace(/\|/g, '\\|');
+	// Escape backslash FIRST, then pipe — otherwise a literal `\` in the input
+	// would be left bare and the subsequent `|` escape would chain with it,
+	// breaking Markdown table cells (CodeQL `js/incomplete-sanitization`).
+	return s.replace(/\\/g, '\\\\').replace(/\|/g, '\\|');
 }
 
 function freqMhz(hz: number | null): string {
