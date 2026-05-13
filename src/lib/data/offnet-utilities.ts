@@ -35,7 +35,18 @@ export const signalRecording: ToolCategory = {
 				'Offline RF signal analysis for visualizing and decoding recorded IQ files',
 			icon: toolIcons.sdr,
 			deployment: 'native'
-		})
+		}),
+		createTool(
+			{
+				id: 'gnu-radio',
+				name: 'GNU Radio',
+				description:
+					'GNU Radio Companion (GRC) flowgraph editor streamed via noVNC',
+				icon: toolIcons.sdr,
+				deployment: 'native'
+			},
+			{ isInstalled: true, viewName: 'gnu-radio', canOpen: true }
+		)
 	]
 };
 

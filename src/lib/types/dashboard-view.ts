@@ -27,6 +27,7 @@ export type ActiveView =
 	| 'webtak'
 	| 'tak-config'
 	| 'globalprotect'
+	| 'gnu-radio'
 	| 'logs-analytics'
 	| 'sparrow-wifi'
 	| 'sdrpp'
@@ -55,6 +56,7 @@ export const VALID_VIEWS: ReadonlySet<string> = new Set<ActiveView>([
 	'webtak',
 	'tak-config',
 	'globalprotect',
+	'gnu-radio',
 	'logs-analytics',
 	'sparrow-wifi',
 	'sdrpp',

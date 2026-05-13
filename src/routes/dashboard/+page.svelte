@@ -19,6 +19,7 @@
 	import TakConfigView from '$lib/components/dashboard/tak/TakConfigView.svelte';
 	import TerminalPanel from '$lib/components/dashboard/TerminalPanel.svelte';
 	import BluehoodView from '$lib/components/dashboard/views/BluehoodView.svelte';
+	import GnuRadioView from '$lib/components/dashboard/views/GnuRadioView.svelte';
 	import KismetView from '$lib/components/dashboard/views/KismetView.svelte';
 	import LogsAnalyticsView from '$lib/components/dashboard/views/LogsAnalyticsView.svelte';
 	import NovaSDRView from '$lib/components/dashboard/views/NovaSDRView.svelte';
@@ -194,6 +195,8 @@
 				<NovaSDRView />
 			{:else if $activeView === 'sdrpp'}
 				<SDRppView />
+			{:else if $activeView === 'gnu-radio'}
+				<GnuRadioView />
 			{:else if $activeView === 'wireshark'}
 				<WiresharkView />
 			{:else if $activeView === 'uas-scan'}

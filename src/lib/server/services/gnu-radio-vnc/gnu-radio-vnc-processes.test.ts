@@ -4,6 +4,7 @@ import {
 	_setSpawnImplForTest,
 	spawnGnuRadioCompanion,
 	spawnWebsockify,
+	spawnWindowManager,
 	spawnXtigervnc
 } from './gnu-radio-vnc-processes';
 
@@ -79,5 +80,26 @@ describe('gnu-radio-vnc-processes', () => {
 		const argv = calls[0].args;
 		expect(argv).toContain('6084');
 		expect(argv).toContain('localhost:5995');
+	});
+
+	it('spawnWindowManager invokes openbox with --sm-disable + DISPLAY=:95', () => {
+		const calls: Array<{ cmd: string; args: string[]; env: Record<string, string> }> = [];
+		const mockSpawn: unknown = (cmd: string, args: string[], opts: Record<string, unknown>) => {
+			calls.push({
+				cmd,
+				args,
+				env: (opts.env ?? {}) as Record<string, string>
+			});
+			return { pid: 4246, on: vi.fn(), once: vi.fn(), kill: vi.fn() };
+		};
+		_setSpawnImplForTest(mockSpawn as Parameters<typeof _setSpawnImplForTest>[0]);
+
+		spawnWindowManager();
+
+		expect(calls).toHaveLength(1);
+		expect(calls[0].cmd).toBe('/usr/bin/openbox');
+		expect(calls[0].args).toContain('--sm-disable');
+		expect(calls[0].args).toContain('--config-file');
+		expect(calls[0].env.DISPLAY).toBe(':95');
 	});
 });

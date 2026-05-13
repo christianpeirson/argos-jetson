@@ -35,6 +35,7 @@ declare global {
 				xvncProcess: import('child_process').ChildProcess | null;
 				grcProcess: import('child_process').ChildProcess | null;
 				websockifyProcess: import('child_process').ChildProcess | null;
+				wmProcess: import('child_process').ChildProcess | null;
 				currentFlowgraph: string | null;
 				spawnError: Error | null;
 		  }
