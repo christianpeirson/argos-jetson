@@ -11,7 +11,7 @@ Environment="PATH=/home/jetson2/.nvm/versions/node/v22.22.2/bin:/usr/local/bin:/
 # %i is the unit instance — pass it to the script as the worktree path.
 # Escape slashes in instance name with `-` per systemd-escape(1):
 #   sudo systemctl enable argos-worktree-refresh@$(systemd-escape -p /home/jetson2/code/Argos).timer
-ExecStart=/home/jetson2/code/Argos-session-2/scripts/ops/worktree-refresh.sh %I
+ExecStart=/home/jetson2/code/Argos/scripts/ops/worktree-refresh.sh %I
 StandardOutput=journal
 StandardError=journal
 SyslogIdentifier=argos-worktree-refresh
