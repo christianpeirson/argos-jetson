@@ -71,25 +71,25 @@ process_worktree() {
 
 	# Skip the main checkout (tracks dev, refreshed via the dev→main rollup),
 	# and skip ourselves.
-	[ "$wt" = "$main_root" ] && return 0
-	[ "$wt" = "$self_root" ] && return 0
+	[[ "$wt" = "$main_root" ]] && return 0
+	[[ "$wt" = "$self_root" ]] && return 0
 	# Skip the worktree holding the just-merged branch.
-	[ -n "$merged_branch" ] && [ "$wt_branch" = "$merged_branch" ] && return 0
+	[[ -n "$merged_branch" ]] && [[ "$wt_branch" = "$merged_branch" ]] && return 0
 	# Skip detached-HEAD worktrees.
-	[ -z "$wt_branch" ] && return 0
+	[[ -z "$wt_branch" ]] && return 0
 	# Never rebase protected branches.
 	case "$wt_branch" in main|master|dev) return 0 ;; esac
 
 	# Already contains the new dev tip? Nothing to do.
 	local head_sha
 	head_sha="$(git -C "$wt" rev-parse HEAD 2>/dev/null || echo "")"
-	if [ -n "$head_sha" ] && git -C "$wt" merge-base --is-ancestor "$base_sha" "$head_sha" 2>/dev/null; then
+	if [[ -n "$head_sha" ]] && git -C "$wt" merge-base --is-ancestor "$base_sha" "$head_sha" 2>/dev/null; then
 		already+=("$wt_branch")
 		return 0
 	fi
 
 	# Dirty tree → don't touch; leave a breadcrumb the pre-push gate picks up.
-	if [ -n "$(git -C "$wt" status --porcelain 2>/dev/null)" ]; then
+	if [[ -n "$(git -C "$wt" status --porcelain 2>/dev/null)" ]]; then
 		: > "$wt/.needs-rebase" 2>/dev/null || true
 		skipped_dirty+=("$wt_branch")
 		return 0
@@ -118,7 +118,7 @@ while IFS= read -r line; do
 		"worktree "*) wt="${line#worktree }"; wt_branch="" ;;
 		"branch refs/heads/"*) wt_branch="${line#branch refs/heads/}" ;;
 		"")
-			[ -n "$wt" ] && process_worktree "$wt" "$wt_branch"
+			[[ -n "$wt" ]] && process_worktree "$wt" "$wt_branch"
 			wt=""; wt_branch=""
 			;;
 	esac
@@ -126,15 +126,15 @@ done < <(git -C "$main_root" worktree list --porcelain; printf '\n')
 
 # --- summary ---------------------------------------------------------------
 summary="[worktree-refresh] done."
-[ ${#rebased[@]} -gt 0 ]       && summary="$summary  rebased: ${rebased[*]}."
-[ ${#already[@]} -gt 0 ]       && summary="$summary  already-current: ${already[*]}."
-[ ${#skipped_dirty[@]} -gt 0 ] && summary="$summary  skipped (dirty, marked .needs-rebase): ${skipped_dirty[*]}."
-[ ${#conflicted[@]} -gt 0 ]    && summary="$summary  ⚠ rebase conflict (aborted, marked .needs-rebase): ${conflicted[*]} — those worktrees must 'git rebase origin/dev' by hand."
+[[ ${#rebased[@]} -gt 0 ]]       && summary="$summary  rebased: ${rebased[*]}."
+[[ ${#already[@]} -gt 0 ]]       && summary="$summary  already-current: ${already[*]}."
+[[ ${#skipped_dirty[@]} -gt 0 ]] && summary="$summary  skipped (dirty, marked .needs-rebase): ${skipped_dirty[*]}."
+[[ ${#conflicted[@]} -gt 0 ]]    && summary="$summary  ⚠ rebase conflict (aborted, marked .needs-rebase): ${conflicted[*]} — those worktrees must 'git rebase origin/dev' by hand."
 echo "$summary"
 
 # Best-effort: drop the now-orphaned local branch of the merged PR if it's
 # fully contained in origin/dev and not checked out in any worktree.
-if [ -n "$merged_branch" ] \
+if [[ -n "$merged_branch" ]] \
 	&& git -C "$main_root" rev-parse --verify --quiet "refs/heads/$merged_branch" >/dev/null \
 	&& git -C "$main_root" merge-base --is-ancestor "$merged_branch" "origin/$base" 2>/dev/null; then
 	if ! git -C "$main_root" worktree list --porcelain | grep -qx "branch refs/heads/$merged_branch"; then

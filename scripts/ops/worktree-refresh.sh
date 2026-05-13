@@ -19,13 +19,13 @@ set -euo pipefail
 worktree="${1:?worktree path required}"
 cd "$worktree"
 
-if [ -n "$(git status --porcelain)" ]; then
+if [[ -n "$(git status --porcelain)" ]]; then
 	echo "[worktree-refresh] $worktree dirty — skipping" >&2
 	exit 0
 fi
 
 branch="$(git rev-parse --abbrev-ref HEAD)"
-if [ "$branch" = "HEAD" ]; then
+if [[ "$branch" = "HEAD" ]]; then
 	echo "[worktree-refresh] $worktree detached HEAD — skipping" >&2
 	exit 0
 fi
