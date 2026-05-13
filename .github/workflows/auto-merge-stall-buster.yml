@@ -1,0 +1,82 @@
+name: Auto-merge stall buster
+
+# Why this exists
+# ---------------
+# GitHub's auto-merge bot occasionally stalls 5 minutes to multiple hours after
+# a PR transitions to mergeable_state=CLEAN with all required checks green and
+# auto-merge enabled. There is no GitHub-side configuration that makes the bot
+# faster, but the merge API itself remains responsive — so this workflow polls
+# every 5 minutes for PRs that match the "stalled" pattern and force-merges
+# them via the REST API. Idempotent: merging an already-merged PR returns 405
+# and is swallowed.
+#
+# Filed 2026-05-13 after PR #131 sat for 1h 44m past CLEAN with no config-
+# level cause and zero rate-limit pressure.
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+permissions:
+  pull-requests: write
+  contents: write
+
+jobs:
+  unstick:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Find and merge stalled auto-merge PRs
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const STALL_THRESHOLD_MS = 10 * 60 * 1000; // 10 minutes idle
+            const now = Date.now();
+
+            const data = await github.graphql(`
+              query($owner:String!, $repo:String!) {
+                repository(owner:$owner, name:$repo) {
+                  pullRequests(states: OPEN, first: 50,
+                               orderBy: {field: UPDATED_AT, direction: DESC}) {
+                    nodes {
+                      number
+                      title
+                      mergeStateStatus
+                      autoMergeRequest { mergeMethod }
+                      updatedAt
+                    }
+                  }
+                }
+              }
+            `, { owner: context.repo.owner, repo: context.repo.repo });
+
+            const candidates = data.repository.pullRequests.nodes.filter(pr =>
+              pr.autoMergeRequest &&
+              pr.mergeStateStatus === 'CLEAN' &&
+              (now - new Date(pr.updatedAt).getTime()) > STALL_THRESHOLD_MS
+            );
+
+            if (candidates.length === 0) {
+              core.info('no stalled auto-merge PRs');
+              return;
+            }
+
+            for (const pr of candidates) {
+              const method = pr.autoMergeRequest.mergeMethod.toLowerCase();
+              core.info(`unsticking PR #${pr.number} "${pr.title}" via ${method}`);
+              try {
+                await github.rest.pulls.merge({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: pr.number,
+                  merge_method: method,
+                });
+                core.info(`✓ merged PR #${pr.number}`);
+              } catch (err) {
+                if (err.status === 405 || err.status === 422) {
+                  core.info(`PR #${pr.number} already handled (${err.status}) — skipping`);
+                } else {
+                  core.warning(`PR #${pr.number} merge failed: ${err.status} ${err.message}`);
+                }
+              }
+            }

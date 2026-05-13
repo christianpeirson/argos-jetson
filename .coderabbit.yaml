@@ -147,6 +147,87 @@ reviews:
         Pin EXACT versions (no ^ or ~ on production deps where
         reproducibility matters).
 
+    - path: .claude/**
+      instructions: |
+        Claude Code agent configs and hooks. Review for: JSON validity
+        (settings.json must parse), hook matcher specificity (avoid
+        overly broad `*` matches that fire on unrelated tools), shell
+        quoting in hook commands, env var leakage, and consistency with
+        the project's hook taxonomy in .claude/rules/ and CLAUDE.md.
+
+        Flag any hook that constructs Bash commands from JSON tool_input
+        without proper quoting (command-injection risk). Flag hooks that
+        write to user-controlled paths without sanitization.
+
+        Path conventions: PreToolUse hooks fire BEFORE a tool runs
+        (carrot); PostToolUse fires AFTER (intermediate reminder); Stop
+        fires at turn-end (stick). New hooks should declare which layer
+        of that carrot/stick model they belong to in the leading
+        comment.
+
+    - path: scripts/claude-hooks/**
+      instructions: |
+        Shell hooks invoked by Claude Code via .claude/settings.json.
+        Review for: `set -euo pipefail` at the top, robust JSON parsing
+        (jq -e with defensive defaults like `// ""`), command-injection
+        risk via `eval` / `bash -c` with unvalidated input, and exit-code
+        semantics (advisory hooks return 0 even on logic skip; blocking
+        hooks return non-zero only on policy violation).
+
+        Every hook MUST have a leading comment block documenting:
+        which event it binds to (PreToolUse / PostToolUse / Stop /
+        SessionStart), the matcher, what input it expects on stdin,
+        what it returns on stdout, and the bypass env var (if any).
+        Flag hooks that omit any of those.
+
+        Reference: feedback_parallel_work_hook_enforcement.md
+        and feedback_pre_bg_dispatch_hook.md document the canonical
+        carrot/stick model.
+
+    - path: scripts/ops/**
+      instructions: |
+        Operational shell scripts (worktree management, dev-server
+        provisioning, mem-guard wrapper, db migrate). Review for:
+        missing `set -euo pipefail`, unsafe `rm -rf` patterns,
+        missing dry-run modes on destructive ops, and proper
+        worktree-vs-main-checkout context detection
+        (`git rev-parse --git-common-dir`).
+
+        Scripts that fan out across all worktrees (e.g.
+        worktree-refresh.sh) MUST be idempotent and never touch a
+        dirty tree; the `.needs-rebase` marker is the agreed contract
+        for "skipped, deal with it later" — see memory
+        feedback_worktree_conflict_strategy.md.
+
+    - path: .husky/**
+      instructions: |
+        Git hooks that gate every commit/push. Review for: skip-flag
+        clarity (every gate MUST have a documented `SKIP_*=1` bypass
+        env var visible in the gate's failure message), step-numbering
+        consistency (the L1 freshness gate is step 1b at
+        .husky/pre-push — don't renumber without updating memory
+        feedback_branch_freshness_gate.md), and ordering of cheap-vs-
+        expensive gates (cheap ones run first to fail fast).
+
+        Reject changes that disable a gate without an explicit user-
+        approved memo in the PR body. Reject changes that introduce
+        a gate without a SKIP_* bypass — gate without bypass is a
+        future emergency-merge blocker.
+
+    - path: .github/workflows/**
+      instructions: |
+        GitHub Actions workflows. Review for: minimum-required
+        `permissions:` block (default of `permissions: read-all`
+        plus narrow elevations beats `permissions: write-all`),
+        pinned action versions (use SHA or `@v<N>` major-version
+        pins, never `@main` / `@master`), and scheduled jobs with
+        clear cron cadence justification in a comment block.
+
+        For workflows that mutate repo state (auto-merge stall
+        buster, dependabot auto-approve, etc.), require an explicit
+        idempotency note and an explanation of the racing-with-
+        another-bot story in the leading comment block.
+
 # Hard-fail merge checks per schema. mode = "error" blocks the merge.
 # Each `instructions` field max 10,000 chars per schema.
 pre_merge_checks:
