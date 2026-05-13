@@ -39,6 +39,17 @@
 					}
 				]
 			}
+		],
+		"PostToolUse": [
+			{
+				"matcher": "mcp__github__merge_pull_request",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bash ${CLAUDE_PROJECT_DIR}/scripts/claude-hooks/auto-post-merge-fanout.sh"
+					}
+				]
+			}
 		]
 	}
 }
