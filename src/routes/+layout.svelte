@@ -1,9 +1,16 @@
 <script lang="ts">
 	import '../app.css';
+	// 2026-05-13: load Carbon Components Svelte's g100 dark theme so the
+	// `bx--*` class hierarchy used by Reports / Wi-Fi tabs / Bluetooth toolbar
+	// / Modal renders styled. Spec-026 Phase 0 left the Lunaris-Carbon overlay
+	// scaffold empty (per-component @use migrations are Phase 1+), but Carbon
+	// components are already in use across the dashboard — without this global
+	// import they render as unstyled HTML with `bx--*` classes that resolve to
+	// no rules. See design-system rules + memory project_argos_unified_source_tree.md.
+	import 'carbon-components-svelte/css/g100.css';
 	// spec 026 Phase 1 — Lunaris-on-Carbon theme overlay (currently a stub
 	// with no @carbon/styles imports; subsequent commits add per-component
-	// imports). Wired now that sass-embedded is installed (Vite v7 SCSS
-	// preprocessor requirement).
+	// imports). Loaded AFTER carbon g100 so Lunaris token overrides cascade.
 	import '$lib/styles/lunaris-carbon-theme.scss';
 
 	import type { Snippet } from 'svelte';

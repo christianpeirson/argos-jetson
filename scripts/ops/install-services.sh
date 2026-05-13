@@ -159,12 +159,16 @@ if [[ -f "$DEPLOY_DIR/$USER_SERVICE" ]]; then
   chown "$SETUP_USER":"$SETUP_USER" "$USER_SYSTEMD_DIR/$USER_SERVICE"
 fi
 
-# argos-dev.service — dev server on :5174 (vite-dev with HMR for Mk II / Carbon migration WIP)
+# argos-dev.service — v2 production server on :5174 (prod-server.ts pattern,
+# mirrors argos-final). Unit name kept for back-compat with /tmp/argos-dev-*.log
+# tooling, but no longer runs `vite dev` — closes the terminal-ws production
+# gap (project_argos_terminal_prod_gap.md).
 DEV_SERVICE="argos-dev.service"
 if [[ -f "$DEPLOY_DIR/$DEV_SERVICE" ]]; then
-  echo "  Installing $DEV_SERVICE (auto-enabled — serves dev branch on :5174)"
+  echo "  Installing $DEV_SERVICE (auto-enabled — v2 prod on :5174)"
   sed -e "s|__PROJECT_DIR__|$PROJECT_DIR|g" \
       -e "s|__SETUP_USER__|$SETUP_USER|g" \
+      -e "s|__NODE_BIN__|$NODE_BIN|g" \
       "$DEPLOY_DIR/$DEV_SERVICE" > "$SYSTEMD_DIR/$DEV_SERVICE"
   chmod 644 "$SYSTEMD_DIR/$DEV_SERVICE"
 fi
