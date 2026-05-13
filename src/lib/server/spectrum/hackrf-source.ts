@@ -109,6 +109,8 @@ export class HackRFSpectrumSource extends EventEmitter implements SpectrumSource
 		this.handleSweepData(payload);
 	};
 
+	// Implements SpectrumSource interface — dispatched via src/lib/server/spectrum/factory.ts:32
+	// fallow-ignore-next-line unused-class-member
 	async start(config: SpectrumConfig): Promise<void> {
 		this.currentConfig = config;
 		this.lastError = undefined;
@@ -137,6 +139,8 @@ export class HackRFSpectrumSource extends EventEmitter implements SpectrumSource
 		this.transitionState('streaming');
 	}
 
+	// Implements SpectrumSource interface — dispatched via src/lib/server/spectrum/factory.ts:23
+	// fallow-ignore-next-line unused-class-member
 	async stop(): Promise<void> {
 		this.transitionState('stopping');
 		sweepManager.off('spectrum_data', this.onSweepData);

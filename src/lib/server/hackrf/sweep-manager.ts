@@ -283,6 +283,8 @@ export class SweepManager extends EventEmitter {
 		this.sseEmitter = result.sseEmitter;
 	}
 
+	// Called via src/lib/server/hackrf/sweep-cycle-init.ts:104, sweep-manager-lifecycle.ts:36, sweep-coordinator.ts:279
+	// fallow-ignore-next-line unused-class-member
 	async cleanup(): Promise<void> {
 		if (this.healthMonitorInterval) clearInterval(this.healthMonitorInterval);
 		await this.emergencyStop();

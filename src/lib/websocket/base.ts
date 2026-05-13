@@ -94,6 +94,8 @@ export abstract class BaseWebSocket {
 		this.reconnectState.currentReconnectInterval = this.config.reconnectInterval;
 	}
 
+	// Inherited by TerminalWebSocket subclass in src/lib/components/dashboard/TerminalTabContent.svelte:36
+	// fallow-ignore-next-line unused-class-member
 	// fallow-ignore-next-line complexity
 	send(data: unknown): boolean {
 		if (this.ws?.readyState !== WebSocket.OPEN) {
@@ -112,6 +114,8 @@ export abstract class BaseWebSocket {
 		}
 	}
 
+	// Inherited by TerminalWebSocket subclass in src/lib/components/dashboard/TerminalTabContent.svelte:36
+	// fallow-ignore-next-line unused-class-member
 	on(
 		event: WebSocketEventEnum,
 		listener: (evt: {
@@ -127,6 +131,8 @@ export abstract class BaseWebSocket {
 		this.eventListeners.get(event)?.add(listener);
 	}
 
+	// Inherited by TerminalWebSocket subclass in src/lib/components/dashboard/TerminalTabContent.svelte:36
+	// fallow-ignore-next-line unused-class-member
 	off(
 		event: WebSocketEventEnum,
 		listener: (evt: {
@@ -139,6 +145,8 @@ export abstract class BaseWebSocket {
 		this.eventListeners.get(event)?.delete(listener);
 	}
 
+	// Inherited by TerminalWebSocket subclass in src/lib/components/dashboard/TerminalTabContent.svelte:36
+	// fallow-ignore-next-line unused-class-member
 	onMessage(type: string, handler: (data: unknown) => void): void {
 		if (!this.messageHandlers.has(type)) {
 			this.messageHandlers.set(type, new Set());
@@ -146,14 +154,20 @@ export abstract class BaseWebSocket {
 		this.messageHandlers.get(type)?.add(handler);
 	}
 
+	// Inherited by TerminalWebSocket subclass in src/lib/components/dashboard/TerminalTabContent.svelte:36
+	// fallow-ignore-next-line unused-class-member
 	offMessage(type: string, handler: (data: unknown) => void): void {
 		this.messageHandlers.get(type)?.delete(handler);
 	}
 
+	// Inherited by TerminalWebSocket subclass in src/lib/components/dashboard/TerminalTabContent.svelte:36
+	// fallow-ignore-next-line unused-class-member
 	public isConnected(): boolean {
 		return this.ws?.readyState === WebSocket.OPEN;
 	}
 
+	// Inherited by TerminalWebSocket subclass in src/lib/components/dashboard/TerminalTabContent.svelte:36
+	// fallow-ignore-next-line unused-class-member
 	getState(): number | undefined {
 		return this.ws?.readyState;
 	}

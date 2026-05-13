@@ -79,21 +79,4 @@ export class FrequencyBlacklist {
 		this.blacklist.add(freqHz);
 		logger.warn('[BLOCK] Frequency blacklisted', { frequency, freqHz });
 	}
-
-	/** Check if frequency is blacklisted */
-	has(frequency: FrequencyConfig): boolean {
-		const freqHz = convertToHz(frequency.value, frequency.unit);
-		return this.blacklist.has(freqHz);
-	}
-
-	/** Clear all blacklisted frequencies */
-	clear(): void {
-		this.blacklist.clear();
-		logger.info('[CLEANUP] Frequency blacklist cleared');
-	}
-
-	/** Get the number of blacklisted frequencies */
-	get size(): number {
-		return this.blacklist.size;
-	}
 }

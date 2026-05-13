@@ -79,13 +79,8 @@ export class FrequencyCycler {
 		return this.cycleConfig.frequencies[this.cycleState.currentIndex];
 	}
 
-	/** Get next frequency in cycle */
-	getNextFrequency(): FrequencyConfig | null {
-		if (this.cycleConfig.frequencies.length === 0) return null;
-		const nextIndex = (this.cycleState.currentIndex + 1) % this.cycleConfig.frequencies.length;
-		return this.cycleConfig.frequencies[nextIndex];
-	}
-
+	// Called via src/lib/server/hackrf/sweep-cycle-init.ts:240
+	// fallow-ignore-next-line unused-class-member
 	/** Cycle to next frequency */
 	async cycleToNext(
 		onCycleComplete: (nextFreq: FrequencyConfig) => Promise<void>

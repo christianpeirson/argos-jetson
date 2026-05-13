@@ -51,6 +51,8 @@ export class ErrorTracker {
 		});
 	}
 
+	// Called via src/lib/server/hackrf/sweep-cycle-init.ts:221 and sweep-health-checker.ts:194
+	// fallow-ignore-next-line unused-class-member
 	/** Record a successful operation */
 	recordSuccess(): void {
 		this.errorState.consecutiveErrors = 0;
@@ -158,22 +160,6 @@ export class ErrorTracker {
 		this.deviceState.recoveryState = 'none';
 		this.recovery.reset();
 		logger.info('[CLEANUP] All error tracking reset');
-	}
-
-	updateConfig(
-		config: Partial<
-			RecoveryConfig & { maxConsecutiveErrors?: number; maxFailuresPerMinute?: number }
-		>
-	): void {
-		if (config.maxConsecutiveErrors !== undefined)
-			this.errorState.maxConsecutiveErrors = config.maxConsecutiveErrors;
-		if (config.maxFailuresPerMinute !== undefined)
-			this.errorState.maxFailuresPerMinute = config.maxFailuresPerMinute;
-		this.recovery.updateConfig(config);
-		logger.info('[CONFIG] ErrorTracker configuration updated', {
-			maxConsecutiveErrors: this.errorState.maxConsecutiveErrors,
-			maxFailuresPerMinute: this.errorState.maxFailuresPerMinute
-		});
 	}
 
 	private cleanupOldFailures(): void {

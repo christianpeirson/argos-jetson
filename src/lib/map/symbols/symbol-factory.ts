@@ -90,13 +90,6 @@ export class SymbolFactory {
 		return { modifiers, attributes };
 	}
 
-	static async createSymbolSVG(sidc: string, options: SymbolOptions = {}): Promise<string> {
-		const { renderer, mod } = await this.getRenderer();
-		const { modifiers, attributes } = this.buildRenderMaps(mod, options);
-		const result = renderer.RenderSVG(sidc, modifiers, attributes);
-		return result?.getSVG() ?? '';
-	}
-
 	static async createSymbolDataUrl(sidc: string, options: SymbolOptions = {}): Promise<string> {
 		const { renderer, mod } = await this.getRenderer();
 		const { modifiers, attributes } = this.buildRenderMaps(mod, options);

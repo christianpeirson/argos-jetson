@@ -115,16 +115,6 @@ export class KismetService {
 		}
 	}
 
-	async toggleKismet(): Promise<void> {
-		const currentStatus = get(kismetStore).status;
-
-		if (currentStatus === 'running') {
-			await this.stopKismet();
-		} else if (currentStatus === 'stopped') {
-			await this.startKismet();
-		}
-	}
-
 	/** Parse and validate a devices API response, returning null on failure */
 	private async parseDevicesResponse(response: Response): Promise<KismetDevice[] | null> {
 		if (!response.ok) return null;
@@ -205,10 +195,5 @@ export class KismetService {
 			clearInterval(this.deviceFetchInterval);
 			this.deviceFetchInterval = null;
 		}
-	}
-
-	// Helper method to clear all devices and markers
-	clearDevices(): void {
-		clearAllKismetDevices();
 	}
 }

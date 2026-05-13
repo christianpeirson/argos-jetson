@@ -2,7 +2,6 @@
  * Data fetching functions for TopStatusBar — hardware status, details, weather, geocoding, satellites.
  * Extracted from TopStatusBar to separate data concerns from presentation.
  */
-import type { Satellite } from '$lib/gps/types';
 import { fetchJSON } from '$lib/utils/fetch-json';
 import { haversineMeters } from '$lib/utils/geo';
 
@@ -164,28 +163,4 @@ export async function reverseGeocode(
 	} catch {
 		return null;
 	}
-}
-
-// fallow-ignore-next-line complexity
-export async function fetchSatelliteData(): Promise<{
-	satellites: Satellite[];
-	usedCount: number;
-} | null> {
-	try {
-		const res = await fetch('/api/gps/satellites');
-		if (!res.ok) return null;
-		const data = await res.json();
-		if (!data.success || !data.satellites) return null;
-		return {
-			satellites: data.satellites,
-			usedCount: data.satellites.filter((s: Satellite) => s.used).length
-		};
-	} catch {
-		return null;
-	}
-}
-
-export function formatSerial(s: string): string {
-	const trimmed = s.replace(/^0+/, '');
-	return trimmed.length > 12 ? '...' + trimmed.slice(-12) : trimmed;
 }

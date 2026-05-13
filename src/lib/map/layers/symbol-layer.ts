@@ -105,21 +105,4 @@ export class SymbolLayer {
 			this.map.setLayoutProperty(this.layerId, 'visibility', visible ? 'visible' : 'none');
 		}
 	}
-
-	/**
-	 * Clears the layer and cache
-	 */
-	public clear() {
-		// Technically we can't easily remove images from sprite without recreating style?
-		// MapLibre has removeImage()
-		this.symbolCache.forEach((sidc) => {
-			if (this.map.hasImage(sidc)) this.map.removeImage(sidc);
-		});
-		this.symbolCache.clear();
-
-		const source = this.map.getSource(this.sourceId) as maplibregl.GeoJSONSource;
-		if (source) {
-			source.setData({ type: 'FeatureCollection', features: [] });
-		}
-	}
 }

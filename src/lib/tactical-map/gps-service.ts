@@ -1,6 +1,6 @@
 import { reverseGeocode } from '$lib/components/dashboard/status/status-bar-data';
 import { GPSApiResponseSchema } from '$lib/schemas/rf';
-import { gpsStore, updateGPSPosition, updateGPSStatus } from '$lib/stores/tactical-map/gps-store';
+import { updateGPSPosition, updateGPSStatus } from '$lib/stores/tactical-map/gps-store';
 import { detectCountry, formatCoordinates } from '$lib/utils/country-detector';
 import { haversineMeters } from '$lib/utils/geo';
 import { logger } from '$lib/utils/logger';
@@ -163,19 +163,5 @@ export class GPSService {
 			clearInterval(this.positionInterval);
 			this.positionInterval = null;
 		}
-	}
-
-	getCurrentPosition() {
-		return gpsStore;
-	}
-
-	// Alias methods for compatibility
-	startGPSTracking(): Promise<void> {
-		this.startPositionUpdates();
-		return Promise.resolve();
-	}
-
-	stopGPSTracking(): void {
-		this.stopPositionUpdates();
 	}
 }
