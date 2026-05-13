@@ -265,16 +265,6 @@ export class WebSocketManager extends EventEmitter {
 		}
 	}
 
-	/** Get current statistics */
-	getStats() {
-		return {
-			clients: this.clients.size,
-			devices: this.pollerState.deviceCache.size,
-			polling: !!this.pollingInterval,
-			lastPoll: this.pollerState.lastPollTime
-		};
-	}
-
 	// globalThis chain fallow can't trace. Called via src/hooks.server.ts:284 (wsManager = WebSocketManager.getInstance()).
 	/** Clean up resources */
 	// fallow-ignore-next-line unused-class-member

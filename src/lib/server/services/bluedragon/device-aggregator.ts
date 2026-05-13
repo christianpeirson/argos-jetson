@@ -127,6 +127,8 @@ export class DeviceAggregator {
 		this.pruneTimer = setInterval(() => this.pruneStale(), PRUNE_INTERVAL_MS);
 	}
 
+	// Called via src/lib/server/services/bluedragon/lifecycle.ts:244 and events.ts:102
+	// fallow-ignore-next-line unused-class-member
 	stop(): void {
 		if (this.pruneTimer) {
 			clearInterval(this.pruneTimer);
@@ -147,6 +149,8 @@ export class DeviceAggregator {
 		return this.devices.size;
 	}
 
+	// Called via src/lib/server/services/bluedragon/state.ts:58,70
+	// fallow-ignore-next-line unused-class-member
 	getPacketCount(): number {
 		return this.packetCount;
 	}

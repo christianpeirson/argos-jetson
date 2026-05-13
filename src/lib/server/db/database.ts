@@ -301,10 +301,6 @@ export class RFDatabase {
 		return this.db;
 	}
 
-	vacuum() {
-		this.db.exec('VACUUM');
-	}
-
 	close() {
 		if (this.cleanupService) this.cleanupService.stop();
 		this.statements.clear();

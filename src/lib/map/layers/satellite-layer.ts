@@ -65,17 +65,4 @@ export class SatelliteLayer {
 		// Also fade in/out for smoother transition if supported
 		this.map.setPaintProperty(this.LAYER_ID, 'raster-opacity', visible ? 1 : 0);
 	}
-
-	/**
-	 * Updates the source URL (requiring remove/add source).
-	 */
-	updateSource(urlTemplate: string, attribution: string) {
-		if (this.map.getLayer(this.LAYER_ID)) {
-			this.map.removeLayer(this.LAYER_ID);
-		}
-		if (this.map.getSource(this.SOURCE_ID)) {
-			this.map.removeSource(this.SOURCE_ID);
-		}
-		this.add(urlTemplate, attribution);
-	}
 }

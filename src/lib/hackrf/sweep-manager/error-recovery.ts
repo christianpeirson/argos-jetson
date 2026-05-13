@@ -82,24 +82,6 @@ export class RecoveryManager {
 		return state;
 	}
 
-	/** Complete recovery process. Returns true if it was successful. */
-	complete(successful: boolean): void {
-		this.recovering = false;
-
-		if (successful) {
-			this.reset();
-			logger.info('[OK] Recovery completed successfully');
-		} else {
-			logger.warn('[ERROR] Recovery attempt failed', {
-				attempt: this.attempts,
-				nextAction:
-					this.attempts >= (this.config.maxRecoveryAttempts || 3)
-						? 'Give up'
-						: 'Retry after delay'
-			});
-		}
-	}
-
 	/** Reset all recovery state. */
 	reset(): void {
 		this.attempts = 0;
