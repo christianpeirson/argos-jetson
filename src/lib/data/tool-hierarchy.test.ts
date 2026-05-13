@@ -120,14 +120,14 @@ describe('Tool Navigation Debug', () => {
 	// Counts are synced with the toolHierarchy data — bump when tools are added
 	// under ONNET/OFFNET/etc. See git history for the most recent adjustment.
 
-	it('total tools across all categories is 97', () => {
-		expect(countTools(toolHierarchy.root).total).toBe(97);
+	it('total tools across all categories is 98', () => {
+		expect(countTools(toolHierarchy.root).total).toBe(98);
 	});
 
-	it('OFFNET has exactly 86 tools', () => {
+	it('OFFNET has exactly 87 tools', () => {
 		// Safe: Test: Type assertion for test data construction
 		const offnet = findByPath(['offnet'], toolHierarchy.root) as ToolCategory;
-		expect(countTools(offnet).total).toBe(86);
+		expect(countTools(offnet).total).toBe(87);
 	});
 
 	it('ONNET has exactly 9 tools', () => {
@@ -154,9 +154,9 @@ describe('Tool Navigation Debug', () => {
 		expect(countTools(defense).total).toBe(1);
 	});
 
-	it('UTILITIES has 18 tools', () => {
+	it('UTILITIES has 19 tools', () => {
 		// Safe: Test: Type assertion for test data construction
 		const utils = findByPath(['offnet', 'utilities'], toolHierarchy.root) as ToolCategory;
-		expect(countTools(utils).total).toBe(18);
+		expect(countTools(utils).total).toBe(19);
 	});
 });

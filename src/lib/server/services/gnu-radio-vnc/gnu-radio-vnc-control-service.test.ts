@@ -1,5 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { env } from '$lib/server/env';
+
 import {
 	getGnuRadioVncStatus,
 	startGnuRadioVnc,
@@ -8,6 +10,13 @@ import {
 import { _setSpawnImplForTest } from './gnu-radio-vnc-processes';
 
 beforeEach(() => {
+	// CI Ubuntu runner doesn't have the real binaries; stub env to /bin/sh so
+	// resolveBin returns successfully. spawn DI seam below ensures nothing is
+	// actually executed.
+	env.ARGOS_VNC_XTIGERVNC_BIN = '/bin/sh';
+	env.ARGOS_VNC_WEBSOCKIFY_BIN = '/bin/sh';
+	env.ARGOS_VNC_GNURADIO_COMPANION_BIN = '/bin/sh';
+
 	_setSpawnImplForTest(() => {
 		const proc = {
 			pid: Math.floor(Math.random() * 10000) + 1000,
@@ -25,6 +34,9 @@ beforeEach(() => {
 afterEach(() => {
 	_setSpawnImplForTest(null);
 	delete globalThis.__argos_gnuradioVnc_state;
+	delete env.ARGOS_VNC_XTIGERVNC_BIN;
+	delete env.ARGOS_VNC_WEBSOCKIFY_BIN;
+	delete env.ARGOS_VNC_GNURADIO_COMPANION_BIN;
 });
 
 describe('gnu-radio-vnc-control-service', () => {

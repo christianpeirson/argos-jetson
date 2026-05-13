@@ -58,11 +58,14 @@ interface Props {
 
 ```svelte
 <CarbonSelect
-  selected={value}                                  // controlled, not bind:
-  on:update={(e) => { value = e.detail; onChange?.(e.detail); }}
-  ...
+	selected={value}
+	on:update={(e) => {
+		value = e.detail;
+		onChange?.(e.detail);
+	}}
+	...
 >
-  {@render children?.()}
+	{@render children?.()}
 </CarbonSelect>
 ```
 

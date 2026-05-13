@@ -40,8 +40,7 @@ export const signalRecording: ToolCategory = {
 			{
 				id: 'gnu-radio',
 				name: 'GNU Radio',
-				description:
-					'GNU Radio Companion (GRC) flowgraph editor streamed via noVNC',
+				description: 'GNU Radio Companion (GRC) flowgraph editor streamed via noVNC',
 				icon: toolIcons.sdr,
 				deployment: 'native'
 			},

@@ -1,5 +1,5 @@
 [Unit]
-Description=Argos Dev Server (Mk II / Carbon migration WIP) on :5174
+Description=Argos v2 Production Server on :5174
 After=network.target
 
 [Service]
@@ -8,18 +8,23 @@ User=__SETUP_USER__
 Group=__SETUP_USER__
 WorkingDirectory=__PROJECT_DIR__
 # NOTE: EnvironmentFile= intentionally omitted. systemd's parser does NOT strip
-# inline '# comment' from values, breaking Zod URL/number validation
-# (e.g. KISMET_API_URL=http://localhost:2501  # comment → URL parse error).
-# The app's src/lib/server/env.ts calls dotenv.config() at module-import time,
-# which DOES strip comments correctly. Mirrors argos-final.service.d/10-env.conf.
-Environment="NODE_ENV=development"
-Environment="NODE_OPTIONS=--max-old-space-size=2048"
-Environment="VITE_PORT=5174"
-# Fetch upstream before vite starts so :5174 cannot serve stale code on boot.
-# Non-blocking: `|| true` ensures a transient network failure doesn't prevent
-# vite from starting against the locally-checked-out tip.
-ExecStartPre=/bin/sh -c 'cd __PROJECT_DIR__ && git fetch origin --quiet || true'
-ExecStart=__PROJECT_DIR__/scripts/dev/start-vite.sh
+# inline '# comment' from values, breaking Zod URL/number validation. The app's
+# src/lib/server/env.ts calls dotenv.config() at module-import time, which DOES
+# strip comments correctly. Mirrors argos-final.service.d/10-env.conf.
+Environment="NODE_ENV=production"
+Environment="NODE_OPTIONS=--max-old-space-size=1024"
+Environment="PORT=5174"
+Environment="HOST=0.0.0.0"
+# Pre-spawn tmux-0 on startup so the v2 dashboard Terminal panel opens
+# instantly (same as argos-final does for v1).
+Environment="ARGOS_TERMINAL_PRESPAWN=1"
+# Use the same prod-server.ts entry as argos-final so the WebSocket upgrade
+# for /terminal-ws is wired in v2 production. Closes the gap documented in
+# memory project_argos_terminal_prod_gap.md. Unit name kept as "argos-dev"
+# for back-compat with /tmp/argos-dev-*.log tooling, but as of 2026-05-13
+# this is a prod build of v2, NOT vite dev. HMR-style engineering happens
+# on per-worktree dev ports via aoe (port-for-worktree.sh hash, 5191-5269).
+ExecStart=__NODE_BIN__ --import tsx __PROJECT_DIR__/scripts/ops/prod-server.ts
 Restart=on-failure
 RestartSec=10
 StandardOutput=journal

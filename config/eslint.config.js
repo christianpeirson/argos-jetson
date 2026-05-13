@@ -84,10 +84,7 @@ export default [
 			// and other root .js files get covered — fixes a JS-shape blind spot revealed by
 			// fallow's Pass 0 (dangerfile.js:155 CC=13 was never caught by ESLint complexity
 			// because that rule was TS-only).
-			'max-lines': [
-				'warn',
-				{ max: 300, skipBlankLines: true, skipComments: true }
-			],
+			'max-lines': ['warn', { max: 300, skipBlankLines: true, skipComments: true }],
 			'max-lines-per-function': [
 				'warn',
 				{ max: 50, skipBlankLines: true, skipComments: true, IIFEs: true }

@@ -13,13 +13,19 @@
 #   bash scripts/ops/install-v1-fallback.sh
 #
 # Environment overrides:
-#   V1_COMMIT=<sha>         git commit to check out (default: 2203a328)
+#   V1_REF=<ref>            git ref to check out — branch or sha (default: v1)
+#                            The `v1` branch lives on origin and is seeded from
+#                            the last pre-Mk-II commit + cherry-picks (GNU Radio,
+#                            Carbon-CSS-fix, etc.). Using a branch (not a SHA)
+#                            so `git pull` inside Argos-v1 picks up new v1
+#                            commits without re-running this script.
+#   V1_COMMIT=<sha>         DEPRECATED alias for V1_REF (still honored).
 #   V1_PROJECT_DIR=<path>   target worktree path (default: <project>-v1)
 #   FORCE_REBUILD=1         remove existing v1 worktree + rebuild from scratch
 #
 # What it does (idempotent unless FORCE_REBUILD=1):
 #   1. Verifies cwd is inside an Argos checkout
-#   2. Creates git worktree at V1_PROJECT_DIR pointing at V1_COMMIT
+#   2. Creates git worktree at V1_PROJECT_DIR tracking V1_REF
 #   3. Copies .env (NOT symlink — per-machine isolation)
 #   4. npm install --ignore-scripts (skips node-gyp; bypasses node-pty
 #      compile bug on aarch64 Linux + Node 22)
@@ -35,7 +41,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
-V1_COMMIT="${V1_COMMIT:-2203a328}"
+# V1_REF preferred; V1_COMMIT alias kept for back-compat (if set, wins).
+V1_REF="${V1_REF:-${V1_COMMIT:-v1}}"
 V1_PROJECT_DIR="${V1_PROJECT_DIR:-${PROJECT_DIR}-v1}"
 FORCE_REBUILD="${FORCE_REBUILD:-0}"
 
@@ -53,7 +60,7 @@ fi
 echo "Argos v1 fallback installer"
 echo "  Project:    $PROJECT_DIR"
 echo "  V1 dir:     $V1_PROJECT_DIR"
-echo "  V1 commit:  $V1_COMMIT"
+echo "  V1 ref:     $V1_REF"
 echo ""
 
 # Step 1: Worktree
@@ -66,8 +73,17 @@ if [[ -d "$V1_PROJECT_DIR" ]]; then
   fi
 fi
 if [[ ! -d "$V1_PROJECT_DIR" ]]; then
-  echo "[1/7] Creating worktree at $V1_PROJECT_DIR (commit $V1_COMMIT)..."
-  git -C "$PROJECT_DIR" worktree add "$V1_PROJECT_DIR" "$V1_COMMIT"
+  echo "[1/7] Creating worktree at $V1_PROJECT_DIR (ref $V1_REF)..."
+  # Branch refs: track origin/<branch> if it exists, so `git pull` works.
+  # SHA refs: detached HEAD (same as before).
+  if git -C "$PROJECT_DIR" show-ref --verify --quiet "refs/heads/$V1_REF"; then
+    git -C "$PROJECT_DIR" worktree add "$V1_PROJECT_DIR" "$V1_REF"
+  elif git -C "$PROJECT_DIR" show-ref --verify --quiet "refs/remotes/origin/$V1_REF"; then
+    git -C "$PROJECT_DIR" fetch origin "$V1_REF":"$V1_REF" 2>/dev/null || true
+    git -C "$PROJECT_DIR" worktree add "$V1_PROJECT_DIR" "$V1_REF"
+  else
+    git -C "$PROJECT_DIR" worktree add "$V1_PROJECT_DIR" "$V1_REF"
+  fi
 fi
 
 # Step 2: .env (copy, not symlink — v1 may diverge per-machine)

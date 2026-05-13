@@ -1,4 +1,6 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { env } from '$lib/server/env';
 
 import {
 	_setSpawnImplForTest,
@@ -8,9 +10,23 @@ import {
 	spawnXtigervnc
 } from './gnu-radio-vnc-processes';
 
+// CI Ubuntu runner doesn't have Xtigervnc / gnuradio-companion / websockify
+// installed → resolveBin throws BinaryNotFoundError before the spawn DI seam
+// can intercept. Mutate env.* to /bin/sh so resolveBin returns successfully —
+// spawn never actually executes anything because _setSpawnImplForTest below
+// replaces the spawn impl entirely.
+beforeEach(() => {
+	env.ARGOS_VNC_XTIGERVNC_BIN = '/bin/sh';
+	env.ARGOS_VNC_WEBSOCKIFY_BIN = '/bin/sh';
+	env.ARGOS_VNC_GNURADIO_COMPANION_BIN = '/bin/sh';
+});
+
 afterEach(() => {
 	_setSpawnImplForTest(null);
 	delete globalThis.__argos_gnuradioVnc_state;
+	delete env.ARGOS_VNC_XTIGERVNC_BIN;
+	delete env.ARGOS_VNC_WEBSOCKIFY_BIN;
+	delete env.ARGOS_VNC_GNURADIO_COMPANION_BIN;
 });
 
 describe('gnu-radio-vnc-processes', () => {

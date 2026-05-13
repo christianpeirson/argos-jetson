@@ -139,11 +139,7 @@
 	</Button>
 {/snippet}
 
-<ToolViewWrapper
-	title="GNU Radio Companion"
-	onBack={goBack}
-	actions={stopAction}
->
+<ToolViewWrapper title="GNU Radio Companion" onBack={goBack} actions={stopAction}>
 	{#if serviceStatus === 'idle'}
 		<div class="grc-status">
 			<p class="status-label">GNU RADIO READY</p>
