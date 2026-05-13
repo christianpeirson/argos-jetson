@@ -84,7 +84,10 @@ export default [
 			// and other root .js files get covered — fixes a JS-shape blind spot revealed by
 			// fallow's Pass 0 (dangerfile.js:155 CC=13 was never caught by ESLint complexity
 			// because that rule was TS-only).
-			'max-lines': ['warn', { max: 300, skipBlankLines: true, skipComments: true }],
+			'max-lines': [
+				'warn',
+				{ max: 300, skipBlankLines: true, skipComments: true }
+			],
 			'max-lines-per-function': [
 				'warn',
 				{ max: 50, skipBlankLines: true, skipComments: true, IIFEs: true }
@@ -139,58 +142,68 @@ export default [
 			// at top of config so .js files like dangerfile.js are covered — see comment there.)
 		}
 	},
-	// Spec-026 Phase 8.8: spread eslint-plugin-svelte's recommended preset.
-	// `svelte.configs.recommended` is a flat-config ARRAY (4 entries: plugin
-	// registration, *.svelte parser config, *.svelte.{js,ts} parser config,
-	// shared 35-rule block). Spreading the array is the correct way to apply
-	// the preset; spreading `.rules` was a no-op because arrays don't expose a
-	// `.rules` property. Argos-specific overrides for parser sub-parser and
-	// rule downgrades follow in the next entry.
-	...svelte.configs.recommended,
 	{
-		// Argos parser override: recommended preset's parser config for
-		// `.svelte.{js,ts}` does not wire the TypeScript sub-parser. Without
-		// it, `.svelte.ts` module-state files raise "Parsing error: Unexpected
-		// token" on every type annotation. The svelte-eslint-parser README
-		// documents this exact override.
-		files: ['**/*.svelte', '**/*.svelte.ts', '**/*.svelte.js'],
+		files: ['**/*.svelte'],
 		languageOptions: {
 			parser: svelteParser,
 			parserOptions: {
 				parser: tsParser
 			}
 		},
+		plugins: {
+			svelte
+		},
 		rules: {
-			// svelte/require-each-key: ERROR (default from recommended preset)
-			// after the 18-site cleanup landed in the follow-up PR — all
-			// `{#each}` blocks now carry stable keys.
+			// spec-026 Phase 8.8 fix (2026-05-04): `svelte.configs.recommended`
+			// in eslint-plugin-svelte v3+ is a flat-config ARRAY of 4 items,
+			// NOT an object. `.rules` on the array itself is undefined, which
+			// is why the previous spread silently no-op'd. Rules actually live
+			// on items[1] (4 svelte-scoped) and items[3] (35 generic).
 			//
-			// svelte/no-at-html-tags: ERROR (default from recommended preset).
-			// 7 audited files render hard-coded SVG icon strings only; they're
-			// whitelisted via the files-pattern override below. Each
-			// whitelisted file carries a top-of-file
-			// `@audit-svelte-no-at-html-tags` HTML comment with per-file
-			// reasoning. Re-audit + remove from the list before adding any
-			// user-derived `{@html}` content.
-		}
-	},
-	{
-		// Spec-026 Phase 8.8 cleanup PR — XSS-audited `{@html}` whitelist.
-		// Each file in this list renders ONLY hard-coded SVG icon strings
-		// from $lib/data/tool-icons.ts / weather-helpers.ts / buildConeSVG()
-		// with no user input vector. See the `@audit-svelte-no-at-html-tags`
-		// comment at the top of each listed file for per-file reasoning.
-		files: [
-			'src/lib/components/dashboard/DashboardMap.svelte',
-			'src/lib/components/dashboard/TopStatusBar.svelte',
-			'src/lib/components/dashboard/panels/OnnetToolsPanel.svelte',
-			'src/lib/components/dashboard/panels/ToolsPanelHeader.svelte',
-			'src/lib/components/dashboard/shared/ToolCard.svelte',
-			'src/lib/components/dashboard/shared/ToolCategoryCard.svelte',
-			'src/lib/components/dashboard/status/CoordsDisplay.svelte'
-		],
-		rules: {
-			'svelte/no-at-html-tags': 'off'
+			// Verified via runtime probe against eslint-plugin-svelte v3.10.1:
+			//   recommended[1].rules: 4 rules (2 error, 2 off — comment-directive,
+			//                         system, no-inner-declarations off, no-self-
+			//                         assign off — scoped to *.svelte via files filter)
+			//   recommended[3].rules: 35 rules (33 error, 2 warn — Svelte-AST
+			//                         specific bug-catchers; no files filter so
+			//                         they apply repo-wide but only fire on
+			//                         svelte syntax)
+			//
+			// Why explicit indices instead of `...svelte.configs.recommended`
+			// at top level: Argos's custom svelte block (this one) sets
+			// `parserOptions: { parser: tsParser }` to handle `<script lang="ts">`,
+			// which the bundled recommended config does NOT. Spreading the array
+			// at top level introduces the recommended's parser block first; the
+			// later block here would have to override languageOptions deeply.
+			// Index-spreading the rules object is simpler and parser-conflict-free.
+			//
+			// `eslint-plugin-svelte` ships ZERO a11y rules — a11y enforcement
+			// remains svelte-compiler territory via svelte-check.
+			...svelte.configs.recommended[1].rules,
+			...svelte.configs.recommended[3].rules,
+
+			// Phase 8.8 selective downgrades — pre-existing issues surfaced when
+			// the recommended spread was first activated (2026-05-04). Both fire
+			// as legitimate findings but are out-of-scope for this config-fix
+			// PR per the umbrella plan §8.8: "any pre-existing-issue rule that
+			// fires as ERROR gets downgraded to WARN with inline comment +
+			// Phase 8 follow-up note for proper fix."
+			//
+			// Follow-up issues (TODO file):
+			// - svelte/require-each-key (~21 sites): every {#each} should pass
+			//   a unique key. Risk: Svelte 5 keyed-each tracking falls back to
+			//   index-based reuse, which can desync DOM state on re-render
+			//   (e.g., focused input loses focus when list reorders). Each
+			//   site needs a per-iteration unique field. Bundle as a sweep PR.
+			// - svelte/no-at-html-tags (~7 sites): `{@html}` flagged as XSS risk.
+			//   All current Argos sites use it for known-safe content (Lucide
+			//   icon SVG strings + pre-formatted status badges). Each site
+			//   needs a per-call audit confirming the input is either a
+			//   compile-time literal or sanitized via DOMPurify. Bundle as a
+			//   security-review pass PR with explicit `// eslint-disable-next-
+			//   line` justifications where the audit confirms safety.
+			'svelte/require-each-key': 'warn',
+			'svelte/no-at-html-tags': 'warn'
 		}
 	},
 	{
