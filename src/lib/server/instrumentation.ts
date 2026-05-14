@@ -17,7 +17,7 @@ import type { ReadableSpan, SpanExporter } from '@opentelemetry/sdk-trace-base';
 /** Query parameter names that must never appear in trace data. */
 const SENSITIVE_PARAMS = new Set(['api_key', 'apikey', 'key', 'token', 'secret', 'password']);
 /** Replace the value of sensitive query params with [REDACTED] in a URL string. */
-function redactUrl(raw: string): string {
+export function redactUrl(raw: string): string {
 	try {
 		const url = new URL(raw);
 		for (const param of SENSITIVE_PARAMS) {
@@ -32,7 +32,7 @@ function redactUrl(raw: string): string {
 	}
 }
 /** Redact sensitive params from a url.query string (e.g. "?api_key=..."). */
-function redactQueryAttr(query: string): string {
+export function redactQueryAttr(query: string): string {
 	try {
 		const redacted = redactUrl(`http://x${query}`);
 		return redacted.slice('http://x'.length);
@@ -58,7 +58,7 @@ function sanitizeSpan(span: ReadableSpan): void {
  * Wraps an exporter to scrub sensitive query params (api_key, token, etc.)
  * from url.full / url.query / http.url span attributes before export.
  */
-class SanitizingExporter implements SpanExporter {
+export class SanitizingExporter implements SpanExporter {
 	constructor(private readonly delegate: SpanExporter) {}
 	export(spans: ReadableSpan[], resultCallback: (result: ExportResult) => void): void {
 		for (const span of spans) sanitizeSpan(span);
