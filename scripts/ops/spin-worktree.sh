@@ -10,7 +10,7 @@
 # tmux-session + worktree lifecycle; this helper is the thin front door that:
 #
 #   1. fetches `origin` so `dev` is current,
-#   2. creates the feature branch off `origin/dev` (so the worktree starts fresh),
+#   2. creates the feature branch off `origin/main` (so the worktree starts fresh),
 #   3. hands the branch to `aoe add --worktree … --launch` (creates the worktree
 #      at ../Argos-worktrees/<branch> and starts a tmux session with Claude),
 #   4. symlinks `node_modules` and `.env` from the main checkout so npm/dev
@@ -31,14 +31,14 @@
 #   slug         feature name (→ branch `feature/<slug>`) OR a full branch name
 #                with a recognized prefix (feature/ fix/ chore/ spike/ docs/
 #                test/ refactor/), used verbatim.
-#   base-branch  branch to fork from (default: dev). Accepts a local or origin/ ref.
+#   base-branch  branch to fork from (default: main). Accepts a local or origin/ ref.
 #
 # Examples:
 #   ./scripts/ops/spin-worktree.sh css-import-fix
-#       → branch feature/css-import-fix off origin/dev, worktree
+#       → branch feature/css-import-fix off origin/main, worktree
 #         ../Argos-worktrees/feature/css-import-fix, Claude session launched
 #   ./scripts/ops/spin-worktree.sh fix/wal-checkpoint
-#       → branch fix/wal-checkpoint off origin/dev
+#       → branch fix/wal-checkpoint off origin/main
 #   ./scripts/ops/spin-worktree.sh spec-028-migration main
 #       → branch feature/spec-028-migration off origin/main
 #
@@ -51,7 +51,9 @@
 set -euo pipefail
 
 slug="${1:-}"
-base="${2:-dev}"
+# Default base = main (dev branch retired 2026-05-13 per feedback_rollup_pr_admin_squash.md).
+# Override with the 2nd positional arg if you need to fork from a different branch.
+base="${2:-main}"
 
 if [[ -z "$slug" ]]; then
 	cat <<'USAGE' >&2
@@ -59,7 +61,7 @@ usage: spin-worktree.sh <slug> [base-branch]
 
   slug         feature name → branch feature/<slug>, OR a full prefixed branch
                name (feature/… fix/… chore/… spike/… docs/… test/… refactor/…)
-  base-branch  branch to fork from (default: dev)
+  base-branch  branch to fork from (default: main)
 
 Run from inside any Argos worktree. The new worktree is created under
 ../Argos-worktrees/<branch> (aoe's path layout).
@@ -165,6 +167,19 @@ for link in node_modules .env; do
 		echo "→ symlinked $link"
 	fi
 done
+
+# Tessl tile cache: share the main checkout's downloaded tiles instead of
+# letting each worktree redownload them. tessl.json + .tessl/RULES.md are
+# checked into git (so the worktree already has them); only .tessl/tiles/
+# is gitignored and gets symlinked here. Without this, `query_library_docs`
+# from a worktree finds no local tiles and falls back to slow network fetch
+# (or fails if offline).
+tessl_tiles_src="$main_root/.tessl/tiles"
+if [[ -d "$tessl_tiles_src" ]]; then
+	mkdir -p "$worktree_dir/.tessl"
+	ln -sfn "$tessl_tiles_src" "$worktree_dir/.tessl/tiles"
+	echo "→ symlinked .tessl/tiles"
+fi
 
 # Generate this worktree's own .svelte-kit (NOT a symlink — see above).
 if [[ -f "$worktree_dir/package.json" ]] && command -v npx >/dev/null 2>&1; then

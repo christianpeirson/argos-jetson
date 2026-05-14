@@ -45,6 +45,24 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
 
+      - name: 'Verify Node engine >= package.json engines.node'
+        # Defensive cross-check: catches divergence between .nvmrc (drives the
+        # CI runner Node) and package.json engines.node (drives local dev +
+        # .husky/pre-push section 0 gate). Without this, someone bumping
+        # engines without updating .nvmrc would only break locally, not in CI.
+        # Mirrors the local pre-push gate. See project_node_engine_pin.md.
+        run: |
+          REQUIRED_MAJOR=$(node -p "((require('./package.json').engines||{}).node||'').replace(/[^0-9]/g,'').slice(0,2) || '0'")
+          ACTUAL_MAJOR=$(node -p "process.versions.node.split('.')[0]")
+          if [ "$REQUIRED_MAJOR" = "0" ]; then
+            echo "::warning::package.json engines.node missing - engine gate skipped"
+          elif [ "$ACTUAL_MAJOR" -lt "$REQUIRED_MAJOR" ]; then
+            echo "::error::Runner Node v$(node -v | tr -d v) < required engines.node >=${REQUIRED_MAJOR}.x. Bump .nvmrc to match package.json engines.node."
+            exit 1
+          else
+            echo "Node $(node -v) satisfies engines.node >=${REQUIRED_MAJOR}.x"
+          fi
+
       - name: 'Install Dependencies'
         run: npm ci
 

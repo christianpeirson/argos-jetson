@@ -3,6 +3,9 @@
 	"description": "Real-time SDR & Network Analysis Console for Army EW training on Raspberry Pi 5",
 	"version": "0.0.1",
 	"private": true,
+	"engines": {
+		"node": ">=22.11"
+	},
 	"type": "module",
 	"scripts": {
 		"dev": "npm run kill-dev && PORT=$(./scripts/dev/port-for-worktree.sh) && tmux new-session -d -s argos-logs-$PORT \"./scripts/dev/start-vite.sh 2>&1 | tee /tmp/argos-dev-$PORT.log\" && rm -f /tmp/argos-dev-restart.lock && echo \"Argos dev started in tmux session: argos-logs-$PORT (port :$PORT)\" && echo \"Use: tmux attach -t argos-logs-$PORT\" && sleep 6 && lsof -ti:$PORT >/dev/null && echo \"Server UP on :$PORT\" || echo \"WARNING: Server may still be starting...\"",

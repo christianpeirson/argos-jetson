@@ -339,3 +339,7 @@ docs/argos-v2-mockup/
 docs/carbon-design-system/
 docs/carbon-website/
 .fallow/
+
+# Tessl tile cache — heavy binary artifacts shared across worktrees via
+# spin-worktree.sh symlink. tessl.json + .tessl/RULES.md ARE tracked.
+.tessl/tiles/

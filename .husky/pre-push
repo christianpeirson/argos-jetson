@@ -34,6 +34,23 @@
 
 set -e
 
+# 0) Node-engine gate — fail fast if local Node major < package.json engines.node.
+#    Prevents the argos-dev crashloop class of bug (undici 8.x requires Node ≥22).
+#    Bypass: SKIP_NODE_ENGINE=1 git push ...
+if [ "${SKIP_NODE_ENGINE:-0}" = "1" ]; then
+	echo "[pre-push] SKIP_NODE_ENGINE=1 — bypass engaged"
+else
+	REQUIRED_MAJOR=$(node -p "((require('./package.json').engines||{}).node||'').replace(/[^0-9]/g,'').slice(0,2) || '0'")
+	ACTUAL_MAJOR=$(node -p "process.versions.node.split('.')[0]")
+	if [ "$REQUIRED_MAJOR" = "0" ]; then
+		echo "[pre-push] ⚠️  package.json engines.node missing — skipping node gate"
+	elif [ "$ACTUAL_MAJOR" -lt "$REQUIRED_MAJOR" ]; then
+		echo "[pre-push] ❌ Node v$(node -v | tr -d v) is older than required engines.node (>=${REQUIRED_MAJOR})" >&2
+		echo "[pre-push]    Install matching Node (NodeSource setup_22.x) or set SKIP_NODE_ENGINE=1 to bypass." >&2
+		exit 1
+	fi
+fi
+
 # 1) Protected-branch push guard (must consume git's ref-list from stdin first)
 if [ "${ALLOW_MAIN_PUSH:-0}" = "1" ]; then
 	echo "[pre-push] ALLOW_MAIN_PUSH=1 — bypass engaged, pushing to protected branch"
