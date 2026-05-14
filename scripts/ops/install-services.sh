@@ -9,12 +9,6 @@ PROJECT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 DEPLOY_DIR="$PROJECT_DIR/deployment"
 SYSTEMD_DIR="/etc/systemd/system"
 
-# v1 fallback worktree (override with V1_PROJECT_DIR=...).
-# When this directory exists, argos-final is repointed at it via drop-in
-# 30-v1-source.conf so :5173 serves the stable pre-Mk-II UI while the dev
-# branch's WIP runs on :5174 via argos-dev.service.
-V1_PROJECT_DIR="${V1_PROJECT_DIR:-${PROJECT_DIR}-v1}"
-
 if [[ $EUID -ne 0 ]]; then
   echo "Error: Must run as root (sudo)" >&2
   exit 1
@@ -59,7 +53,6 @@ echo "Installing Argos systemd services..."
 echo "  Project:   $PROJECT_DIR"
 echo "  User:      $SETUP_USER"
 echo "  DroneID:   $DRONEID_DIR"
-echo "  V1 dir:    $V1_PROJECT_DIR (drop-in installed only if dir exists)"
 echo ""
 
 # Install operational monitor scripts to /usr/local/bin/
@@ -113,39 +106,8 @@ for name in "${SYSTEM_SERVICES[@]}"; do
       -e "s|__SETUP_USER__|$SETUP_USER|g" \
       -e "s|__DRONEID_DIR__|$DRONEID_DIR|g" \
       -e "s|__NODE_BIN__|$NODE_BIN|g" \
-      -e "s|__V1_PROJECT_DIR__|$V1_PROJECT_DIR|g" \
       "$svc" > "$SYSTEMD_DIR/$name"
   chmod 644 "$SYSTEMD_DIR/$name"
-done
-
-# Drop-ins for system services. Each lives at deployment/<unit>.service.d/<n>-name.conf
-# and is rendered into /etc/systemd/system/<unit>.service.d/<n>-name.conf.
-# Currently: argos-final.service.d/30-v1-source.conf — repoints argos-final at the
-# v1 fallback worktree (only installed when V1_PROJECT_DIR exists on disk; install
-# the worktree via scripts/ops/install-v1-fallback.sh first).
-declare -A DROPIN_GUARDS=(
-  ["argos-final.service.d/30-v1-source.conf"]="$V1_PROJECT_DIR"
-)
-for relpath in "${!DROPIN_GUARDS[@]}"; do
-  guard="${DROPIN_GUARDS[$relpath]}"
-  src="$DEPLOY_DIR/$relpath"
-  if [[ ! -f "$src" ]]; then
-    echo "  [SKIP] drop-in $relpath (template not found)"
-    continue
-  fi
-  if [[ -n "$guard" && ! -d "$guard" ]]; then
-    echo "  [SKIP] drop-in $relpath (guard dir $guard does not exist — run install-v1-fallback.sh first)"
-    continue
-  fi
-  dest="$SYSTEMD_DIR/$relpath"
-  echo "  Installing drop-in $relpath"
-  mkdir -p "$(dirname "$dest")"
-  sed -e "s|__PROJECT_DIR__|$PROJECT_DIR|g" \
-      -e "s|__SETUP_USER__|$SETUP_USER|g" \
-      -e "s|__NODE_BIN__|$NODE_BIN|g" \
-      -e "s|__V1_PROJECT_DIR__|$V1_PROJECT_DIR|g" \
-      "$src" > "$dest"
-  chmod 644 "$dest"
 done
 
 # User-level service (argos-dev-monitor) — installed to user systemd

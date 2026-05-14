@@ -221,6 +221,20 @@ const innerHandle: Handle = async ({ event, resolve }) => {
 	const shortCircuit = runSecurityPipeline(event);
 	if (shortCircuit) return shortCircuit;
 
+	// Port-aware UI split — see memory feedback_port_ui_split_nonnegotiable.md.
+	// :5174 (argos-dev) serves Mk II by default; :5173 (argos-final) serves the
+	// legacy Argos shell. Done here (not in +page.server.ts) because
+	// dashboard/+page.ts has `ssr: false`, which makes server-side load redirects
+	// unreliable. Hooks run on every request regardless of ssr setting.
+	const p = event.url.pathname;
+	if (process.env.PORT === '5174' && (p === '/dashboard' || p === '/dashboard/')) {
+		return new Response(null, { status: 307, headers: { location: '/dashboard/mk2/overview' } });
+	}
+	if (p === '/' || p === '') {
+		const target = process.env.PORT === '5174' ? '/dashboard/mk2/overview' : '/dashboard';
+		return new Response(null, { status: 307, headers: { location: target } });
+	}
+
 	// Reverse-proxy /rdio/* → rdio-scanner container. Runs after auth gate so
 	// the rdio-scanner UI inherits Argos session authentication.
 	if (event.url.pathname.startsWith('/rdio')) {
