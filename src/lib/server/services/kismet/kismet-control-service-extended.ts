@@ -5,7 +5,6 @@ import { env } from '$lib/server/env';
 import { execFileAsync } from '$lib/server/exec';
 import { resourceManager } from '$lib/server/hardware/resource-manager';
 import { HardwareDevice } from '$lib/server/hardware/types';
-import { withRetry } from '$lib/server/retry';
 import { validateNumericParam } from '$lib/server/security/input-sanitizer';
 import { delay } from '$lib/utils/delay';
 import { logger } from '$lib/utils/logger';
@@ -60,22 +59,23 @@ async function spawnKismet(iface: string): Promise<void> {
 	logger.info('[kismet] Start command issued', { user: kismetUser, iface });
 }
 
-/** Wait for Kismet PID to appear, retrying up to 3 times */
+/**
+ * Wait for Kismet PID to appear by fine-grained polling.
+ *
+ * 2026-05-15 (OTel/Jaeger scan follow-up): replaced the 5 s hardcoded
+ * lead-in + 3 × 2 s retry pattern (~11 s minimum) with 55 × 200 ms
+ * polling. Same 11 s upper bound but the typical case (Kismet daemon
+ * spawns in 500 ms - 1 s) exits at first success instead of waiting
+ * out a 5 s pre-roll. User-visible Wi-Fi Start latency drops from
+ * ~15 s to ~2-3 s.
+ */
 async function waitForKismetPid(): Promise<string> {
-	await delay(5000);
-	const findPid = withRetry(
-		async () => {
-			const pid = await pgrepKismet();
-			if (!pid) throw new Error('Kismet PID not found');
-			return pid;
-		},
-		{ attempts: 3, delayMs: 2000, backoff: 'linear' }
-	);
-	try {
-		return await findPid();
-	} catch {
-		return '';
+	for (let i = 0; i < 55; i++) {
+		const pid = await pgrepKismet();
+		if (pid) return pid;
+		await delay(200);
 	}
+	return '';
 }
 
 /** Check which OS user owns a process */
