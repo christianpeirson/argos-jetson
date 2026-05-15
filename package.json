@@ -135,7 +135,7 @@
 		"@internationalized/date": "3.11.0",
 		"@modelcontextprotocol/sdk": "1.26.0",
 		"@novnc/novnc": "^1.6.0",
-		"@opentelemetry/auto-instrumentations-node": "0.72.0",
+		"@opentelemetry/auto-instrumentations-node": "0.75.0",
 		"@opentelemetry/core": "2.6.1",
 		"@opentelemetry/exporter-trace-otlp-http": "0.214.0",
 		"@opentelemetry/resources": "2.6.1",
