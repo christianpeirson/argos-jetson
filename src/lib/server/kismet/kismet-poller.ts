@@ -27,7 +27,23 @@ export interface PollerState {
 	lastPollTime: number;
 	isPolling: boolean;
 	statsThrottle: number;
+	/**
+	 * Backoff state for ECONNREFUSED storms. OTel/Jaeger scan (2026-05-15)
+	 * showed kismet-proxy was the #1 trace error source: 1190 ECONNREFUSED
+	 * to localhost:2501 in 70 min when kismet daemon was down. Without
+	 * backoff, the poller hammers every POLL_INTERVAL forever.
+	 *
+	 * After CONSECUTIVE_ERRORS_THRESHOLD failures we delay the next poll
+	 * exponentially up to MAX_BACKOFF_MS. Any successful fetch resets
+	 * the counter.
+	 */
+	consecutiveErrors: number;
+	nextPollAtMs: number;
 }
+
+const CONSECUTIVE_ERRORS_THRESHOLD = 3;
+const BASE_BACKOFF_MS = 5_000;
+const MAX_BACKOFF_MS = 5 * 60 * 1_000; // 5 min cap
 
 /** Parse and validate raw device data from Kismet API */
 function validateRawDevices(rawDevices: unknown): KismetRawDevice[] {
@@ -66,6 +82,42 @@ function broadcastPollError(broadcast: BroadcastFn, error: unknown): void {
 /**
  * Poll Kismet for device updates. Mutates the pollerState in place.
  */
+function handlePollSuccess(
+	state: PollerState,
+	devices: KismetRawDevice[],
+	startTime: number,
+	apiUrl: string,
+	apiKey: string,
+	throttleInterval: number,
+	broadcast: BroadcastFn
+): void {
+	for (const raw of devices) {
+		processDeviceUpdate(raw, state, throttleInterval, broadcast);
+	}
+	state.lastPollTime = Math.floor(startTime / 1000);
+	state.consecutiveErrors = 0;
+	state.nextPollAtMs = 0;
+	maybeEmitStatus(state, apiUrl, apiKey, throttleInterval, broadcast);
+}
+
+function handlePollFailure(state: PollerState, error: unknown, broadcast: BroadcastFn): void {
+	state.consecutiveErrors += 1;
+	if (state.consecutiveErrors >= CONSECUTIVE_ERRORS_THRESHOLD) {
+		const overflow = state.consecutiveErrors - CONSECUTIVE_ERRORS_THRESHOLD;
+		const backoff = Math.min(BASE_BACKOFF_MS * 2 ** overflow, MAX_BACKOFF_MS);
+		state.nextPollAtMs = Date.now() + backoff;
+	}
+	broadcastPollError(broadcast, error);
+}
+
+function shouldSkipPoll(state: PollerState, clientCount: number): boolean {
+	return (
+		state.isPolling ||
+		clientCount === 0 ||
+		(!!state.nextPollAtMs && Date.now() < state.nextPollAtMs)
+	);
+}
+
 export async function pollKismetDevices(
 	state: PollerState,
 	clientCount: number,
@@ -74,23 +126,29 @@ export async function pollKismetDevices(
 	throttleInterval: number,
 	broadcast: BroadcastFn
 ): Promise<void> {
-	if (state.isPolling || clientCount === 0) return;
+	if (shouldSkipPoll(state, clientCount)) return;
 
 	state.isPolling = true;
 	const startTime = Date.now();
 
 	try {
 		const devices = await fetchDevices(apiUrl, apiKey, state.lastPollTime);
-		for (const raw of devices) {
-			processDeviceUpdate(raw, state, throttleInterval, broadcast);
-		}
-		state.lastPollTime = Math.floor(startTime / 1000);
-		maybeEmitStatus(state, apiUrl, apiKey, throttleInterval, broadcast);
+		handlePollSuccess(state, devices, startTime, apiUrl, apiKey, throttleInterval, broadcast);
 	} catch (error) {
-		broadcastPollError(broadcast, error);
+		handlePollFailure(state, error, broadcast);
 	} finally {
 		state.isPolling = false;
 	}
+}
+
+/**
+ * Reset backoff state to immediately resume fast-cadence polling. Call this
+ * from the kismet start endpoint so the user-visible "Start" action takes
+ * effect without waiting out the current backoff window.
+ */
+export function resetPollerBackoff(state: PollerState): void {
+	state.consecutiveErrors = 0;
+	state.nextPollAtMs = 0;
 }
 
 /** Emit system status if enough time has passed since the last emission */

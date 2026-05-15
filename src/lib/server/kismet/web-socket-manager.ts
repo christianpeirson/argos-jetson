@@ -52,7 +52,9 @@ export class WebSocketManager extends EventEmitter {
 		updateThrottles: new Map(),
 		lastPollTime: 0,
 		isPolling: false,
-		statsThrottle: 0
+		statsThrottle: 0,
+		consecutiveErrors: 0,
+		nextPollAtMs: 0
 	};
 
 	private constructor() {
