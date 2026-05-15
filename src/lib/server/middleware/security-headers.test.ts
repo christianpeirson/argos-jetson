@@ -23,12 +23,22 @@ describe('applySecurityHeaders', () => {
 		expect(cspOf()).toContain('default-src');
 	});
 
-	it('allows IBM Carbon CDN for Plex fonts (font-src)', () => {
-		expect(cspOf()).toContain("font-src 'self' https://1.www.s81c.com data:");
+	it('allows IBM Carbon CDN and Google Fonts gstatic for fonts (font-src)', () => {
+		expect(cspOf()).toContain(
+			"font-src 'self' https://1.www.s81c.com https://fonts.gstatic.com data:"
+		);
 	});
 
-	it('allows IBM Carbon CDN for companion stylesheets (style-src)', () => {
-		expect(cspOf()).toContain("style-src 'self' 'unsafe-inline' https://1.www.s81c.com");
+	it('allows IBM Carbon CDN and Google Fonts stylesheets (style-src)', () => {
+		expect(cspOf()).toContain(
+			"style-src 'self' 'unsafe-inline' https://1.www.s81c.com https://fonts.googleapis.com"
+		);
+	});
+
+	it('sets style-src-elem explicitly so browsers do not fall back to style-src', () => {
+		expect(cspOf()).toContain(
+			"style-src-elem 'self' 'unsafe-inline' https://1.www.s81c.com https://fonts.googleapis.com"
+		);
 	});
 
 	it('keeps object-src none for non-PDF routes', () => {
