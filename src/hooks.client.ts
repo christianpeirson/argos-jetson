@@ -1,15 +1,29 @@
+import * as Sentry from '@sentry/sveltekit';
 import type { HandleClientError } from '@sveltejs/kit';
+
+import { PUBLIC_SENTRY_DSN } from '$env/static/public';
+
+if (PUBLIC_SENTRY_DSN) {
+	Sentry.init({
+		dsn: PUBLIC_SENTRY_DSN,
+		sendDefaultPii: true,
+		tracesSampleRate: 0.1,
+		integrations: [
+			Sentry.replayIntegration(),
+			Sentry.feedbackIntegration({ colorScheme: 'system' })
+		],
+		replaysSessionSampleRate: 0.1,
+		replaysOnErrorSampleRate: 1.0
+	});
+}
 
 /**
  * Global error handler for unhandled client-side errors.
  *
- * Mirrors the shape of `handleError` in src/hooks.server.ts so the
- * `page.error` object is consistent whether the error originated on the
- * server or in the browser. Server-side ingestion (audit log, metrics)
- * remains the source of truth; this hook only surfaces client errors to
- * the browser console and returns a safe `App.Error` payload.
+ * Wrapped with Sentry's `handleErrorWithSentry` so the client error is captured
+ * to Sentry in addition to the existing console + `App.Error` payload.
  */
-export const handleError: HandleClientError = ({ error, event, status }) => {
+const myErrorHandler: HandleClientError = ({ error, event, status }) => {
 	const errorId = crypto.randomUUID();
 
 	const errorDetails: Record<string, unknown> = {
@@ -30,3 +44,5 @@ export const handleError: HandleClientError = ({ error, event, status }) => {
 		errorId
 	};
 };
+
+export const handleError: HandleClientError = Sentry.handleErrorWithSentry(myErrorHandler);

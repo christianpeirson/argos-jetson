@@ -142,6 +142,7 @@
 		"@opentelemetry/sdk-node": "0.214.0",
 		"@opentelemetry/sdk-trace-base": "2.6.1",
 		"@opentelemetry/semantic-conventions": "1.40.0",
+		"@sentry/sveltekit": "10.53.1",
 		"@sveltejs/adapter-node": "5.5.4",
 		"@tailwindcss/forms": "0.5.10",
 		"@tak-ps/node-cot": "14.30.1",

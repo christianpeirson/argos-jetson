@@ -27,7 +27,7 @@ export function applySecurityHeaders(response: Response, pathWithQuery?: string)
 			"style-src 'self' 'unsafe-inline' https://1.www.s81c.com https://fonts.googleapis.com",
 			"style-src-elem 'self' 'unsafe-inline' https://1.www.s81c.com https://fonts.googleapis.com",
 			"img-src 'self' data: blob: https://*.tile.openstreetmap.org https://mt0.google.com https://mt1.google.com https://mt2.google.com https://mt3.google.com https://server.arcgisonline.com https://services.arcgisonline.com",
-			"connect-src 'self' blob: ws: wss: http://localhost:8085 http://localhost:8081 https://mt0.google.com https://mt1.google.com https://mt2.google.com https://mt3.google.com https://server.arcgisonline.com https://services.arcgisonline.com https://demotiles.maplibre.org",
+			"connect-src 'self' blob: ws: wss: http://localhost:8085 http://localhost:8081 https://mt0.google.com https://mt1.google.com https://mt2.google.com https://mt3.google.com https://server.arcgisonline.com https://services.arcgisonline.com https://demotiles.maplibre.org https://*.ingest.us.sentry.io https://*.sentry.io",
 			"worker-src 'self' blob:",
 			"child-src 'self' blob:",
 			"frame-src 'self' http: https: http://*:2501 http://*:3001 http://*:5002 http://*:8073 http://*:8085 http://*:8081 http://*:80 https://*:8443 https://*:8446",

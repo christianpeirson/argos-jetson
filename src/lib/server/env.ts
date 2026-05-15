@@ -119,7 +119,13 @@ const envSchema = z.object({
 	// path for sparrow-wifi. Declared so the validated `env` export stays the
 	// single source of truth for `process.env` reads in src/lib/server/.
 	HOSTNAME: z.string().optional(),
-	XDG_RUNTIME_DIR: z.string().optional()
+	XDG_RUNTIME_DIR: z.string().optional(),
+
+	// Sentry — PUBLIC_SENTRY_DSN is exposed to browser via $env/static/public.
+	// SENTRY_AUTH_TOKEN is server/build-only; consumed by sentrySvelteKit() in
+	// vite.config.ts for source-maps upload during `npm run build`.
+	PUBLIC_SENTRY_DSN: z.string().default(''),
+	SENTRY_AUTH_TOKEN: z.string().optional()
 });
 
 // Parse and validate environment variables at startup

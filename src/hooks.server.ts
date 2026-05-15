@@ -1,7 +1,9 @@
 import '$lib/server/instrumentation';
 import '$lib/server/env';
 
+import * as Sentry from '@sentry/sveltekit';
 import type { Handle, HandleServerError } from '@sveltejs/kit';
+import { sequence } from '@sveltejs/kit/hooks';
 import { monitorEventLoopDelay } from 'perf_hooks';
 import type { WebSocket } from 'ws';
 import { WebSocketServer } from 'ws';
@@ -13,6 +15,7 @@ import {
 	validateSecurityConfig,
 	validateSessionToken
 } from '$lib/server/auth/auth-middleware';
+import { env as argosEnv } from '$lib/server/env';
 import { initServerProcesses } from '$lib/server/initialization/bootstrap';
 import { WebSocketManager } from '$lib/server/kismet/web-socket-manager';
 import { checkRateLimit, getSafeClientAddress } from '$lib/server/middleware/rate-limit-middleware';
@@ -21,6 +24,17 @@ import { handleWsConnection } from '$lib/server/middleware/ws-connection-handler
 import { logAuthEvent } from '$lib/server/security/auth-audit';
 import { handleRdioProxy } from '$lib/server/services/trunk-recorder/rdio-proxy';
 import { logger } from '$lib/utils/logger';
+
+if (argosEnv.PUBLIC_SENTRY_DSN) {
+	Sentry.init({
+		dsn: argosEnv.PUBLIC_SENTRY_DSN,
+		sendDefaultPii: true,
+		// Tracing disabled on server: Sentry tracing uses `require-in-the-middle`,
+		// which collides with argos's better-sqlite3 + ESM/CJS boundary (see
+		// .claude/rules/architecture.md "OpenTelemetry opt-in"). Errors-only here.
+		tracesSampleRate: 0
+	});
+}
 
 // Request body size limits -- prevents DoS via oversized POST/PUT bodies (Phase 2.1.7)
 const MAX_BODY_SIZE = 10 * 1024 * 1024; // 10MB general limit
@@ -258,12 +272,15 @@ const innerHandle: Handle = async ({ event, resolve }) => {
 	return response;
 };
 
-export const handle: Handle = withSecurityHeaders(innerHandle);
+export const handle: Handle = sequence(Sentry.sentryHandle(), withSecurityHeaders(innerHandle));
 
 /**
- * Global error handler for unhandled server-side errors
+ * Global error handler for unhandled server-side errors.
+ *
+ * Wrapped with Sentry's `handleErrorWithSentry` so unhandled server errors are
+ * captured to Sentry in addition to the existing logger + `App.Error` payload.
  */
-export const handleError: HandleServerError = ({ error, event }) => {
+const myServerErrorHandler: HandleServerError = ({ error, event }) => {
 	const errorId = crypto.randomUUID();
 
 	const errorDetails = {
@@ -299,6 +316,8 @@ export const handleError: HandleServerError = ({ error, event }) => {
 		stack: dev && error instanceof Error ? error.stack : undefined
 	};
 };
+
+export const handleError: HandleServerError = Sentry.handleErrorWithSentry(myServerErrorHandler);
 
 // Graceful shutdown -- guarded via globalThis to prevent listener accumulation on HMR
 // globalThis.__argos_hooks_shutdown_registered is typed in src/app.d.ts.
