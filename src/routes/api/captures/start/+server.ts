@@ -32,10 +32,12 @@ const LoadoutSchema = z.object({
 	spectrum_bin_hz: z.number().positive().optional()
 });
 
+const DEFAULT_LOADOUT: z.infer<typeof LoadoutSchema> = { sensors: [] };
+
 const StartCaptureSchema = z.object({
 	mission_id: z.string().min(1).optional(),
-	role: z.enum(['baseline', 'posture', 'tick']),
-	loadout: LoadoutSchema
+	role: z.enum(['baseline', 'posture', 'tick']).default('baseline'),
+	loadout: LoadoutSchema.default(DEFAULT_LOADOUT)
 });
 
 type ResolvedMission =
