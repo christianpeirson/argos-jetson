@@ -41,6 +41,16 @@ describe('applySecurityHeaders', () => {
 		);
 	});
 
+	it('allows Sentry ingest + general sentry.io hosts on connect-src', () => {
+		// Wired with @sentry/sveltekit so the browser SDK can POST events to
+		// https://oXXX.ingest.us.sentry.io/... without tripping CSP. Without
+		// these allowlist entries, every captured client error gets blocked
+		// at the connect-src stage and never reaches the Sentry project.
+		const csp = cspOf();
+		expect(csp).toContain('https://*.ingest.us.sentry.io');
+		expect(csp).toContain('https://*.sentry.io');
+	});
+
 	it('keeps object-src none for non-PDF routes', () => {
 		expect(cspOf()).toContain("object-src 'none'");
 	});
