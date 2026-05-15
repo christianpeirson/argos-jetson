@@ -6,7 +6,9 @@
 	import DiskRow from './DiskRow.svelte';
 	import MetricCard from './MetricCard.svelte';
 
-	const POLL_METRICS_MS = 1200;
+	// 2026-05-15: bumped from 1200 → 3000 after Jaeger scan flagged
+	// /api/system/metrics as the top idle-loop offender on Mk II.
+	const POLL_METRICS_MS = 3000;
 	const POLL_INFO_MS = 5000;
 	const TEMP_ALARM_C = 85;
 	const CPU_ALARM_PCT = 80;

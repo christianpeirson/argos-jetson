@@ -20,8 +20,13 @@
 
 	import SensorTile from './SensorTile.svelte';
 
-	const POLL_MS = 2_000;
-	const SYSTEM_POLL_MS = 1_200;
+	// OTel/Jaeger scan (2026-05-15) showed these intervals were generating ~50
+	// /api/system/metrics + ~30 /api/kismet/devices + ~30 /api/gps/position
+	// requests/min from this single component, on top of the 12/min that
+	// chassis.svelte.ts already runs. Bumped to halve the noise without
+	// sacrificing perceived freshness.
+	const POLL_MS = 5_000;
+	const SYSTEM_POLL_MS = 3_000;
 	const SWEEP_TICK_MS = 1_000;
 
 	let sweepValue = $state<number | null>(null);
