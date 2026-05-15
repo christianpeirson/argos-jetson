@@ -1,3 +1,4 @@
+import { spawn } from 'child_process';
 import { homedir, userInfo } from 'os';
 
 import { errMsg } from '$lib/server/api/error-utils';
@@ -44,7 +45,13 @@ async function cleanupMonitorInterface(iface: string): Promise<void> {
  *  The main `/usr/bin/kismet` process itself does not need root. */
 async function spawnKismet(iface: string): Promise<void> {
 	const kismetUser = userInfo().username;
-	await execFileAsync(
+	// 2026-05-15: changed from awaited execFileAsync to fire-and-forget spawn.
+	// Even with --daemonize, awaiting kismet blocked ~15 s before the parent
+	// exited the fork (Jetson + linuxwifi adapter detection runs pre-fork).
+	// User-visible WiFi Start latency was dominated by this single await.
+	// pgrepKismet via waitForKismetPid bounds the wait at 11 s now, and
+	// kismet typically forks + spawns child within 500 ms-2 s on Jetson.
+	const child = spawn(
 		'/usr/bin/kismet',
 		[
 			'-c',
@@ -54,8 +61,16 @@ async function spawnKismet(iface: string): Promise<void> {
 			'--daemonize',
 			'--silent'
 		],
-		{ timeout: 15000, cwd: homedir() }
+		{
+			cwd: homedir(),
+			detached: true,
+			stdio: 'ignore'
+		}
 	);
+	child.unref();
+	child.on('error', (err) => {
+		logger.error('[kismet] spawn error', { err: err.message });
+	});
 	logger.info('[kismet] Start command issued', { user: kismetUser, iface });
 }
 
