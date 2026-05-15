@@ -9,13 +9,15 @@
 # collision makes Vite exit cleanly instead of stomping another instance.
 #
 # Reserved ports (never auto-assigned):
-#   5173  argos-final.service        (v1 production — Argos-v1 worktree)
-#   5174  argos-dev.service          (v2 production-tracking dev — main checkout)
+#   5173  argos-final.service        (production, v1 legacy UI — main worktree)
+#   5174  argos-dev.service          (production, v2 Mk II UI — main worktree)
 #   5175  argos-newui-dev.service    (legacy session-2 worktree)
+#
+# Both :5173 and :5174 serve from the main worktree; UI split is port-aware in
+# hooks.server.ts (see memory feedback_port_ui_split_nonnegotiable.md).
 #
 # Assignment:
 #   main checkout (basename "Argos")         → 5174
-#   legacy "Argos-v1"                        → refuse (production owns :5173)
 #   legacy "Argos-session-2"                 → 5175
 #   legacy "Argos-session-N" (N∈{1,3..9})    → 5180 + N ; session-10 → 5190
 #   anything else (aoe feature worktree)     → 5191 + (hash(branch) mod 79)  ∈ [5191, 5269]
@@ -37,10 +39,6 @@ case "$name" in
 	Argos)
 		echo 5174
 		exit 0
-		;;
-	Argos-v1)
-		echo "[port-for-worktree] $name is the v1 production worktree (argos-final on :5173). Refusing dev." >&2
-		exit 1
 		;;
 	Argos-session-2)
 		echo 5175

@@ -7,7 +7,7 @@ paths:
     - 'deployment/**/*'
     - 'src/hooks.server.ts'
     - 'src/hooks.client.ts'
-    - 'src/instrumentation.ts'
+    - 'src/lib/server/instrumentation.ts'
 ---
 
 # Architecture, Source Layout, Code Conventions
@@ -25,7 +25,7 @@ Loaded when Claude reads files under `src/`, `tests/`, `scripts/`, `config/`, or
 - **Direct SQLite**: `better-sqlite3` + WAL, no ORM. Migrations in `scripts/db-migrate.ts`. Repository pattern in `src/lib/server/db/`.
 - **Security middleware** in `src/hooks.server.ts`: Auth gate → Rate limit (200/min API, 30/min hardware) → Body size limit → CSP → Event-loop monitor.
 - **MCP servers** (`src/lib/server/mcp/`): talk to the running app via HTTP only — cannot import SvelteKit internals.
-- **OpenTelemetry opt-in**: gated on `OTEL_ENABLED=1`. ALL OTel imports must be dynamic inside the gate — static imports throw `ERR_AMBIGUOUS_MODULE_SYNTAX` because `require-in-the-middle` (OTel auto-instrumentation) intercepts `better-sqlite3` and confuses ESM/CJS. See `src/instrumentation.ts`.
+- **OpenTelemetry opt-in**: gated on `OTEL_ENABLED=1`. ALL OTel imports must be dynamic inside the gate — static imports throw `ERR_AMBIGUOUS_MODULE_SYNTAX` because `require-in-the-middle` (OTel auto-instrumentation) intercepts `better-sqlite3` and confuses ESM/CJS. See `src/lib/server/instrumentation.ts`.
 
 ### Data flow
 

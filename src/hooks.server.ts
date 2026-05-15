@@ -1,3 +1,4 @@
+import '$lib/server/instrumentation';
 import '$lib/server/env';
 
 import type { Handle, HandleServerError } from '@sveltejs/kit';
@@ -217,8 +218,33 @@ function runSecurityPipeline(event: Parameters<Handle>[0]['event']): Response | 
  * wraps this handle so the headers cover every return path (401/413/429
  * short-circuits + rdio proxy + normal resolve) uniformly.
  */
+/**
+ * Port-aware UI split — see memory feedback_port_ui_split_nonnegotiable.md.
+ * :5174 (argos-dev) serves Mk II by default; :5173 (argos-final) serves the
+ * legacy Argos shell. Done at the hooks layer (not in +page.server.ts) because
+ * dashboard/+page.ts has `ssr: false`, which makes server-load redirects
+ * unreliable. Hooks run on every request regardless of ssr setting.
+ */
+function redirect307(location: string): Response {
+	return new Response(null, { status: 307, headers: { location } });
+}
+
+function rootRedirect(event: Parameters<Handle>[0]['event']): Response | null {
+	const p = event.url.pathname;
+	if (p !== '/' && p !== '') return null;
+	return redirect307(process.env.PORT === '5174' ? '/dashboard/mk2/overview' : '/dashboard');
+}
+
+function mk2DashboardRedirect(event: Parameters<Handle>[0]['event']): Response | null {
+	if (process.env.PORT !== '5174') return null;
+	const p = event.url.pathname;
+	if (p !== '/dashboard' && p !== '/dashboard/') return null;
+	return redirect307('/dashboard/mk2/overview');
+}
+
 const innerHandle: Handle = async ({ event, resolve }) => {
-	const shortCircuit = runSecurityPipeline(event);
+	const shortCircuit =
+		runSecurityPipeline(event) ?? rootRedirect(event) ?? mk2DashboardRedirect(event);
 	if (shortCircuit) return shortCircuit;
 
 	// Reverse-proxy /rdio/* → rdio-scanner container. Runs after auth gate so
