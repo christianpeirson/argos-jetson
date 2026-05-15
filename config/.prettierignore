@@ -20,3 +20,7 @@ yarn.lock
 
 # Ignore specific files
 CHANGELOG.md
+
+# Vendored upstream code — keep byte-for-byte identical to noVNC/pako sources
+static/webtak/novnc/**
+static/webtak/vendor/**

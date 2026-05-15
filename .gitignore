@@ -14,6 +14,7 @@ graphify-out/
 .pnp
 .pnp.js
 vendor/
+!static/webtak/vendor/
 jspm_packages/
 web_modules/
 bower_components/
