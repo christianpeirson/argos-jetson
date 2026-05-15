@@ -64,7 +64,15 @@ const GENERATED_GLOBS = [
 	'.fallow-dupes-baseline.json',
 	'.fallow-health-baseline.json',
 	'.fallow-*-baseline.json',
-	'**/.fallow-*-baseline.json'
+	'**/.fallow-*-baseline.json',
+	// Vendored upstream code under static/webtak/{novnc,vendor}/ is
+	// byte-for-byte from novnc/noVNC + nodeca/pako. Reviewers don't audit it
+	// line-by-line — it's a snapshot of an external project. Treat as
+	// generated for size-cap purposes; the manifest test
+	// (tests/integration/vnc-vendor-manifest.test.ts) is what reviewers
+	// actually look at.
+	'static/webtak/novnc/**',
+	'static/webtak/vendor/**'
 ];
 /**
  * Human-authored LOC = total LOC minus everything matched by GENERATED_GLOBS.
