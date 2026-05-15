@@ -5,7 +5,6 @@ import * as path from 'path';
 import { env } from '$lib/server/env';
 import { execFileAsync } from '$lib/server/exec';
 import { withRetry } from '$lib/server/retry';
-import { delay } from '$lib/utils/delay';
 import { logger } from '$lib/utils/logger';
 
 export interface KismetStartResult {
@@ -51,15 +50,23 @@ async function probeKismetStatus(): Promise<boolean> {
 	}
 }
 
-/** Poll Kismet status endpoint until responsive */
-async function waitForKismetReady(maxAttempts = 15): Promise<boolean> {
+/**
+ * Poll Kismet status endpoint until responsive.
+ *
+ * 2026-05-15 (OTel/Jaeger scan): bumped attempts 15 → 60 and delayMs
+ * 1000 → 250. Same 15 s upper bound, but typical case (Kismet binds
+ * :2501 in 200-500 ms) exits at first success instead of waiting out
+ * a 1 s tick. Stage B program-lifecycle scan showed kismet start was
+ * 14.3 s — this loop's 1 s bucketing was the dominant cost.
+ */
+async function waitForKismetReady(maxAttempts = 60): Promise<boolean> {
 	const probe = withRetry(
 		async () => {
 			const ready = await probeKismetStatus();
 			if (!ready) throw new Error('Kismet not ready');
 			return true;
 		},
-		{ attempts: maxAttempts, delayMs: 1000, backoff: 'linear' }
+		{ attempts: maxAttempts, delayMs: 250, backoff: 'linear' }
 	);
 	try {
 		return await probe();
@@ -117,11 +124,9 @@ async function startDirect(): Promise<boolean> {
 		child.unref();
 		fs.closeSync(logFd);
 
-		// Give Kismet a moment to start
-		await delay(2000);
-
-		// Check if it started
-		return await isKismetRunning();
+		// Replaces a 2 s hardcoded delay+check (OTel scan 2026-05-15).
+		// waitForKismetReady polls every 250 ms up to 15 s.
+		return await waitForKismetReady();
 	} catch (error) {
 		logger.error('[Kismet] Direct startup failed', {
 			error: error instanceof Error ? error.message : String(error)

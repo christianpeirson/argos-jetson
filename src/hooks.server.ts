@@ -1,3 +1,4 @@
+import '$lib/server/instrumentation';
 import '$lib/server/env';
 
 import type { Handle, HandleServerError } from '@sveltejs/kit';

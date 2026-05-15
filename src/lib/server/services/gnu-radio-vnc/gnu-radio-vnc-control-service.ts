@@ -16,6 +16,7 @@ import {
 	isAnyProcessAlive,
 	killAllProcesses,
 	spawnGnuRadioCompanion,
+	spawnGrcMaximizer,
 	spawnWebsockify,
 	spawnWindowManager,
 	spawnXtigervnc
@@ -87,6 +88,8 @@ async function performStartup(resolvedFlowgraph: string | undefined): Promise<Er
 		await new Promise((r) => setTimeout(r, 250));
 		spawnWebsockify();
 		spawnGnuRadioCompanion(resolvedFlowgraph);
+		// Detached, polls in background; falls back silently if wmctrl missing.
+		spawnGrcMaximizer();
 		return null;
 	} catch (err) {
 		return err instanceof Error ? err : new Error(String(err));

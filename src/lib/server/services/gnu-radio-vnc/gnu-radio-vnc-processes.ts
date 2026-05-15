@@ -136,6 +136,48 @@ export function spawnGnuRadioCompanion(flowgraph?: string): ChildProcess {
 	return proc;
 }
 
+// Post-spawn window maximizer. The openbox <application name="gnuradio-companion">
+// rule in etc/openbox-rc.xml is unreliable on real GRC (verified live: _NET_WM_STATE
+// stays empty even after `openbox --reconfigure`). wmctrl issues an EWMH
+// _NET_WM_STATE ADD client message AFTER the window maps, which works.
+//
+// Substring match on WM_NAME — `'GNU Radio Companion'` matches both
+// `'untitled - GNU Radio Companion'` and `'<flowgraph>.grc - GNU Radio Companion'`
+// (case-insensitive default per wmctrl(1) Debian manpage).
+//
+// Runs as a detached bash loop so a delayed window map doesn't block the API
+// response. Polls every 200 ms, 30 s upper bound. wmctrl absence is logged but
+// non-fatal — GRC still works at default size if the binary is missing.
+export function spawnGrcMaximizer(): ChildProcess {
+	const cmd = [
+		'for i in $(seq 1 150); do',
+		"  if wmctrl -l 2>/dev/null | grep -q 'GNU Radio Companion'; then",
+		"    wmctrl -r 'GNU Radio Companion' -b add,maximized_vert,maximized_horz",
+		'    exit 0',
+		'  fi',
+		'  sleep 0.2',
+		'done',
+		'exit 1'
+	].join('\n');
+	const proc = spawnImpl('/bin/bash', ['-c', cmd], {
+		stdio: 'ignore',
+		detached: true,
+		env: { ...process.env, DISPLAY: GNU_RADIO_VNC_DISPLAY }
+	});
+	proc.on('error', (err) => {
+		logger.warn('wmctrl maximizer spawn error (non-fatal)', { error: err.message });
+	});
+	proc.on('exit', (code) => {
+		if (code === 0) {
+			logger.info('GRC window maximized via wmctrl');
+		} else if (code === 1) {
+			logger.warn('GRC window did not appear within 30s — left at default size');
+		}
+	});
+	proc.unref();
+	return proc;
+}
+
 export function spawnWebsockify(): ChildProcess {
 	const bin = resolveWebsockifyBin();
 	const args = [String(GNU_RADIO_WS_PORT), `localhost:${GNU_RADIO_VNC_PORT}`];

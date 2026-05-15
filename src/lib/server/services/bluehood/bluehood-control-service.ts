@@ -78,11 +78,19 @@ async function stopKismetForBluetooth(): Promise<void> {
 	await delay(2000);
 }
 
-/** Poll BlueHood dashboard until it responds or timeout */
-async function waitForBluehoodReady(maxAttempts = 15): Promise<boolean> {
+/**
+ * Poll BlueHood dashboard until it responds or timeout.
+ *
+ * 2026-05-15 (OTel/Jaeger scan): replaced 15 × 1000 ms loop with finer
+ * 60 × 250 ms polling. Same 15 s upper bound, but typical case (BlueHood
+ * boots in 200-500 ms) returns at first success instead of waiting out
+ * a full 1 s tick. Stage B program-lifecycle scan showed bluehood start
+ * was 15.3 s — almost entirely this loop's bucketing.
+ */
+async function waitForBluehoodReady(maxAttempts = 60, intervalMs = 250): Promise<boolean> {
 	for (let i = 0; i < maxAttempts; i++) {
 		if (await isBluehoodApiResponding()) return true;
-		await delay(1000);
+		await delay(intervalMs);
 	}
 	return false;
 }

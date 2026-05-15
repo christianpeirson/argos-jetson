@@ -5,6 +5,7 @@
  * (Xtigervnc + chromium + websockify).
  *
  * Body shapes:
+ *   { action: "start" }                              // uses WEBTAK_DEFAULT_URL
  *   { action: "start", url: "https://10.3.1.5:8446" }
  *   { action: "stop" }
  *   { action: "status" }
@@ -21,10 +22,18 @@ import {
 } from '$lib/server/services/webtak-vnc/webtak-vnc-control-service';
 import { safeParseWithHandling } from '$lib/utils/validation-error';
 
+const WEBTAK_FALLBACK_URL = 'https://localhost:8446';
+
 export const _WebtakVncControlSchema = z.discriminatedUnion('action', [
 	z.object({
 		action: z.literal('start'),
-		url: z.string().url().describe('TAK server URL to load in the remote Chromium')
+		url: z
+			.string()
+			.url()
+			.optional()
+			.describe(
+				'TAK server URL to load in the remote Chromium (defaults to WEBTAK_DEFAULT_URL env or https://localhost:8446)'
+			)
 	}),
 	z.object({ action: z.literal('stop') }),
 	z.object({ action: z.literal('status') })
@@ -39,6 +48,10 @@ function resultStatus(result: WebtakVncResult): number {
 	return 'error' in result && result.error ? 400 : 500;
 }
 
+function resolveStartUrl(bodyUrl: string | undefined): string {
+	return bodyUrl ?? process.env.WEBTAK_DEFAULT_URL ?? WEBTAK_FALLBACK_URL;
+}
+
 export const POST = createHandler(
 	async ({ request }) => {
 		let rawBody: unknown;
@@ -51,7 +64,7 @@ export const POST = createHandler(
 		if (!validated) return error(400, 'Invalid WebTAK VNC control request');
 
 		if (validated.action === 'start') {
-			const result = await startWebtakVnc(validated.url);
+			const result = await startWebtakVnc(resolveStartUrl(validated.url));
 			return json(result, { status: resultStatus(result) });
 		}
 		if (validated.action === 'stop') {
