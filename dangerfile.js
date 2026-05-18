@@ -72,17 +72,7 @@ const GENERATED_GLOBS = [
 	// (tests/integration/vnc-vendor-manifest.test.ts) is what reviewers
 	// actually look at.
 	'static/webtak/novnc/**',
-	'static/webtak/vendor/**',
-	// TEMPORARY — V3 (NVIDIA UI) mechanical-copy carve-out (added 2026-05-18,
-	// spec-027 phase C1). C1 copies V1's component tree into
-	// src/lib/components/v3/** and the v3 route at src/routes/dashboard/v3/**
-	// verbatim — only import prefixes change — and verifies each copied file
-	// by diffing it against its V1 original. There is nothing to review
-	// line-by-line, same rationale as the static/webtak/vendor exclusion above.
-	// REMOVE this block when C1 completes: C2's hand-written NVIDIA polish
-	// edits these same files and MUST count toward the size cap.
-	'src/lib/components/v3/**',
-	'src/routes/dashboard/v3/**'
+	'static/webtak/vendor/**'
 ];
 /**
  * Human-authored LOC = total LOC minus everything matched by GENERATED_GLOBS.
