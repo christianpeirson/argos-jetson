@@ -243,18 +243,10 @@ function redirect307(location: string): Response {
 	return new Response(null, { status: 307, headers: { location } });
 }
 
-/** Resolve the '/' redirect target for the current server port. */
-function rootRedirectTarget(): string {
-	const port = process.env.PORT;
-	if (port === '5174') return '/dashboard/mk2/overview';
-	if (port === '5175') return '/dashboard/v3';
-	return '/dashboard';
-}
-
 function rootRedirect(event: Parameters<Handle>[0]['event']): Response | null {
 	const p = event.url.pathname;
 	if (p !== '/' && p !== '') return null;
-	return redirect307(rootRedirectTarget());
+	return redirect307(process.env.PORT === '5174' ? '/dashboard/mk2/overview' : '/dashboard');
 }
 
 function mk2DashboardRedirect(event: Parameters<Handle>[0]['event']): Response | null {
@@ -264,23 +256,9 @@ function mk2DashboardRedirect(event: Parameters<Handle>[0]['event']): Response |
 	return redirect307('/dashboard/mk2/overview');
 }
 
-// V3 (port 5175, NVIDIA UI) — mirror of mk2DashboardRedirect. A bare visit to
-// /dashboard on :5175 lands on the V3 subtree. Inert on :5173/:5174 (PORT guard
-// returns null before any path logic).
-function v3DashboardRedirect(event: Parameters<Handle>[0]['event']): Response | null {
-	if (process.env.PORT !== '5175') return null;
-	const p = event.url.pathname;
-	if (p !== '/dashboard' && p !== '/dashboard/') return null;
-	return redirect307('/dashboard/v3');
-}
-
-/** Port-aware UI redirect chain (root + bare-/dashboard, all three ports). */
-function uiRedirect(event: Parameters<Handle>[0]['event']): Response | null {
-	return rootRedirect(event) ?? mk2DashboardRedirect(event) ?? v3DashboardRedirect(event);
-}
-
 const innerHandle: Handle = async ({ event, resolve }) => {
-	const shortCircuit = runSecurityPipeline(event) ?? uiRedirect(event);
+	const shortCircuit =
+		runSecurityPipeline(event) ?? rootRedirect(event) ?? mk2DashboardRedirect(event);
 	if (shortCircuit) return shortCircuit;
 
 	// Reverse-proxy /rdio/* → rdio-scanner container. Runs after auth gate so

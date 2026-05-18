@@ -31,19 +31,6 @@
 				color: #ffffff;
 				font-family: 'Geist', system-ui, sans-serif;
 			}
-			/* V3 (port 5175) pre-paint surfaces — the <body>-top script below
-			   sets data-ui/data-mode before paint, so these higher-specificity
-			   rules win over the generic `body` rule and the white/black canvas
-			   never flashes. Inert for V1/V2 — their <body> never carries
-			   data-ui="v3". */
-			body[data-ui='v3'][data-mode='light'] {
-				background-color: #ffffff;
-				color: #000000;
-			}
-			body[data-ui='v3'][data-mode='dark'] {
-				background-color: #000000;
-				color: #ffffff;
-			}
 		</style>
 
 		<!-- Geist Sans for UI navigation chrome -->
@@ -53,23 +40,6 @@
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">
-		<script>
-			/* V3 (port 5175) pre-paint theme stamp. Runs only on /dashboard/v3
-			   routes; sets the data attributes the [data-ui='v3'] CSS keys off
-			   so dark/light + accent are correct at first paint. Inert on
-			   :5173/:5174 — they never serve a /dashboard/v3 path. */
-			try {
-				if (location.pathname.indexOf('/dashboard/v3') === 0) {
-					var v3t = JSON.parse(localStorage.getItem('argos-v3-theme') || '{}');
-					var v3d = document.body.dataset;
-					v3d.ui = 'v3';
-					v3d.mode = v3t.mode === 'dark' ? 'dark' : 'light';
-					v3d.palette = v3t.palette || 'nvidia';
-				}
-			} catch (e) {
-				/* localStorage blocked — the V3 store applies its defaults on init */
-			}
-		</script>
 		<div style="display: contents">%sveltekit.body%</div>
 	</body>
 </html>
