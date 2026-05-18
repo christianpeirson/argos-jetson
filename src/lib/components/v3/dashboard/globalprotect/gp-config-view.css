@@ -1,0 +1,137 @@
+/* GpConfigView styles */
+
+.gp-split-layout {
+	display: flex;
+	flex-direction: row;
+	gap: 0;
+	height: 100%;
+	overflow: hidden;
+}
+
+.gp-left-panel {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	padding: 8px;
+	overflow-y: auto;
+	min-width: 280px;
+}
+
+.gp-drag-handle {
+	width: 4px;
+	cursor: col-resize;
+	background: var(--border, #2e2e2e);
+	flex-shrink: 0;
+	transition: background 0.15s;
+}
+
+.gp-drag-handle:hover,
+.gp-drag-handle.dragging {
+	background: var(--primary);
+}
+
+.gp-right-panel {
+	flex: 1;
+	min-width: 200px;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	padding: 8px;
+}
+
+.loading-text {
+	padding: 20px 0;
+	font-size: 13px;
+	color: var(--muted-foreground);
+}
+
+.save-row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.save-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 6px 16px;
+	font-size: 14px;
+	font-weight: 500;
+	color: white;
+	background: var(--primary);
+	border: none;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: background 0.15s;
+	justify-content: center;
+}
+
+.save-btn:hover:not(:disabled) {
+	background: color-mix(in srgb, var(--primary) 85%, white);
+}
+
+.save-btn:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.save-message {
+	font-size: 11px;
+}
+
+.save-message.success {
+	color: var(--status-healthy, #8bbfa0);
+}
+
+.save-message.error {
+	color: var(--destructive);
+}
+
+.startup-toggle {
+	display: flex;
+	cursor: pointer;
+	flex-direction: row;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 12px;
+	font-size: 14px;
+	font-weight: 500;
+	color: var(--foreground);
+	background: none;
+	border: 1px solid var(--border, #2e2e2e);
+	border-radius: 6px;
+	transition: background 0.15s;
+}
+
+.startup-toggle:hover {
+	background: var(--muted, #1a1a1a);
+}
+
+.toggle-track {
+	display: flex;
+	height: 16px;
+	width: 28px;
+	align-items: center;
+	border-radius: 9999px;
+	padding: 0 2px;
+	transition: background 0.15s;
+	background: color-mix(in srgb, var(--muted-foreground) 30%, transparent);
+}
+
+.toggle-track.active {
+	background: var(--primary);
+}
+
+.toggle-thumb {
+	width: 12px;
+	height: 12px;
+	border-radius: 9999px;
+	background: white;
+	transition: transform 0.15s;
+	transform: translateX(0);
+}
+
+.toggle-thumb.active {
+	transform: translateX(12px);
+}

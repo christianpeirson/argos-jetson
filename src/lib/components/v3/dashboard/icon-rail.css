@@ -1,0 +1,51 @@
+/* IconRail position-specific overrides — right, top, bottom */
+
+/* ---- Right position ---- */
+.icon-rail[data-position='right'] {
+	border-right: none;
+	border-left: 1px solid var(--border);
+}
+
+/* ---- Top position ---- */
+.icon-rail[data-position='top'] {
+	flex-direction: row;
+	width: 100%;
+	min-width: unset;
+	height: var(--icon-rail-width);
+	min-height: var(--icon-rail-width);
+	border-right: none;
+	border-bottom: 1px solid var(--border);
+	padding: 0 10px;
+}
+
+.icon-rail[data-position='top'] .rail-top,
+.icon-rail[data-position='top'] .rail-bottom {
+	flex-direction: row;
+}
+
+.icon-rail[data-position='top'] .rail-separator {
+	width: 1px;
+	height: 24px;
+}
+
+/* ---- Bottom position ---- */
+.icon-rail[data-position='bottom'] {
+	flex-direction: row;
+	width: 100%;
+	min-width: unset;
+	height: var(--icon-rail-width);
+	min-height: var(--icon-rail-width);
+	border-right: none;
+	border-top: 1px solid var(--border);
+	padding: 0 10px;
+}
+
+.icon-rail[data-position='bottom'] .rail-top,
+.icon-rail[data-position='bottom'] .rail-bottom {
+	flex-direction: row;
+}
+
+.icon-rail[data-position='bottom'] .rail-separator {
+	width: 1px;
+	height: 24px;
+}
