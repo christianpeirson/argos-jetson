@@ -20,6 +20,18 @@
 			try {
 				var t = JSON.parse(localStorage.getItem('argos-theme') || '{}');
 				if (t.palette) document.documentElement.dataset.palette = t.palette;
+				// V3 (NVIDIA UI, :5175): stamp data-ui on <html> before first
+				// paint so /dashboard/v3 routes theme correctly. Path-gated, so
+				// inert on :5173 (V1) and :5174 (V2). C0 — V3 mirrors V1 (dark),
+				// no canvas flash yet; C2 extends this with the NVIDIA light/dark
+				// swap. <body> isn't parsed yet inside <head>, so the v3 layout
+				// re-stamps data-ui onto <body> after hydration.
+				if (location.pathname.startsWith('/dashboard/v3')) {
+					var v3 = JSON.parse(localStorage.getItem('argos-v3-theme') || '{}');
+					document.documentElement.dataset.ui = 'v3';
+					if (v3.mode) document.documentElement.dataset.mode = v3.mode;
+					if (v3.palette) document.documentElement.dataset.palette = v3.palette;
+				}
 			} catch (e) {
 				/* dark class already set on <html> */
 			}

@@ -26,6 +26,11 @@
 	}
 	let { children }: Props = $props();
 
+	// :5175 (V3 / NVIDIA UI) owns the <body> data-attributes via its own route
+	// layout + v3-theme-store. The Mk II $effects below must NOT run on
+	// /dashboard/v3 routes, or they would overwrite data-ui='v3' with 'mk2'.
+	const isV3 = $derived(page.url.pathname.startsWith('/dashboard/v3'));
+
 	// spec-024 PR11 (T054) — Mk II is the default UI. `?ui=lunaris` is the
 	// one-release escape hatch back to the legacy Lunaris shell; T055 next
 	// release deletes both that escape and the legacy chassis. Reads:
@@ -33,6 +38,7 @@
 	//   ?ui=lunaris                   → no data-ui attribute (Lunaris :root)
 	//   ?ui=mk2 (old bookmark)        → still mk2 (idempotent)
 	$effect(() => {
+		if (isV3) return;
 		const isLunaris = page.url.searchParams.get('ui') === 'lunaris';
 		if (isLunaris) {
 			document.body.removeAttribute('data-ui');
@@ -46,6 +52,7 @@
 	// CSS selectors in app.css apply live without any component coupling.
 	// Lunaris escape hatch strips both attributes so legacy mode stays clean.
 	$effect(() => {
+		if (isV3) return;
 		const isLunaris = page.url.searchParams.get('ui') === 'lunaris';
 		if (isLunaris) {
 			document.body.removeAttribute('data-accent');
@@ -55,6 +62,7 @@
 	});
 
 	$effect(() => {
+		if (isV3) return;
 		const isLunaris = page.url.searchParams.get('ui') === 'lunaris';
 		if (isLunaris) {
 			document.body.removeAttribute('data-density');

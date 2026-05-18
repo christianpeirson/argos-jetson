@@ -234,19 +234,27 @@ function runSecurityPipeline(event: Parameters<Handle>[0]['event']): Response | 
  */
 /**
  * Port-aware UI split — see memory feedback_port_ui_split_nonnegotiable.md.
- * :5174 (argos-dev) serves Mk II by default; :5173 (argos-final) serves the
- * legacy Argos shell. Done at the hooks layer (not in +page.server.ts) because
- * dashboard/+page.ts has `ssr: false`, which makes server-load redirects
- * unreliable. Hooks run on every request regardless of ssr setting.
+ * :5173 (argos-final) serves the legacy Argos shell (V1); :5174 (argos-dev)
+ * serves Mk II (V2); :5175 (argos-v3) serves the NVIDIA UI (V3). Done at the
+ * hooks layer (not in +page.server.ts) because dashboard/+page.ts has
+ * `ssr: false`, which makes server-load redirects unreliable. Hooks run on
+ * every request regardless of ssr setting.
  */
 function redirect307(location: string): Response {
 	return new Response(null, { status: 307, headers: { location } });
 }
 
+function rootRedirectTarget(): string {
+	const port = process.env.PORT;
+	if (port === '5174') return '/dashboard/mk2/overview';
+	if (port === '5175') return '/dashboard/v3';
+	return '/dashboard';
+}
+
 function rootRedirect(event: Parameters<Handle>[0]['event']): Response | null {
 	const p = event.url.pathname;
 	if (p !== '/' && p !== '') return null;
-	return redirect307(process.env.PORT === '5174' ? '/dashboard/mk2/overview' : '/dashboard');
+	return redirect307(rootRedirectTarget());
 }
 
 function mk2DashboardRedirect(event: Parameters<Handle>[0]['event']): Response | null {
@@ -256,9 +264,20 @@ function mk2DashboardRedirect(event: Parameters<Handle>[0]['event']): Response |
 	return redirect307('/dashboard/mk2/overview');
 }
 
+function v3DashboardRedirect(event: Parameters<Handle>[0]['event']): Response | null {
+	if (process.env.PORT !== '5175') return null;
+	const p = event.url.pathname;
+	if (p !== '/dashboard' && p !== '/dashboard/') return null;
+	return redirect307('/dashboard/v3');
+}
+
+/** Run the port-aware UI redirect chain. Returns a redirect Response or null. */
+function uiRedirect(event: Parameters<Handle>[0]['event']): Response | null {
+	return rootRedirect(event) ?? mk2DashboardRedirect(event) ?? v3DashboardRedirect(event);
+}
+
 const innerHandle: Handle = async ({ event, resolve }) => {
-	const shortCircuit =
-		runSecurityPipeline(event) ?? rootRedirect(event) ?? mk2DashboardRedirect(event);
+	const shortCircuit = runSecurityPipeline(event) ?? uiRedirect(event);
 	if (shortCircuit) return shortCircuit;
 
 	// Reverse-proxy /rdio/* → rdio-scanner container. Runs after auth gate so
