@@ -479,3 +479,26 @@
 	--mk2-row-h: 30px;
 	--mk2-bar-h: 48px;
 }
+
+/* ============================================================
+   Argos V3 — NVIDIA UI token scope.  Activated via <body data-ui="v3">.
+
+   C0 (port plumbing): a v3 body does NOT match the [data-ui='mk2']
+   block above, so it inherits the Lunaris :root tokens and renders
+   V1-identical — the C1 working copy needs no token work here. The
+   six tokens below are pre-seeded at their :root (V1) values so the
+   v3 surface renders identically AND C2 gets a single in-place edit
+   surface.
+
+   C2 (NVIDIA polish) retargets this block to DESIGN.md values:
+   white canvas, #76b900 green accent, 2px radius, Inter typography.
+   Selector matches only <body data-ui="v3"> → inert on :5173/:5174.
+   ============================================================ */
+[data-ui='v3'] {
+	--background: #111111;
+	--foreground: #ffffff;
+	--card: #1a1a1a;
+	--border: #2e2e2e;
+	--primary: #a8b8e0;
+	--radius: 0.65rem;
+}
