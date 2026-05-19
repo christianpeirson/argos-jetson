@@ -47,7 +47,7 @@ jobs:
     steps:
       - name: 'Checkout code'
         # actions/checkout v4.2.2
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           # Full history so fallow can resolve the base branch for diff-aware audit
           fetch-depth: 0
@@ -55,7 +55,7 @@ jobs:
 
       - name: 'Setup Node.js'
         # actions/setup-node v4.4.0
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
@@ -82,7 +82,7 @@ jobs:
         # locally with the same baseline state CI used.
         if: always()
         # actions/upload-artifact v4 (first-party, version-tagged OK)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: fallow-baselines
           path: |
