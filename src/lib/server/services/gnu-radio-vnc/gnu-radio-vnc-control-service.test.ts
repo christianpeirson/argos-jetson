@@ -44,6 +44,18 @@ afterEach(() => {
 });
 
 describe('gnu-radio-vnc-control-service', () => {
+	it('start arms a server-shutdown handler (SIGTERM/SIGINT)', async () => {
+		// Must run before any other startGnuRadioVnc() call in this file:
+		// createVncShutdownHandler is idempotent, so process.once is invoked
+		// only on the first start of the module's lifetime.
+		const onceSpy = vi.spyOn(process, 'once');
+		await startGnuRadioVnc();
+		const signals = onceSpy.mock.calls.map((c) => c[0]);
+		expect(signals).toContain('SIGTERM');
+		expect(signals).toContain('SIGINT');
+		onceSpy.mockRestore();
+	});
+
 	it('start returns wsPort 6084 + wsPath /websockify on success', async () => {
 		const r = await startGnuRadioVnc();
 		expect(r.success).toBe(true);

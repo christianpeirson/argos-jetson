@@ -11,6 +11,7 @@ import { resolve as resolvePath } from 'path';
 
 import { logger } from '$lib/utils/logger';
 
+import { createVncShutdownHandler } from '../vnc-common/spawn-helpers';
 import {
 	getCurrentFlowgraph,
 	isAnyProcessAlive,
@@ -96,7 +97,13 @@ async function performStartup(resolvedFlowgraph: string | undefined): Promise<Er
 	}
 }
 
+// Reap the VNC stack on Argos server shutdown (SIGTERM/SIGINT). The view no
+// longer stops GNU Radio on navigation — only the Stop button does — so without
+// this the stack would orphan when the server restarts. Idempotent.
+const registerShutdownHandler = createVncShutdownHandler('gnu-radio-vnc', killAllProcesses);
+
 export async function startGnuRadioVnc(flowgraph?: string): Promise<GnuRadioVncControlResult> {
+	registerShutdownHandler();
 	if (isAnyProcessAlive()) return buildAlreadyRunningResult();
 
 	const { resolved, error } = resolveFlowgraphOrError(flowgraph);
