@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onDestroy, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { activeView } from '$lib/stores/dashboard/dashboard-store';
@@ -22,7 +22,6 @@
 	let currentFlowgraph = $state<string | null>(null);
 	let vncKey = $state(0);
 	let stopping = $state(false);
-	let stopSent = $state(false);
 
 	function buildWsUrl(wsPort: number, wsPath: string): string {
 		const host = window.location.hostname;
@@ -113,7 +112,6 @@
 				errorMsg = `Stop failed: ${res.status}`;
 				return;
 			}
-			stopSent = true;
 			activeView.set('map');
 		} catch (err) {
 			serviceStatus = 'error';
@@ -125,11 +123,6 @@
 
 	onMount(() => {
 		void startGrc();
-	});
-
-	onDestroy(() => {
-		if (stopSent) return;
-		void postControl('stop').catch(() => undefined);
 	});
 </script>
 
