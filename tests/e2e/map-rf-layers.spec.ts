@@ -16,7 +16,7 @@
  * Ref: tessl-labs/playwright-testing skill.
  */
 
-import { expect, test, type ConsoleMessage } from '@playwright/test';
+import { type ConsoleMessage, expect, test } from '@playwright/test';
 
 const EMPTY_FC = { type: 'FeatureCollection', features: [] };
 
@@ -70,7 +70,9 @@ test.describe('Phase B RF layer components', () => {
 		const layersCard = page.locator('button.hub-card:has-text("Map Layers")');
 		if (await layersCard.isVisible({ timeout: 5_000 }).catch(() => false)) {
 			await layersCard.click();
-			const rfChip = page.locator('button:has-text("RF Heatmap"), button:has-text("Heatmap")').first();
+			const rfChip = page
+				.locator('button:has-text("RF Heatmap"), button:has-text("Heatmap")')
+				.first();
 			if (await rfChip.isVisible({ timeout: 3_000 }).catch(() => false)) {
 				await rfChip.click();
 				await page.waitForTimeout(250);
@@ -78,8 +80,9 @@ test.describe('Phase B RF layer components', () => {
 			}
 		}
 
-		expect(layerErrors, `Unexpected RF-layer console errors:\n${layerErrors.join('\n')}`).toEqual(
-			[]
-		);
+		expect(
+			layerErrors,
+			`Unexpected RF-layer console errors:\n${layerErrors.join('\n')}`
+		).toEqual([]);
 	});
 });
