@@ -79,15 +79,3 @@ export const SimplifiedSignalSchema = z.object({
 	timestamp: z.number().int().positive(),
 	count: z.number().int().positive()
 });
-
-/**
- * V3ThemeState Schema - Validates V3 (NVIDIA UI) theme persistence
- *
- * Validation rules:
- * - mode: 'dark' or 'light'
- * - palette: non-empty accent-palette name, capped at 32 chars
- */
-export const V3ThemeSchema = z.object({
-	mode: z.enum(['dark', 'light']),
-	palette: z.string().min(1).max(32)
-});

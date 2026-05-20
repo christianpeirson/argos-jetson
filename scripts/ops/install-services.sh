@@ -135,20 +135,6 @@ if [[ -f "$DEPLOY_DIR/$DEV_SERVICE" ]]; then
   chmod 644 "$SYSTEMD_DIR/$DEV_SERVICE"
 fi
 
-# argos-v3.service — v3 (NVIDIA UI) production server on :5175 (prod-server.ts
-# pattern, mirrors argos-dev). The src/hooks.server.ts port branch routes
-# PORT=5175 to the /dashboard/v3 surface. Supersedes the removed
-# argos-newui-dev.service (the legacy session-N vite-dev unit).
-V3_SERVICE="argos-v3.service"
-if [[ -f "$DEPLOY_DIR/$V3_SERVICE" ]]; then
-  echo "  Installing $V3_SERVICE (auto-enabled — v3 prod on :5175)"
-  sed -e "s|__PROJECT_DIR__|$PROJECT_DIR|g" \
-      -e "s|__SETUP_USER__|$SETUP_USER|g" \
-      -e "s|__NODE_BIN__|$NODE_BIN|g" \
-      "$DEPLOY_DIR/$V3_SERVICE" > "$SYSTEMD_DIR/$V3_SERVICE"
-  chmod 644 "$SYSTEMD_DIR/$V3_SERVICE"
-fi
-
 echo ""
 echo "Reloading systemd daemon..."
 systemctl daemon-reload
@@ -158,7 +144,6 @@ systemctl enable argos-startup.service 2>/dev/null || true
 systemctl enable argos-final.service 2>/dev/null || true
 systemctl enable argos-kismet.service 2>/dev/null || true
 systemctl enable argos-dev.service 2>/dev/null || true
-systemctl enable argos-v3.service 2>/dev/null || true
 # Enable monitor services only if their binaries were installed
 for bin in argos-cpu-protector argos-wifi-resilience argos-process-manager; do
   if [[ -x "/usr/local/bin/${bin}.sh" ]]; then
