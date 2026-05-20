@@ -494,29 +494,52 @@ if (schemaTouched && !migrationTouched) {
 	);
 }
 
-// ── 5. Lockfile sync (package.json ↔ package-lock.json) ───────────────────
+// ── 5. Lockfile sync (dependency sections ↔ package-lock.json) ────────────
 /**
  * Pattern from https://danger.systems/js/tutorials/dependencies.
- * Fails when package.json changed but package-lock.json didn't — `npm ci`
- * on CI would fail or install drift. Warns on the reverse (usually
- * intentional via `npm audit fix` / dedupe but worth a sanity check).
+ *
+ * The "starting simple" example in the tutorial fires on ANY change to
+ * package.json — including script edits, metadata bumps, and engines
+ * adjustments — none of which require a lockfile update. The same tutorial
+ * page recommends evolving the rule via `JSONDiffForFile` so it only
+ * triggers on actual dependency-section diffs:
+ *   "Convert the check for the package and lockfile to use
+ *    `JSONDiffForFile` so that it only warns on `dependencies` or
+ *    `devDependencies`."
+ *   — https://danger.systems/js/tutorials/dependencies#building-from-here
+ *
+ * Implementation: inspect the JSON diff of package.json. Fail only when
+ * `dependencies` / `devDependencies` / `peerDependencies` /
+ * `optionalDependencies` actually changed and the lockfile didn't follow.
+ * Script / metadata / engines changes pass silently. Wrapped in
+ * `schedule()` so the async call is awaited before Danger reports.
  */
-function checkLockfileSync() {
+const DEPENDENCY_KEYS = [
+	'dependencies',
+	'devDependencies',
+	'peerDependencies',
+	'optionalDependencies'
+];
+
+schedule(async () => {
 	const pkgChanged = changed.includes('package.json');
 	const lockChanged = changed.includes('package-lock.json');
-	if (pkgChanged && !lockChanged) {
-		fail(
-			'package.json was modified but package-lock.json was not. Run `npm install` locally and commit the updated lockfile — otherwise `npm ci` on CI will fail or install different transitive versions than were tested.'
-		);
-		return;
-	}
 	if (!pkgChanged && lockChanged) {
 		warn(
 			'package-lock.json changed without a corresponding package.json change. Usually intentional (`npm audit fix`, dedupe) but worth a reviewer sanity check.'
 		);
+		return;
 	}
-}
-checkLockfileSync();
+	if (!pkgChanged) return;
+
+	const diff = await danger.git.JSONDiffForFile('package.json');
+	const depsChanged = DEPENDENCY_KEYS.some((k) => diff[k] !== undefined);
+	if (depsChanged && !lockChanged) {
+		fail(
+			'package.json dependency sections changed but package-lock.json was not updated. Run `npm install` locally and commit the updated lockfile — otherwise `npm ci` on CI will install different transitive versions than were tested.'
+		);
+	}
+});
 
 // ── 6. Native-addon dependency guard ──────────────────────────────────────
 /**
