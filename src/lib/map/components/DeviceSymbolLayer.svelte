@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { FeatureCollection } from 'geojson';
+	import type { Feature, FeatureCollection } from 'geojson';
 	import type maplibregl from 'maplibre-gl';
 	import { GeoJSONSource, getMapContext, SymbolLayer } from 'svelte-maplibre-gl';
 
@@ -22,6 +22,11 @@
 
 	const ctx = getMapContext();
 	const registered = new Set<string>();
+
+	function getValidSidc(f: Feature): string {
+		const sidc = f.properties?.sidc;
+		return typeof sidc === 'string' ? sidc : '';
+	}
 
 	function shouldSkipRegistration(sidc: string): boolean {
 		return !ctx.map || registered.has(sidc) || ctx.map.hasImage(sidc);
@@ -51,8 +56,8 @@
 
 	$effect(() => {
 		for (const f of data.features) {
-			const sidc = f.properties?.sidc;
-			if (typeof sidc === 'string' && sidc.length > 0) void registerSymbolImage(sidc);
+			const sidc = getValidSidc(f);
+			if (sidc) void registerSymbolImage(sidc);
 		}
 	});
 </script>
