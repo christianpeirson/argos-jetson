@@ -6,7 +6,16 @@
  * (which enforces message shape) and CodeRabbit (which reviews code
  * quality) with PR-level structural rules:
  *
- *   1. Size cap — warn on PRs the reviewer can't reasonably load.
+ *   1. Size cap — warn on PRs the reviewer can't reasonably load. Hard-fail
+ *      at 2000 reviewable LOC. THREE carve-outs:
+ *        (a) Pure-deletion (additions === 0 && deletions > 0): skipped —
+ *            no per-line review value when removing code; reviewers
+ *            spot-check the file list, not the bytes.
+ *        (b) Format-only commits (`style(<scope>): prettier|format ...`):
+ *            subtracted from the LOC total via computeFormatOnlyLOC().
+ *        (c) Label exemption: PR has 'size-cap-exempt' label AND author
+ *            association is MEMBER / OWNER / COLLABORATOR. Drive-by
+ *            contributors cannot self-exempt.
  *   2. Cross-subsystem sprawl — warn when a single PR spans more than
  *      three top-level src/ areas.
  *   3. Tests-required — fail when server code changes without a
@@ -14,9 +23,15 @@
  *   4. Migration-drift — warn when migrations and schema.sql drift
  *      out of sync.
  *
- * These rules start conservative (mostly warn) and can be tightened
- * once the team sees how they land on live PRs. `fail` rules block the
- * merge; `warn` rules post a comment but do not block.
+ * Industry-norm references: the canonical Danger.js example at
+ * https://danger.systems/js/index uses 600 LOC warn() with no hard
+ * block. Argos retains the 2000-LOC hard block as discipline for
+ * ordinary feature PRs while adding carve-outs (a, b, c) for legitimate
+ * exceptions — structurally consistent with how popular OSS Danger
+ * configurations handle large-but-low-review-value PRs.
+ *
+ * `fail` rules block the merge; `warn` rules post a comment but do not
+ * block. `message` rules are informational only.
  */
 
 // Include deleted files too — a PR that deletes server code is still a
@@ -127,17 +142,67 @@ function computeFormatOnlyLOC() {
 	return { total, matched };
 }
 
+/**
+ * Pure-deletion carve-out (a). Returns the exemption message if the PR is
+ * pure deletion (additions === 0 && deletions > 0), or null if not exempt.
+ */
+function checkPureDeletionExemption() {
+	const pr = danger.github?.pr;
+	if (!pr) return null;
+	const additions = pr.additions ?? 0;
+	const deletions = pr.deletions ?? 0;
+	if (additions !== 0 || deletions <= 0) return null;
+	const changedFiles = pr.changed_files ?? 0;
+	return `Pure-deletion PR (${deletions} lines removed across ${changedFiles} files). Size cap skipped — reviewers should spot-check the file list, not read line-by-line.`;
+}
+
+/**
+ * Label-based exemption carve-out (c). Returns the exemption message if the
+ * PR carries the 'size-cap-exempt' label AND author is a trusted association
+ * (MEMBER / OWNER / COLLABORATOR), or null if not exempt.
+ */
+function checkLabelExemption(reviewable) {
+	const pr = danger.github?.pr;
+	if (!pr) return null;
+	const labels = (danger.github?.issue?.labels ?? []).map((l) => l.name);
+	if (!labels.includes('size-cap-exempt')) return null;
+	const authorAssoc = pr.author_association ?? 'NONE';
+	if (!['MEMBER', 'OWNER', 'COLLABORATOR'].includes(authorAssoc)) return null;
+	const authorLogin = pr.user?.login ?? '?';
+	return `Size cap exempted via 'size-cap-exempt' label (author: ${authorLogin}, association: ${authorAssoc}). Reviewable: ${reviewable} lines. Reviewer is responsible for the manual scope review.`;
+}
+
+/**
+ * Surface the format-only LOC subtraction as a warn for reviewer transparency.
+ * No-op when no format-only commits matched.
+ */
+function reportFormatOnlySubtraction(formatOnly) {
+	if (formatOnly.total <= 0) return;
+	const list = formatOnly.matched.map((m) => `\`${m.sha}\` (${m.loc} LOC)`).join(', ');
+	warn(
+		`Excluding ${formatOnly.total} format-only LOC from size cap (commits matching \`^style(<scope>): prettier|format ...\`): ${list}. Reviewer can verify by re-running \`npm run format\` on the PR head — diff should be empty.`
+	);
+}
+
 function reportPrSize(lineCount, generated, formatOnly) {
 	const reviewable = Math.max(0, lineCount - formatOnly.total);
-	if (formatOnly.total > 0) {
-		const list = formatOnly.matched.map((m) => `\`${m.sha}\` (${m.loc} LOC)`).join(', ');
-		warn(
-			`Excluding ${formatOnly.total} format-only LOC from size cap (commits matching \`^style(<scope>): prettier|format ...\`): ${list}. Reviewer can verify by re-running \`npm run format\` on the PR head — diff should be empty.`
-		);
+	reportFormatOnlySubtraction(formatOnly);
+
+	const pureDelMsg = checkPureDeletionExemption();
+	if (pureDelMsg) {
+		message(pureDelMsg);
+		return;
 	}
+
+	const labelMsg = checkLabelExemption(reviewable);
+	if (labelMsg) {
+		message(labelMsg);
+		return;
+	}
+
 	if (reviewable > PR_SIZE_HARD) {
 		fail(
-			`PR is ${reviewable} reviewable lines (> ${PR_SIZE_HARD}). Split into smaller PRs — reviewers cannot meaningfully review at this scale. Generated files excluded: ${generated} lines. Format-only excluded: ${formatOnly.total} lines.`
+			`PR is ${reviewable} reviewable lines (> ${PR_SIZE_HARD}). Split into smaller PRs — reviewers cannot meaningfully review at this scale. Generated files excluded: ${generated} lines. Format-only excluded: ${formatOnly.total} lines.\n\nLegitimate exemption paths: (a) pure-deletion PRs auto-exempt (no additions); (b) repo-trusted author (MEMBER/OWNER/COLLABORATOR) can apply the 'size-cap-exempt' label and re-run CI.`
 		);
 		return;
 	}
