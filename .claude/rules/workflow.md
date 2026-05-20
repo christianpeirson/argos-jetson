@@ -25,9 +25,9 @@ Plugin source: `sveltejs/ai-tools` marketplace, plugin name `svelte`, v1.0.4+. O
 5. **`LSP hover`** (POST-edit) — Confirm TypeScript narrowed correctly on a sample of the migrated consumer sites. One LSP call per site beats running `svelte-check` (~650 MB RAM, 30+ s).
 6. **`mcp__plugin_svelte_svelte__playground-link`** — Ask user if they want one ONLY when no project file was modified. NEVER generate when code was written to project files (the tool description forbids it).
 
-## Rule 4 — GitHub Access via github-mcp-server Only (HARD-LOCKED)
+## Rule 4 — GitHub Access via github-mcp-server Preferred
 
-For ANY GitHub API operation: use `mcp__github__*` tools (github-mcp-server, remote at `https://api.githubcopilot.com/mcp`) ONLY. Mechanically enforced — `mcp__octocode__github*` is in `.claude/settings.json` `permissions.deny` AND blocked by PreToolUse hook `scripts/claude-hooks/block-octocode-github.sh`. `gh` CLI is gated by hook `scripts/claude-hooks/gh-cli-restrict.sh` to a narrow allow-list. `WebFetch` on `github.com/*` is blocked by global hook `~/.claude/hooks/github-url-block.sh`.
+For GitHub API operations: prefer `mcp__github__*` tools (github-mcp-server, remote at `https://api.githubcopilot.com/mcp`) for consistency, auditability, and rate-limit transparency. Mechanically enforced for `mcp__octocode__github*` — `.claude/settings.json` `permissions.deny` AND PreToolUse hook `scripts/claude-hooks/block-octocode-github.sh` both block it. `WebFetch` on `github.com/*` is blocked by global hook `~/.claude/hooks/github-url-block.sh`. The previous `gh` CLI gate (`scripts/claude-hooks/gh-cli-restrict.sh`) was retired 2026-05-20 — `gh` CLI is now available as a fallback without hook-level enforcement (decision: enable RTK shell-command rewriting, which collided with the gate; MCP remains the documented preferred path).
 
 **Routing matrix:**
 
@@ -42,17 +42,17 @@ For ANY GitHub API operation: use `mcp__github__*` tools (github-mcp-server, rem
 | Releases / tags                  | `mcp__github__list_releases` / `get_latest_release` / `get_release_by_tag` / `list_tags` / `get_tag`                           |
 | CI / runs                        | `mcp__github__` actions toolset                                                                                                |
 
-**`gh` CLI allow-list** (gaps github-mcp-server doesn't cover):
+**`gh` CLI** (gaps github-mcp-server doesn't cover are most important for):
 
 - `gh workflow run|list|view` — workflow dispatch (github MCP `actions` toolset is read-only re: dispatch)
 - `gh secret set|list|delete` — secret management (no MCP surface)
 - `gh auth status|login|logout` — auth probe
 
-Anything else (`gh pr`, `gh issue`, `gh api`, `gh release`, `gh repo`, `gh run`) is denied by the hook.
+Other `gh` subcommands (`gh pr`, `gh issue`, `gh api`, `gh release`, `gh repo`, `gh run`) are available but should be the fallback — MCP is preferred because calls are logged + rate-limit-instrumented by the Anthropic surface and the audit trail across sessions is consistent.
 
 **`git` CLI** is fully allowed for local working-tree ops (commit, push, fetch, pull, branch, rebase, checkout, tag) — github MCP cannot replace local git.
 
-**Bash hooks** (`scripts/claude-hooks/*.sh`) MAY use any `gh` subcommand internally because hooks run in bash and have no access to MCP tools. They bypass `gh-cli-restrict.sh` by setting `CLAUDE_HOOK_INTERNAL=1` before invoking `gh` (see `scripts/claude-hooks/post-push-pr-flow.sh`).
+**Bash hooks** (`scripts/claude-hooks/*.sh`) MAY use any `gh` subcommand internally because hooks run in bash and have no access to MCP tools. The legacy `CLAUDE_HOOK_INTERNAL=1` convention (still set in `post-push-pr-flow.sh`) is now dead — left for backward compatibility but no longer required.
 
 **octocode** is kept ONLY for `lsp*` (LSP findReferences/hover/gotoDefinition/callHierarchy) and `local*` (localFindFiles/localSearchCode/localGetFileContent/localViewStructure) namespaces — these are NOT GitHub operations and are out of scope.
 

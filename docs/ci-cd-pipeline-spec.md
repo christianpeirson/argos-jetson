@@ -296,7 +296,7 @@ Net coverage: 2 fallow firings (pre-push + CI) instead of 3. Defense remains lay
 
 - **Layer 1 — `.claude/settings.json` `permissions.deny`** lists `mcp__octocode__githubGetFileContent|ViewRepoStructure|SearchCode|SearchRepositories|SearchPullRequests`. Denied tools never reach the model.
 - **Layer 2 — PreToolUse hook `scripts/claude-hooks/block-octocode-github.sh`** matches `mcp__octocode__github*` and emits `permissionDecision:"deny"` with the routing matrix. Catches anything that slips a glob match.
-- **Layer 3 — PreToolUse hook `scripts/claude-hooks/gh-cli-restrict.sh`** matches `Bash`, anchors to `^[[:space:]]*gh[[:space:]]+`, allows only `workflow|secret|auth` subcommands. Bash hooks bypass via `CLAUDE_HOOK_INTERNAL=1` env-var seal (hooks have no MCP access — `scripts/claude-hooks/post-push-pr-flow.sh:46` uses this seal for its `gh pr view` PR-identity probe).
+- **Layer 3 — retired 2026-05-20.** The previous PreToolUse hook `scripts/claude-hooks/gh-cli-restrict.sh` (anchored `Bash` to `^[[:space:]]*gh[[:space:]]+`, allow-list `workflow|secret|auth`) was removed when RTK shell-rewriting was adopted — RTK's `rtk gh pr list` calls `gh pr list` internally, which the gate denied. The `CLAUDE_HOOK_INTERNAL=1` seal still appears in `scripts/claude-hooks/post-push-pr-flow.sh:46` but is now dead code (no remaining hook consumes it). `gh` CLI is unrestricted at the hook layer; MCP-preferred policy is documented in `.claude/rules/workflow.md` Rule 4.
 - **Layer 4 — global hook `~/.claude/hooks/github-url-block.sh`** denies `WebFetch` + raw curl on `github.com/*`, allows release-asset CDN + `cli.github.com`.
 
 (d) Allow-list for `gh` CLI (gaps github-mcp-server doesn't cover):

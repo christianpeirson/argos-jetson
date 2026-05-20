@@ -29,15 +29,6 @@
 						"command": "bash ${CLAUDE_PROJECT_DIR}/scripts/claude-hooks/block-octocode-github.sh"
 					}
 				]
-			},
-			{
-				"matcher": "Bash",
-				"hooks": [
-					{
-						"type": "command",
-						"command": "bash ${CLAUDE_PROJECT_DIR}/scripts/claude-hooks/gh-cli-restrict.sh"
-					}
-				]
 			}
 		],
 		"PostToolUse": [
