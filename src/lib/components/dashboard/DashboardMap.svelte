@@ -19,7 +19,6 @@
 
 	import DeviceSymbolLayer from '$lib/map/components/DeviceSymbolLayer.svelte';
 	import SatelliteLayer from '$lib/map/components/SatelliteLayer.svelte';
-	import { mapInstance } from '$lib/map/map-instance.svelte';
 	import {
 		RF_CENTROID_HALO_LAYER_ID,
 		RF_CENTROID_LAYER_ID,
@@ -49,6 +48,7 @@
 		rfPathCasingLayer,
 		rfPathLayer
 	} from '$lib/map/layers/rf-path-layer';
+	import { mapInstance } from '$lib/map/map-instance.svelte';
 	import { isolatedDeviceMAC } from '$lib/stores/dashboard/dashboard-store';
 	import { gpsStore } from '$lib/stores/tactical-map/gps-store';
 
