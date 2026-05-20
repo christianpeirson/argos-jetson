@@ -37,6 +37,9 @@
 		},
 		"tessl/npm-svelte-check": {
 			"version": "4.0.0"
+		},
+		"tdg-personal/skill-comply": {
+			"version": "0.1.0"
 		}
 	}
 }
