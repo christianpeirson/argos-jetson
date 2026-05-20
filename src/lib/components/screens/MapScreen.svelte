@@ -20,9 +20,7 @@
 
 	import { onDestroy, onMount } from 'svelte';
 	import {
-		CircleLayer,
 		GeoJSONSource,
-		HeatmapLayer,
 		LineLayer,
 		MapLibre,
 		Marker,
@@ -30,30 +28,10 @@
 	} from 'svelte-maplibre-gl';
 
 	import LayerChips from '$lib/components/screens/parts/LayerChips.svelte';
-	import {
-		RF_CENTROID_HALO_LAYER_ID,
-		RF_CENTROID_LAYER_ID,
-		RF_CENTROID_SOURCE_ID,
-		rfCentroidHaloLayer,
-		rfCentroidLayer
-	} from '$lib/map/layers/rf-centroid-layer';
-	import {
-		RF_HEATMAP_LAYER_ID,
-		RF_HEATMAP_SOURCE_ID,
-		rfHeatmapLayer
-	} from '$lib/map/layers/rf-heatmap-layer';
-	import {
-		RF_HIGHLIGHT_RAYS_LAYER_ID,
-		RF_HIGHLIGHT_RAYS_SOURCE_ID,
-		rfHighlightRaysLayer
-	} from '$lib/map/layers/rf-highlight-layer';
-	import {
-		RF_PATH_CASING_LAYER_ID,
-		RF_PATH_LAYER_ID,
-		RF_PATH_SOURCE_ID,
-		rfPathCasingLayer,
-		rfPathLayer
-	} from '$lib/map/layers/rf-path-layer';
+	import RfCentroidLayer from '$lib/map/components/RfCentroidLayer.svelte';
+	import RfHeatmapLayer from '$lib/map/components/RfHeatmapLayer.svelte';
+	import RfHighlightLayer from '$lib/map/components/RfHighlightLayer.svelte';
+	import RfPathLayer from '$lib/map/components/RfPathLayer.svelte';
 	import { detectionsStore } from '$lib/state/detections.svelte';
 	import {
 		overlayCentroids,
@@ -135,56 +113,18 @@
 		<NavigationControl position="bottom-right" showCompass={false} />
 
 		{#if overlayHeatmap.value}
-			<GeoJSONSource id={RF_HEATMAP_SOURCE_ID} data={rfVisualization.features.heatmap}>
-				<HeatmapLayer
-					id={RF_HEATMAP_LAYER_ID}
-					layout={rfHeatmapLayer.layout}
-					paint={rfHeatmapLayer.paint}
-				/>
-			</GeoJSONSource>
+			<RfHeatmapLayer data={rfVisualization.features.heatmap} />
 		{/if}
 
 		{#if overlayPath.value}
-			<GeoJSONSource
-				id={RF_PATH_SOURCE_ID}
-				data={rfVisualization.features.path}
-				lineMetrics={true}
-			>
-				<LineLayer
-					id={RF_PATH_CASING_LAYER_ID}
-					layout={rfPathCasingLayer.layout}
-					paint={rfPathCasingLayer.paint}
-				/>
-				<LineLayer
-					id={RF_PATH_LAYER_ID}
-					layout={rfPathLayer.layout}
-					paint={rfPathLayer.paint}
-				/>
-			</GeoJSONSource>
+			<RfPathLayer data={rfVisualization.features.path} />
 		{/if}
 
 		{#if overlayCentroids.value}
-			<GeoJSONSource id={RF_CENTROID_SOURCE_ID} data={rfVisualization.features.centroids}>
-				<CircleLayer
-					id={RF_CENTROID_HALO_LAYER_ID}
-					layout={rfCentroidHaloLayer.layout}
-					paint={rfCentroidHaloLayer.paint}
-				/>
-				<CircleLayer
-					id={RF_CENTROID_LAYER_ID}
-					layout={rfCentroidLayer.layout}
-					paint={rfCentroidLayer.paint}
-				/>
-			</GeoJSONSource>
+			<RfCentroidLayer data={rfVisualization.features.centroids} />
 		{/if}
 
-		<GeoJSONSource id={RF_HIGHLIGHT_RAYS_SOURCE_ID} data={rfVisualization.selectedObservations}>
-			<LineLayer
-				id={RF_HIGHLIGHT_RAYS_LAYER_ID}
-				layout={rfHighlightRaysLayer.layout}
-				paint={rfHighlightRaysLayer.paint}
-			/>
-		</GeoJSONSource>
+		<RfHighlightLayer raysData={rfVisualization.selectedObservations} />
 
 		{#if overlayDetections.value}
 			<GeoJSONSource id="mk2-detection-bearings" data={bearingFC}>

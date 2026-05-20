@@ -4,7 +4,10 @@ import type { LngLatLike } from 'maplibre-gl';
 import type maplibregl from 'maplibre-gl';
 import { fromStore } from 'svelte/store';
 
-import { RF_CENTROID_HALO_LAYER_ID, RF_CENTROID_LAYER_ID } from '$lib/map/layers/rf-centroid-layer';
+import {
+	RF_CENTROID_HALO_LAYER_ID,
+	RF_CENTROID_LAYER_ID
+} from '$lib/map/components/RfCentroidLayer.svelte';
 import { promotedDevices, visibilityMode } from '$lib/map/visibility-engine';
 import { selectDevice } from '$lib/stores/dashboard/agent-context-store';
 import {
