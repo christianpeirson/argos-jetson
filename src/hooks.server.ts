@@ -232,14 +232,6 @@ function runSecurityPipeline(event: Parameters<Handle>[0]['event']): Response | 
  * wraps this handle so the headers cover every return path (401/413/429
  * short-circuits + rdio proxy + normal resolve) uniformly.
  */
-/**
- * Port-aware UI split — see memory feedback_port_ui_split_nonnegotiable.md.
- * :5173 (argos-final) serves the legacy Argos shell (V1); :5174 (argos-dev)
- * serves Mk II (V2); :5175 (argos-v3) serves the NVIDIA UI (V3). Done at the
- * hooks layer (not in +page.server.ts) because dashboard/+page.ts has
- * `ssr: false`, which makes server-load redirects unreliable. Hooks run on
- * every request regardless of ssr setting.
- */
 function redirect307(location: string): Response {
 	return new Response(null, { status: 307, headers: { location } });
 }
@@ -247,7 +239,6 @@ function redirect307(location: string): Response {
 function rootRedirectTarget(): string {
 	const port = process.env.PORT;
 	if (port === '5174') return '/dashboard/mk2/overview';
-	if (port === '5175') return '/dashboard/v3';
 	return '/dashboard';
 }
 
@@ -264,16 +255,9 @@ function mk2DashboardRedirect(event: Parameters<Handle>[0]['event']): Response |
 	return redirect307('/dashboard/mk2/overview');
 }
 
-function v3DashboardRedirect(event: Parameters<Handle>[0]['event']): Response | null {
-	if (process.env.PORT !== '5175') return null;
-	const p = event.url.pathname;
-	if (p !== '/dashboard' && p !== '/dashboard/') return null;
-	return redirect307('/dashboard/v3');
-}
-
 /** Run the port-aware UI redirect chain. Returns a redirect Response or null. */
 function uiRedirect(event: Parameters<Handle>[0]['event']): Response | null {
-	return rootRedirect(event) ?? mk2DashboardRedirect(event) ?? v3DashboardRedirect(event);
+	return rootRedirect(event) ?? mk2DashboardRedirect(event);
 }
 
 const innerHandle: Handle = async ({ event, resolve }) => {
