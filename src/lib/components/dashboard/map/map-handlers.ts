@@ -9,7 +9,6 @@ import type { Feature, FeatureCollection } from 'geojson';
 import type { LngLatLike } from 'maplibre-gl';
 import maplibregl from 'maplibre-gl';
 
-import type { SymbolLayer } from '$lib/map/layers/symbol-layer';
 import { SymbolFactory } from '$lib/map/symbols/symbol-factory';
 import type { DeviceClassification } from '$lib/stores/tactical-map/kismet-store';
 import { parseCotToFeature } from '$lib/utils/cot-parser';
@@ -87,10 +86,8 @@ function resolveLayerVis(
 export function syncLayerVisibility(
 	map: maplibregl.Map,
 	vis: Record<string, boolean>,
-	isoMac: string | null,
-	symbolLayer?: SymbolLayer
+	isoMac: string | null
 ): void {
-	if (symbolLayer) symbolLayer.setVisible(vis.milSyms !== false);
 	for (const [key, layerIds] of Object.entries(LAYER_MAP)) {
 		const visible = resolveLayerVis(key, vis, isoMac);
 		for (const id of layerIds) setLayerVisibility(map, id, visible);
@@ -143,34 +140,7 @@ export function syncThemePaint(map: maplibregl.Map): void {
 	applyBuildingPaint(map);
 }
 
-// ── Symbol layer update ──
-
-let _prevDeviceCount = -1;
-let _prevAffiliationSize = -1;
-let _prevCotCount = -1;
-let _prevDeviceFeatures: FeatureCollection | null = null;
-
-// fallow-ignore-next-line complexity
-function hasSymbolInputChanged(
-	devCount: number,
-	affSize: number,
-	cotCount: number,
-	deviceGeoJSON: FeatureCollection
-): boolean {
-	if (
-		devCount === _prevDeviceCount &&
-		affSize === _prevAffiliationSize &&
-		cotCount === _prevCotCount &&
-		deviceGeoJSON === _prevDeviceFeatures
-	) {
-		return false;
-	}
-	_prevDeviceCount = devCount;
-	_prevAffiliationSize = affSize;
-	_prevCotCount = cotCount;
-	_prevDeviceFeatures = deviceGeoJSON;
-	return true;
-}
+// ── Symbol feature builder ──
 
 function resolveAffiliation(
 	props: Record<string, unknown>,
@@ -202,21 +172,16 @@ function parseCotFeatures(cotMessages: string[]): Feature[] {
 	return cotMessages.map((xml) => parseCotToFeature(xml)).filter((f): f is Feature => f !== null);
 }
 
-export function updateSymbolLayer(
-	symbolLayer: SymbolLayer,
+export function buildMilSymFC(
 	deviceGeoJSON: FeatureCollection,
 	affiliations: Map<string, DeviceClassification>,
 	cotMessages: string[]
-): void {
-	const devCount = deviceGeoJSON?.features.length ?? 0;
-	if (!hasSymbolInputChanged(devCount, affiliations.size, cotMessages.length, deviceGeoJSON)) {
-		return;
-	}
+): FeatureCollection {
 	const deviceFeatures = deviceGeoJSON
 		? deviceGeoJSON.features.map((f) => mapDeviceToSymbol(f, affiliations))
 		: [];
 	const cotFeatures = parseCotFeatures(cotMessages);
-	symbolLayer.update([...deviceFeatures, ...cotFeatures]);
+	return { type: 'FeatureCollection', features: [...deviceFeatures, ...cotFeatures] };
 }
 
 // ── Cell tower fetch ──

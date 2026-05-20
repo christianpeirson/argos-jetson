@@ -1,15 +1,428 @@
 {
+	"finding_counts": {
+		"dangerfile.js": {
+			"complexity_critical": {
+				"count": 2
+			},
+			"complexity_high": {
+				"count": 2
+			},
+			"crap_critical": {
+				"count": 2
+			},
+			"crap_high": {
+				"count": 2
+			},
+			"crap_moderate": {
+				"count": 2
+			}
+		},
+		"src/lib/components/chassis/LeftRail.svelte": {
+			"crap_moderate": {
+				"count": 2
+			}
+		},
+		"src/lib/components/chassis/tools-flyout-focus.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/components/dashboard/views/GnuRadioView.svelte": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/hackrf/sweep-manager/buffer-parser.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/hackrf/sweep-manager/error-recovery.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/hackrf/sweep-manager/frequency-utils.ts": {
+			"crap_moderate": {
+				"count": 2
+			}
+		},
+		"src/lib/hackrf/sweep-manager/process-lifecycle.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/hackrf/sweep-manager/sweep-health-checker.ts": {
+			"crap_moderate": {
+				"count": 2
+			}
+		},
+		"src/lib/map/symbols/symbol-factory.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/map/visibility-engine.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/server/api/create-handler.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/server/db/geo.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/server/db/rf-aggregation.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/server/db/signal-repository.ts": {
+			"crap_moderate": {
+				"count": 2
+			}
+		},
+		"src/lib/server/hackrf/sweep-coordinator.ts": {
+			"crap_moderate": {
+				"count": 3
+			}
+		},
+		"src/lib/server/hackrf/sweep-cycle-init.ts": {
+			"crap_moderate": {
+				"count": 4
+			}
+		},
+		"src/lib/server/hardware/detection/network-detector.ts": {
+			"crap_moderate": {
+				"count": 2
+			}
+		},
+		"src/lib/server/hardware/detection/serial-detector.ts": {
+			"crap_moderate": {
+				"count": 3
+			}
+		},
+		"src/lib/server/hardware/detection/usb-detector.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/server/hardware/detection/usb-sdr-detectors.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/server/hardware/hardware-registry.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/server/hardware/resource-manager.ts": {
+			"crap_moderate": {
+				"count": 2
+			}
+		},
+		"src/lib/server/initialization/bootstrap.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/server/kismet/alfa-detector.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/server/kismet/kismet-device-transform.ts": {
+			"crap_moderate": {
+				"count": 2
+			}
+		},
+		"src/lib/server/kismet/kismet-poller.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/server/kismet/kismet-proxy-transform.ts": {
+			"crap_moderate": {
+				"count": 2
+			}
+		},
+		"src/lib/server/kismet/kismet-proxy.ts": {
+			"crap_moderate": {
+				"count": 3
+			}
+		},
+		"src/lib/server/kismet/web-socket-manager.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/server/mcp/servers/streaming-inspector-tools.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/server/mcp/servers/streaming-inspector.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/server/middleware/rate-limit-middleware.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/server/services/bluedragon/decoders.ts": {
+			"crap_moderate": {
+				"count": 7
+			}
+		},
+		"src/lib/server/services/bluedragon/device-aggregator.ts": {
+			"crap_moderate": {
+				"count": 3
+			}
+		},
+		"src/lib/server/services/bluedragon/pcap-stream-parser.ts": {
+			"crap_moderate": {
+				"count": 4
+			}
+		},
+		"src/lib/server/services/bluedragon/pid-fifo.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/server/services/bluedragon/signal-persistence.ts": {
+			"crap_moderate": {
+				"count": 2
+			}
+		},
+		"src/lib/server/services/gnu-radio-vnc/gnu-radio-vnc-control-service.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/server/services/gps/gps-data-parser.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/server/services/gps/gps-position-service.ts": {
+			"crap_moderate": {
+				"count": 2
+			}
+		},
+		"src/lib/server/services/gsm-evil/gsm-evil-control-service.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/server/services/gsm-evil/gsm-evil-stop-helpers.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/server/services/gsm-evil/gsm-scan-helpers.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/server/services/gsm-evil/gsm-scan-service.ts": {
+			"crap_moderate": {
+				"count": 2
+			}
+		},
+		"src/lib/server/services/kismet-service-transform.ts": {
+			"crap_moderate": {
+				"count": 2
+			}
+		},
+		"src/lib/server/services/kismet.service.ts": {
+			"crap_moderate": {
+				"count": 2
+			}
+		},
+		"src/lib/server/services/kismet/kismet-control-service-extended.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/server/services/kismet/kismet-control-service.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/server/services/kismet/kismet-health.ts": {
+			"crap_moderate": {
+				"count": 2
+			}
+		},
+		"src/lib/server/services/reports/bluetooth-scan.ts": {
+			"crap_moderate": {
+				"count": 2
+			}
+		},
+		"src/lib/server/services/reports/emcon-diff.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/server/services/reports/mission-store.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/server/services/reports/peak-hold-accumulate.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/server/services/reports/peak-hold-font.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/server/services/reports/peak-hold-renderer.ts": {
+			"crap_moderate": {
+				"count": 3
+			}
+		},
+		"src/lib/server/services/reports/spectrum-features.ts": {
+			"crap_moderate": {
+				"count": 2
+			}
+		},
+		"src/lib/server/services/rf/session-export.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/server/services/session/session-tracker.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/server/services/sightline/sightline-control-service.ts": {
+			"crap_moderate": {
+				"count": 3
+			}
+		},
+		"src/lib/server/services/sparrow/sparrow-proxy-service.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/server/services/spiderfoot/spiderfoot-control-service.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/server/services/vnc-common/spawn-helpers.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/server/services/weather/metar-parse.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/server/services/webtak-vnc/webtak-vnc-control-service.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/server/services/wigletotak/wigletotak-control-service.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/server/spectrum/b205-source.ts": {
+			"crap_moderate": {
+				"count": 2
+			}
+		},
+		"src/lib/server/spectrum/factory.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/server/spectrum/hackrf-source.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/server/tak/tak-package-parser.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/server/tak/tak-service.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/stores/dashboard/pinned-tools-store.svelte.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/stores/persisted-writable.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/utils/fetch-json.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/utils/logger.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/lib/utils/validation-error.ts": {
+			"crap_moderate": {
+				"count": 2
+			}
+		},
+		"src/routes/api/gsm-evil/tower-location/+server.ts": {
+			"crap_moderate": {
+				"count": 2
+			}
+		},
+		"src/routes/api/system/docker/[action]/+server.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		},
+		"src/routes/api/webtak-vnc/control/+server.ts": {
+			"crap_moderate": {
+				"count": 1
+			}
+		}
+	},
 	"runtime_coverage_findings": [],
 	"target_keys": [
-		"src/lib/stores/dashboard/agent-context-store.ts:dead code",
-		"src/lib/websocket/base.ts:dead code",
-		"src/lib/server/services/gps/gps-data-parser.ts:dead code",
-		"src/lib/server/terminal/session.ts:dead code",
-		"src/lib/stores/tactical-map/hackrf-store.ts:dead code",
+		"src/lib/components/chassis/drawer-clamp.ts:dead code",
+		"src/lib/server/instrumentation.ts:dead code",
+		"src/lib/server/services/bluedragon/decoders.ts:dead code",
+		"src/lib/server/services/system/journald-logs.ts:dead code",
+		"src/lib/server/services/rf/signal-sources.ts:dead code",
+		"src/lib/server/spectrum/b205-source.ts:dead code",
+		"src/lib/server/services/rf/signal-bus.ts:dead code",
+		"src/lib/schemas/hardware.ts:dead code",
+		"src/lib/server/middleware/rate-limit-middleware.ts:dead code",
 		"src/lib/components/dashboard/panels/devices/device-filters.ts:untested risk",
-		"src/lib/server/services/reports/peak-hold-font.ts:dead code",
-		"src/lib/server/services/bluedragon/pcap-stream-parser.ts:high impact",
 		"src/lib/components/dashboard/panels/devices/device-formatters.ts:high impact",
+		"src/lib/hackrf/sweep-manager/error-analysis.ts:dead code",
+		"src/lib/server/services/bluedragon/pcap-stream-parser.ts:untested risk",
 		"src/lib/state/kismet.svelte.ts:untested risk"
 	]
 }

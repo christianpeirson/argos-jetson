@@ -18,6 +18,8 @@
 		SymbolLayer as MapLibreSymbolLayer
 	} from 'svelte-maplibre-gl';
 
+	import DeviceSymbolLayer from '$lib/map/components/DeviceSymbolLayer.svelte';
+	import SatelliteLayer from '$lib/map/components/SatelliteLayer.svelte';
 	import {
 		RF_CENTROID_HALO_LAYER_ID,
 		RF_CENTROID_LAYER_ID,
@@ -78,6 +80,14 @@
 			onload={ms.handleMapLoad}
 			onerror={(e) => console.error('[MapLibre] map error', e.error ?? e)}
 		>
+			{#if ms.satelliteUrl}
+				<SatelliteLayer
+					urlTemplate={ms.satelliteUrl}
+					attribution={ms.satelliteAttribution}
+					visible={ms.satelliteVisible}
+				/>
+			{/if}
+
 			<GeoJSONSource id="detection-range-src" data={ms.detectionRangeGeoJSON}>
 				<FillLayer
 					id="detection-range-fill"
@@ -458,6 +468,8 @@
 					onclick={ms.handleDeviceCircleClick}
 				/>
 			</GeoJSONSource>
+
+			<DeviceSymbolLayer data={ms.milSymFC} visible={ms.milSymsVisible} />
 
 			{#if ms.towerPopupLngLat && ms.towerPopupContent}
 				<Popup

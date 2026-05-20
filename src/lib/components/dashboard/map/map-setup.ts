@@ -4,16 +4,8 @@
  */
 import type maplibregl from 'maplibre-gl';
 
-import { SatelliteLayer } from '$lib/map/layers/satellite-layer';
-import { SymbolLayer } from '$lib/map/layers/symbol-layer';
-
 import { setLayerVisibility } from './map-handlers-helpers';
 import { LAYER_MAP } from './map-helpers';
-
-export interface MapSetupResult {
-	satLayer: SatelliteLayer;
-	symbolLayer: SymbolLayer;
-}
 
 /** Clickable layer IDs used for hit-testing and cursor changes. */
 const CLICKABLE_LAYERS = [
@@ -158,18 +150,16 @@ function applyInitialLayerVisibility(
 }
 
 /**
- * Initialize satellite + symbol layers, add Stadia-dependent vector layers,
- * and set up cursor interaction handlers.
+ * Add Stadia-dependent vector layers and set up click + cursor interaction
+ * handlers. Satellite + mil-sym layers are now Svelte components mounted in
+ * DashboardMap.svelte directly.
  */
 export function setupMap(
 	mapInstance: maplibregl.Map,
 	onDeviceClick: (e: maplibregl.MapMouseEvent) => void,
 	onBackgroundClick: (e: maplibregl.MapMouseEvent) => void,
 	layerVisibility: Record<string, boolean>
-): MapSetupResult {
-	const satLayer = new SatelliteLayer(mapInstance);
-	const symbolLayer = new SymbolLayer(mapInstance);
-
+): void {
 	registerClickHandlers(mapInstance, onDeviceClick, onBackgroundClick);
 
 	// Stadia-dependent vector layers (not available on Google satellite fallback)
@@ -180,6 +170,4 @@ export function setupMap(
 
 	registerCursorHandlers(mapInstance);
 	applyInitialLayerVisibility(mapInstance, layerVisibility);
-
-	return { satLayer, symbolLayer };
 }

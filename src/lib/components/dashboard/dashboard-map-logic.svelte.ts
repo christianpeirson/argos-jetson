@@ -5,8 +5,6 @@ import type maplibregl from 'maplibre-gl';
 import { fromStore } from 'svelte/store';
 
 import { RF_CENTROID_HALO_LAYER_ID, RF_CENTROID_LAYER_ID } from '$lib/map/layers/rf-centroid-layer';
-import type { SatelliteLayer } from '$lib/map/layers/satellite-layer';
-import type { SymbolLayer } from '$lib/map/layers/symbol-layer';
 import { promotedDevices, visibilityMode } from '$lib/map/visibility-engine';
 import { selectDevice } from '$lib/stores/dashboard/agent-context-store';
 import {
@@ -29,6 +27,7 @@ import { MAP_UI_COLORS } from './map/map-colors';
 import { buildConnectionLinesGeoJSON, buildDeviceGeoJSON } from './map/map-geojson';
 import { createGpsDerivedState, hasRealGPSFix } from './map/map-gps-derived.svelte';
 import {
+	buildMilSymFC,
 	type CellTowerFetchState,
 	handleClusterClick as onClusterClick,
 	handleDeviceClick as deviceClickHandler,
@@ -38,8 +37,7 @@ import {
 	syncClusterVisibility,
 	syncLayerVisibility,
 	syncThemePaint,
-	type TowerPopupState,
-	updateSymbolLayer
+	type TowerPopupState
 } from './map/map-handlers';
 import { setupMap } from './map/map-setup';
 import { applyDimOthers } from './map/rf-highlight-paint';
@@ -64,8 +62,7 @@ export function createMapState() {
 	const rfOverlays$ = fromStore(rfOverlays);
 
 	let map: maplibregl.Map | undefined = $state();
-	let symbolLayer: SymbolLayer | undefined = $state();
-	let satLayer: SatelliteLayer | undefined = $state();
+	let mapLoaded = $state(false);
 	let initialViewSet = false;
 	let cssReady = $state(false);
 	let stadiaChecked = $state(false);
@@ -242,23 +239,19 @@ export function createMapState() {
 			cssReady = true;
 		});
 	});
-	$effect(() => {
-		if (!satLayer) return;
-		const settings = mapS$.current;
-		if (settings.type === 'satellite') {
-			satLayer.add(settings.url, settings.attribution);
-			satLayer.setVisible(true);
-		} else satLayer.setVisible(false);
-	});
-	$effect(() => {
-		if (symbolLayer)
-			updateSymbolLayer(
-				symbolLayer,
-				deviceGeoJSON,
-				kismet$.current.deviceAffiliations,
-				takCot$.current
-			);
-	});
+	const milSymFC: FeatureCollection = $derived(
+		buildMilSymFC(deviceGeoJSON, kismet$.current.deviceAffiliations, takCot$.current)
+	);
+	const milSymsVisible: boolean = $derived(layerVis$.current.milSyms !== false);
+	const satelliteVisible: boolean = $derived(mapS$.current.type === 'satellite');
+	const satelliteUrl: string = $derived(
+		mapS$.current.type === 'satellite' ? mapS$.current.url : ''
+	);
+	const satelliteAttribution: string = $derived(
+		mapS$.current.type === 'satellite'
+			? (mapS$.current.attribution ?? '© Google')
+			: '© Google'
+	);
 	$effect(() => {
 		const { lat, lon } = gpsDerived.gps$.current.position;
 		if (initialViewSet || !map) return;
@@ -277,7 +270,7 @@ export function createMapState() {
 		});
 	});
 	$effect(() => {
-		if (map) syncLayerVisibility(map, layerVis$.current, isolatedMAC$.current, symbolLayer);
+		if (map) syncLayerVisibility(map, layerVis$.current, isolatedMAC$.current);
 	});
 	$effect(() => {
 		if (map)
@@ -323,17 +316,11 @@ export function createMapState() {
 		else isolateDevice(null);
 	}
 	function handleMapLoad() {
-		if (!map || satLayer) return;
+		if (!map || mapLoaded) return;
 		const m = map;
 		const init = () => {
-			const r = setupMap(
-				m,
-				(ev) => applyDeviceClick(m, ev),
-				closeDevicePopup,
-				layerVis$.current
-			);
-			satLayer = r.satLayer;
-			symbolLayer = r.symbolLayer;
+			setupMap(m, (ev) => applyDeviceClick(m, ev), closeDevicePopup, layerVis$.current);
+			mapLoaded = true;
 			// Feed current zoom into the RF filter so the aggregation endpoint
 			// can pick an H3 resolution that matches the viewport. Seeded on
 			// load and updated on zoomend so pan-only interactions don't refetch.
@@ -416,6 +403,21 @@ export function createMapState() {
 		},
 		get deviceGeoJSON() {
 			return deviceGeoJSON;
+		},
+		get milSymFC() {
+			return milSymFC;
+		},
+		get milSymsVisible() {
+			return milSymsVisible;
+		},
+		get satelliteVisible() {
+			return satelliteVisible;
+		},
+		get satelliteUrl() {
+			return satelliteUrl;
+		},
+		get satelliteAttribution() {
+			return satelliteAttribution;
 		},
 		get connectionLinesGeoJSON() {
 			return connectionLinesGeoJSON;
