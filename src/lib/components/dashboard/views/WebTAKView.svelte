@@ -16,6 +16,7 @@
 	 */
 
 	import { activeView } from '$lib/stores/dashboard/dashboard-store';
+	import { fetchJSON } from '$lib/utils/fetch-json';
 
 	import ToolViewWrapper from './ToolViewWrapper.svelte';
 	import WebtakUrlForm from './webtak/webtak-url-form.svelte';
@@ -45,21 +46,23 @@
 
 	// fallow-ignore-next-line complexity
 	async function restoreExistingSession(isCancelled: () => boolean): Promise<void> {
-		try {
-			const res = await fetch(CONTROL_ENDPOINT, {
-				method: 'POST',
-				headers: { 'content-type': 'application/json' },
-				body: JSON.stringify({ action: 'status' })
-			});
-			if (isCancelled()) return;
-			const body = await res.json();
-			if (!body.isRunning || !body.currentUrl) return;
-			wsUrl = buildWsUrl(body);
-			currentUrl = body.currentUrl;
-			mode = 'connected';
-		} catch {
-			/* ignore — fall back to form */
-		}
+		// fetchJSON checks res.ok and returns null on any failure (F9), so an error
+		// body never flows into the connected-state assignment below.
+		const body = await fetchJSON<{
+			isRunning?: boolean;
+			currentUrl?: string;
+			wsPort?: number;
+			wsPath?: string;
+		}>(CONTROL_ENDPOINT, {
+			method: 'POST',
+			headers: { 'content-type': 'application/json' },
+			body: JSON.stringify({ action: 'status' })
+		});
+		if (isCancelled() || !body) return;
+		if (!body.isRunning || !body.currentUrl) return;
+		wsUrl = buildWsUrl(body);
+		currentUrl = body.currentUrl;
+		mode = 'connected';
 	}
 
 	// fallow-ignore-next-line complexity

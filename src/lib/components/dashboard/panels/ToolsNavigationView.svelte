@@ -94,6 +94,16 @@
 		throw new Error('No stop URL configured for tool');
 	}
 
+	/**
+	 * Parse a JSON response, throwing on a non-OK status so the caller's existing
+	 * try/catch (or .catch) drives the failure path — instead of an HTTP error
+	 * body being read as valid tool state (F4).
+	 */
+	async function okJson(res: Response): Promise<Record<string, unknown>> {
+		if (!res.ok) throw new Error(`HTTP ${res.status}`);
+		return res.json() as Promise<Record<string, unknown>>;
+	}
+
 	/** Handle a failed start by checking actual status via controlUrl. */
 	async function checkStatusFallback(toolId: string, ep: (typeof toolEndpoints)[string]) {
 		if (!ep.controlUrl) {
@@ -101,7 +111,7 @@
 			return;
 		}
 		const statusRes = await postControl(ep.controlUrl, 'status');
-		const statusData = await statusRes.json();
+		const statusData = await okJson(statusRes);
 		const running = statusData.isRunning || statusData.running;
 		setLocalStatus(toolId, running ? 'running' : 'stopped');
 	}
@@ -187,7 +197,7 @@
 		if (!ep) return;
 		setToolStatus(tool.id, 'starting');
 		try {
-			const data = await (await fetchStartAction(ep)).json();
+			const data = await okJson(await fetchStartAction(ep));
 			const ok = await dispatchStartResult(tool, data, ep);
 			finalizeStartResult(tool, data, ok);
 		} catch {
@@ -208,7 +218,7 @@
 		if (!ep) return;
 		setToolStatus(tool.id, 'stopping');
 		try {
-			const data = await (await fetchStopAction(ep)).json();
+			const data = await okJson(await fetchStopAction(ep));
 			applyStopResult(tool, data);
 		} catch {
 			setToolStatus(tool.id, catchFallbackStatus(tool.id));
@@ -221,7 +231,7 @@
 		const ep = toolEndpoints[toolId];
 		if (!ep?.controlUrl) return;
 		postControl(ep.controlUrl, 'status')
-			.then((r) => r.json())
+			.then(okJson)
 			.then((data) => {
 				if (data.isRunning || data.running) setLocalStatus(toolId, 'running');
 			})
@@ -238,7 +248,7 @@
 		const ep = toolEndpoints[toolId];
 		if (!ep?.controlUrl) return;
 		postControl(ep.controlUrl, 'status')
-			.then((r) => r.json())
+			.then(okJson)
 			.then((data) => {
 				const running = data.isRunning || data.running;
 				setLocalStatus(toolId, running ? 'running' : 'stopped');
@@ -255,21 +265,21 @@
 
 		// Tools with dedicated GET status endpoints
 		fetch('/api/gsm-evil/status')
-			.then((r) => r.json())
+			.then(okJson)
 			.then((data) => {
 				if (data.status === 'running') setLocalStatus('gsm-evil', 'running');
 			})
 			.catch(() => {});
 
 		fetch('/api/bluehood/status')
-			.then((r) => r.json())
+			.then(okJson)
 			.then((data) => {
 				if (data.isRunning) setLocalStatus('bluehood', 'running');
 			})
 			.catch(() => {});
 
 		fetch('/api/wigletotak/status')
-			.then((r) => r.json())
+			.then(okJson)
 			.then((data) => {
 				if (data.isRunning) setLocalStatus('wigletotak', 'running');
 			})

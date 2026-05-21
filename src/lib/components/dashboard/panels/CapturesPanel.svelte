@@ -9,43 +9,40 @@
 
 	import { browser } from '$app/environment';
 	import PanelEmptyState from '$lib/components/ui/PanelEmptyState.svelte';
+	import { fetchJSON } from '$lib/utils/fetch-json';
 
 	let gsmStatus: 'stopped' | 'starting' | 'running' | 'stopping' = $state('stopped');
 	let gsmBusy = $state(false);
 
+	function gsmControlRequest(action: 'start' | 'stop' | 'status'): globalThis.RequestInit {
+		return {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			credentials: 'same-origin',
+			body: JSON.stringify({ action })
+		};
+	}
+
+	// fetchJSON returns null on network/HTTP/parse failure (it checks res.ok), so
+	// an error body is never read as a valid status (F6).
 	async function fetchGsmStatus(): Promise<void> {
-		try {
-			const res = await fetch('/api/gsm-evil/control', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'same-origin',
-				body: JSON.stringify({ action: 'status' })
-			});
-			const data = await res.json();
-			gsmStatus = data.isRunning ? 'running' : 'stopped';
-		} catch {
-			gsmStatus = 'stopped';
-		}
+		const data = await fetchJSON<{ isRunning?: boolean }>(
+			'/api/gsm-evil/control',
+			gsmControlRequest('status')
+		);
+		gsmStatus = data?.isRunning ? 'running' : 'stopped';
 	}
 
 	// fallow-ignore-next-line complexity
 	async function sendGsmControl(action: 'start' | 'stop'): Promise<void> {
 		gsmBusy = true;
 		gsmStatus = action === 'start' ? 'starting' : 'stopping';
-		try {
-			const res = await fetch('/api/gsm-evil/control', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'same-origin',
-				body: JSON.stringify({ action })
-			});
-			const data = await res.json();
-			gsmStatus = data.success ? (action === 'start' ? 'running' : 'stopped') : 'stopped';
-		} catch {
-			gsmStatus = 'stopped';
-		} finally {
-			gsmBusy = false;
-		}
+		const data = await fetchJSON<{ success?: boolean }>(
+			'/api/gsm-evil/control',
+			gsmControlRequest(action)
+		);
+		gsmStatus = data?.success ? (action === 'start' ? 'running' : 'stopped') : 'stopped';
+		gsmBusy = false;
 	}
 
 	interface Signal {

@@ -59,11 +59,14 @@
 			sources: { entries: string[] }[];
 		}
 		const res = await fetchJSON<LogResponse>('/api/system/logs?minutes=1440');
-		if (res) {
+		// /api/system/logs returns {success:false,error} at HTTP 200 on journald
+		// failure, so fetchJSON yields a truthy body with no `sources` array.
+		// Guard the shape, not just truthiness, before reduce() (ARGOS-4).
+		if (res && Array.isArray(res.sources)) {
 			logStats = {
-				totalEvents: res.sources.reduce((s, src) => s + src.entries.length, 0),
+				totalEvents: res.sources.reduce((s, src) => s + (src.entries?.length ?? 0), 0),
 				warnings: 0,
-				errors: res.total_errors,
+				errors: res.total_errors ?? 0,
 				lastAlert: null
 			};
 		}
