@@ -83,8 +83,11 @@ async function executeAction(action: string, container: string): Promise<Respons
 export const POST = createHandler(
 	async ({ params, request }) => {
 		const action = params.action;
-		if (!action) {
-			return json({ success: false, error: 'Action required' }, { status: 400 });
+		// CWE-78 (defense-in-depth): allowlist the action before it reaches
+		// executeAction/execFile, rather than relying solely on the downstream
+		// argsMap lookup. Only these three map to a docker subcommand.
+		if (!action || !['start', 'stop', 'restart'].includes(action)) {
+			return json({ success: false, error: 'Invalid action' }, { status: 400 });
 		}
 
 		// Body shape already validated by factory; parse is safe.
