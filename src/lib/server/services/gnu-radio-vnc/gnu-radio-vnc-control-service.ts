@@ -109,16 +109,18 @@ export async function startGnuRadioVnc(flowgraph?: string): Promise<GnuRadioVncC
 	const { resolved, error } = resolveFlowgraphOrError(flowgraph);
 	if (error) return error;
 
-	const startupErr = await performStartup(resolved);
-	if (startupErr) {
-		logger.error('GRC VNC spawn failed', { error: startupErr.message });
-		await killAllProcesses();
-		return {
-			success: false,
-			message: 'failed to start GNU Radio VNC stack',
-			error: startupErr.message
-		};
-	}
+	// SPD-5: spawn the VNC stack in the background instead of awaiting the ~2s
+	// sequential spawn (5 procs + inter-spawn delays). Matches the other tool
+	// controls (novasdr etc.) which return immediately and let the client poll /
+	// the noVNC viewer retry until the stack is up. Connection info (wsPort/wsPath)
+	// is static and known now. A spawn failure is logged + the stack reaped async,
+	// since there is no longer a response to carry the error.
+	void performStartup(resolved).then(async (startupErr) => {
+		if (startupErr) {
+			logger.error('GRC VNC spawn failed', { error: startupErr.message });
+			await killAllProcesses();
+		}
+	});
 
 	return buildStartedResult(resolved);
 }

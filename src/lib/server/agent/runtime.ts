@@ -60,7 +60,11 @@ async function _executeTool(
 			body: JSON.stringify({
 				tool_name: toolName,
 				parameters
-			})
+			}),
+			// A11: bound the call so a hung tool endpoint can't wedge agent execution
+			// indefinitely. 30s is generous — some tools spawn hardware (kismet ~3s,
+			// gnuradio ~2s) — but finite. AbortError is caught + logged below.
+			signal: AbortSignal.timeout(30_000)
 		});
 
 		if (!response.ok) {
