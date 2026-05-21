@@ -57,10 +57,13 @@ test.describe('Phase B RF layer components', () => {
 			})
 		);
 
+		// NOTE: do NOT use waitForLoadState('networkidle') — the Argos dashboard
+		// polls /api/gps/position + hardware status + an SSE stream continuously,
+		// so the network never goes idle and the wait would hang to timeout.
+		// Web-first element assertion is the correct readiness signal here.
 		await page.goto('/dashboard', { waitUntil: 'load' });
-		await page.waitForLoadState('networkidle');
 		await expect(page.locator('.map-container, [data-screen="map"]').first()).toBeVisible({
-			timeout: 15_000
+			timeout: 20_000
 		});
 
 		// Toggle into Map Settings → Map Layers, flip the RF heatmap chip, flip it back.
