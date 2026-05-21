@@ -13,10 +13,8 @@
 	const HIGHLIGHT_ACCENT = 'rgba(212, 160, 84, 0.85)';
 	const HIGHLIGHT_ACCENT_FAINT = 'rgba(212, 160, 84, 0.45)';
 
-	let {
-		raysData,
-		ringsData
-	}: { raysData: FeatureCollection; ringsData?: FeatureCollection } = $props();
+	let { raysData, ringsData }: { raysData: FeatureCollection; ringsData?: FeatureCollection } =
+		$props();
 </script>
 
 <GeoJSONSource id={RF_HIGHLIGHT_RAYS_SOURCE_ID} data={raysData}>
