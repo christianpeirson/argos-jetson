@@ -18,12 +18,41 @@ if (PUBLIC_SENTRY_DSN) {
 }
 
 /**
+ * ARGOS-5: after a deploy, a still-open client requests hashed route chunks that
+ * no longer exist, throwing "Failed to fetch dynamically imported module". The
+ * SSR-disabled dashboard has no other recovery, so reload once to pull the new
+ * chunk manifest. A timestamp in sessionStorage suppresses a reload loop if the
+ * failure persists (e.g. genuine network outage), while still allowing recovery
+ * from a later, separate deploy.
+ */
+function isStaleChunkError(error: unknown): boolean {
+	const message = error instanceof Error ? error.message : String(error);
+	return /Failed to fetch dynamically imported module|error loading dynamically imported module/i.test(
+		message
+	);
+}
+
+function maybeReloadForStaleChunk(error: unknown): boolean {
+	if (!isStaleChunkError(error)) return false;
+	const RELOAD_KEY = 'argos-chunk-reload-at';
+	const last = Number(sessionStorage.getItem(RELOAD_KEY) ?? '0');
+	if (Date.now() - last < 10_000) return false; // already reloaded recently — surface the error
+	sessionStorage.setItem(RELOAD_KEY, String(Date.now()));
+	location.reload();
+	return true;
+}
+
+/**
  * Global error handler for unhandled client-side errors.
  *
  * Wrapped with Sentry's `handleErrorWithSentry` so the client error is captured
  * to Sentry in addition to the existing console + `App.Error` payload.
  */
 const myErrorHandler: HandleClientError = ({ error, event, status }) => {
+	if (maybeReloadForStaleChunk(error)) {
+		return { message: 'Loading the latest version…', errorId: crypto.randomUUID() };
+	}
+
 	const errorId = crypto.randomUUID();
 
 	const errorDetails: Record<string, unknown> = {
