@@ -106,3 +106,11 @@ Use codegraph for **structural** questions — what calls what, what would break
 ### If `.codegraph/` doesn't exist
 
 The MCP server returns "not initialized." Ask the user: _"I notice this project doesn't have CodeGraph initialized. Want me to run `codegraph init -i` to build the index?"_
+
+## Skill routing (tessl)
+
+13 tessl skills are installed for the v1 audit + ongoing work (security, DB, realtime/WS, resilience, error-handling, a11y, perf, TS style). **Before planning or doing a code task, match the work to the right skill and invoke it via the Skill tool** — same deliberate-routing discipline as the MCP-PREFLIGHT walk. The full trigger map, per-skill cards, and overlap/disambiguation rules (e.g. software-security=PREVENT vs patch-advisor=REMEDIATE; ssr-auth is Supabase-coupled→harvest patterns only) live in `@SKILL-ROUTING.md`. If a task needs a capability none of the 13 cover, run `mcp__tessl__search` and gate any new install by the 5-check safe-install protocol. Skills are guidance; the measurement engines remain native MCP (sentrux/codegraph/chrome-devtools/CodeQL/Sentry).
+
+@SKILL-ROUTING.md
+
+@AGENTS.md

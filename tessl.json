@@ -40,6 +40,61 @@
 		},
 		"tdg-personal/skill-comply": {
 			"version": "0.1.0"
+		},
+		"cisco/software-security": {
+			"version": "1.2.5"
+		},
+		"tessl-labs/sqlite-node-best-practices": {
+			"version": "0.2.0"
+		},
+		"tessl-labs/web-accessibility-essentials": {
+			"version": "0.2.2"
+		},
+		"tessl-labs/graceful-degradation": {
+			"version": "0.2.1"
+		},
+		"tessl-labs/frontend-error-handling": {
+			"version": "0.2.1"
+		},
+		"tessl-labs/web-performance": {
+			"version": "0.1.0"
+		},
+		"jbvc/lint-and-validate": {
+			"version": "0.1.0"
+		},
+		"santosomar/general-secure-coding-agent-skills": {
+			"version": "47d56bbc24dc4560c0afe546edbb34973da79391",
+			"source": "https://github.com/santosomar/general-secure-coding-agent-skills",
+			"include": {
+				"skills": ["patch-advisor"]
+			}
+		},
+		"ArabelaTso/Skills-4-SE": {
+			"version": "0f00a4fc37905ec9d69a3413b51efefd57e9a997",
+			"source": "https://github.com/ArabelaTso/Skills-4-SE",
+			"include": {
+				"skills": ["abstract-state-analyzer"]
+			}
+		},
+		"idrevnii/perks": {
+			"version": "51dd9ad11eaa5939a9fa7c965a002b17aadd03b0",
+			"source": "https://github.com/idrevnii/perks",
+			"include": {
+				"skills": ["simple-typescript"]
+			}
+		},
+		"tessl-labs/realtime-web-patterns": {
+			"version": "0.2.0"
+		},
+		"g14wxz/ssr-auth-session-management": {
+			"version": "0.1.0"
+		},
+		"secondsky/claude-skills": {
+			"version": "5e92b7170451adf347b8719ee984e147f3eabbea",
+			"source": "https://github.com/secondsky/claude-skills",
+			"include": {
+				"skills": ["csrf-protection"]
+			}
 		}
 	}
 }
