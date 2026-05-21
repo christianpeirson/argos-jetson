@@ -1,8 +1,7 @@
 <!-- @constitutional-exemption Article-IV-4.3 issue:#11 — Component state handling (loading/error/empty UI) deferred to UX improvement phase -->
 <script lang="ts">
-	import { getContext } from 'svelte';
-
 	import type { KismetDevice } from '$lib/kismet/types';
+	import { mapInstance } from '$lib/map/map-instance.svelte';
 	import {
 		activeBands,
 		isolatedDeviceMAC,
@@ -41,10 +40,6 @@
 		WPS_EXTRA_COLUMNS
 	} from './devices/intel-tab-config';
 	import IntelCategoryView from './devices/IntelCategoryView.svelte';
-
-	const dashboardMap = getContext<
-		{ flyTo: (lat: number, lon: number, zoom?: number) => void } | undefined
-	>('dashboardMap');
 
 	let searchQuery = $state('');
 	let whitelistedMACs: string[] = $state([]);
@@ -103,7 +98,8 @@
 	// fallow-ignore-next-line complexity
 	function flyToDevice(device: KismetDevice) {
 		const loc = device.location;
-		if (loc?.lat && loc.lon && dashboardMap) dashboardMap.flyTo(loc.lat, loc.lon, 17);
+		const map = mapInstance.map;
+		if (loc?.lat && loc.lon && map) map.flyTo({ center: [loc.lon, loc.lat], zoom: 17 });
 	}
 
 	function handleRowClick(device: KismetDevice) {

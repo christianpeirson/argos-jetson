@@ -3,7 +3,6 @@
 <script lang="ts">
 	import 'maplibre-gl/dist/maplibre-gl.css';
 
-	import { setContext } from 'svelte';
 	import {
 		CircleLayer,
 		CustomControl,
@@ -23,6 +22,7 @@
 	import RfHighlightLayer from '$lib/map/components/RfHighlightLayer.svelte';
 	import RfPathLayer from '$lib/map/components/RfPathLayer.svelte';
 	import SatelliteLayer from '$lib/map/components/SatelliteLayer.svelte';
+	import { mapInstance } from '$lib/map/map-instance.svelte';
 	import { isolatedDeviceMAC } from '$lib/stores/dashboard/dashboard-store';
 	import { gpsStore } from '$lib/stores/tactical-map/gps-store';
 
@@ -33,11 +33,14 @@
 
 	const ms = createMapState();
 
-	setContext('dashboardMap', {
-		getMap: () => ms.map,
-		flyTo: (lat: number, lon: number, zoom?: number) => {
-			if (ms.map) ms.map.flyTo({ center: [lon, lat], zoom: zoom ?? ms.map.getZoom() });
-		}
+	// Publish the live MapLibre instance to the cross-tree rune singleton so
+	// sibling panels (e.g. DevicesPanel.flyToDevice) can call flyTo / easeTo
+	// without a setContext bridge. Cleared on unmount via the cleanup return.
+	$effect(() => {
+		mapInstance.map = ms.map;
+		return () => {
+			mapInstance.map = undefined;
+		};
 	});
 </script>
 
