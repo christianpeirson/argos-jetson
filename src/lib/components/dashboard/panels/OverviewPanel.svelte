@@ -64,7 +64,7 @@
 		// Guard the shape, not just truthiness, before reduce() (ARGOS-4).
 		if (res && Array.isArray(res.sources)) {
 			logStats = {
-				totalEvents: res.sources.reduce((s, src) => s + (src.entries?.length ?? 0), 0),
+				totalEvents: res.sources.reduce((s, src) => s + (src?.entries?.length ?? 0), 0),
 				warnings: 0,
 				errors: res.total_errors ?? 0,
 				lastAlert: null
