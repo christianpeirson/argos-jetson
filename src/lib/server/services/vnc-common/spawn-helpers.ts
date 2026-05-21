@@ -97,8 +97,23 @@ export function setVncBackground(display: string, scope: string): void {
 	bg.unref();
 }
 
+/**
+ * CWE-78 guard: `windowSearchName` is interpolated into a `bash -c` script, so a
+ * value containing `"`, `$()`, `;` etc. could break out of the xdotool search
+ * argument. Restrict to a safe window-title charset (alphanumerics + space/_-.).
+ */
+export function isSafeWindowSearchName(name: string): boolean {
+	return /^[\w .-]{1,128}$/.test(name);
+}
+
 /** Center a window matching `windowSearchName` within the VNC framebuffer using xdotool. */
 export function centerVncWindow(display: string, windowSearchName: string): void {
+	// Callers pass constants today; the allowlist keeps it injection-proof if that
+	// ever changes (CWE-78).
+	if (!isSafeWindowSearchName(windowSearchName)) {
+		logger.warn(`[vnc] refusing to center window — unsafe search name`, { windowSearchName });
+		return;
+	}
 	const script = `
 		WID=$(xdotool search --name "${windowSearchName}" 2>/dev/null | head -1)
 		if [ -n "$WID" ]; then

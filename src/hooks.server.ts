@@ -157,7 +157,16 @@ const AUTH_REASONS: Record<string, string> = {
 	AUTH_FAILURE: 'Invalid API key or session cookie'
 };
 
-/** Whether the path requires API authentication. */
+/**
+ * Whether the path requires API authentication.
+ *
+ * A6 / CWE-862 (acknowledged by-design): Argos is single-tenant. There is ONE
+ * shared `ARGOS_API_KEY` and no per-route roles, so any authenticated client can
+ * reach every `/api/*` endpoint, including destructive ones (docker control,
+ * systemctl, kismet recon). This is intentional for a single-operator tactical
+ * appliance — NOT a multi-user system. If Argos ever gains multiple operators,
+ * per-route authorization must be added here. Flagged as risk in the v1 audit.
+ */
 function requiresApiAuth(pathname: string): boolean {
 	return pathname.startsWith('/api/') && pathname !== '/api/health';
 }

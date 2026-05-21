@@ -35,7 +35,14 @@ export function applySecurityHeaders(response: Response, pathWithQuery?: string)
 			objectSrc,
 			"frame-ancestors 'self'",
 			"base-uri 'self'",
-			"form-action 'self' https: http:"
+			// CWE-1021/79 (A4): forms only ever POST same-origin (SvelteKit actions +
+			// GP/TAK config), so drop the permissive bare `https: http:` here.
+			// NOTE: `script-src 'unsafe-inline'` + the broad `frame-src http: https:`
+			// remain — `unsafe-inline` is required by SvelteKit's inline hydration
+			// bootstrap; migrating to nonce/hash needs SvelteKit's `csp` config + live
+			// chrome-devtools verification (CSP changes have regressed :5173 before),
+			// so it is tracked as a dedicated follow-up, not bundled here.
+			"form-action 'self'"
 		].join('; ')
 	);
 
