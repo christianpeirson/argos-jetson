@@ -6,7 +6,6 @@
 
 	import { browser } from '$app/environment';
 	import AgentChatPanel from '$lib/components/dashboard/AgentChatPanel.svelte';
-	import DashboardMap from '$lib/components/dashboard/DashboardMap.svelte';
 	import DashboardShell from '$lib/components/dashboard/DashboardShell.svelte';
 	import GpConfigView from '$lib/components/dashboard/globalprotect/GpConfigView.svelte';
 	import LogsPanel from '$lib/components/dashboard/LogsPanel.svelte';
@@ -18,23 +17,8 @@
 	import ResizableBottomPanel from '$lib/components/dashboard/ResizableBottomPanel.svelte';
 	import TakConfigView from '$lib/components/dashboard/tak/TakConfigView.svelte';
 	import TerminalPanel from '$lib/components/dashboard/TerminalPanel.svelte';
-	import BluehoodView from '$lib/components/dashboard/views/BluehoodView.svelte';
-	import GnuRadioView from '$lib/components/dashboard/views/GnuRadioView.svelte';
-	import KismetView from '$lib/components/dashboard/views/KismetView.svelte';
-	import LogsAnalyticsView from '$lib/components/dashboard/views/LogsAnalyticsView.svelte';
-	import NovaSDRView from '$lib/components/dashboard/views/NovaSDRView.svelte';
-	import OpenWebRXView from '$lib/components/dashboard/views/OpenWebRXView.svelte';
 	import ReportsView from '$lib/components/dashboard/views/ReportsView.svelte';
-	import SDRppView from '$lib/components/dashboard/views/SDRppView.svelte';
-	import SightlineView from '$lib/components/dashboard/views/SightlineView.svelte';
-	import SparrowView from '$lib/components/dashboard/views/SparrowView.svelte';
-	import SpiderfootView from '$lib/components/dashboard/views/SpiderfootView.svelte';
-	import ToolUnavailableView from '$lib/components/dashboard/views/ToolUnavailableView.svelte';
 	import ToolViewWrapper from '$lib/components/dashboard/views/ToolViewWrapper.svelte';
-	import UASScanView from '$lib/components/dashboard/views/UASScanView.svelte';
-	import WebTAKView from '$lib/components/dashboard/views/WebTAKView.svelte';
-	import WigleToTAKView from '$lib/components/dashboard/views/WigleToTAKView.svelte';
-	import WiresharkView from '$lib/components/dashboard/views/WiresharkView.svelte';
 	import {
 		activeBottomTab,
 		activePanel,
@@ -59,6 +43,7 @@
 	import { TakService } from '$lib/tactical-map/tak-service';
 
 	import BottomPanelTabs from './BottomPanelTabs.svelte';
+	import DashboardViewRouter from './DashboardViewRouter.svelte';
 
 	// spec-024 PR6 — Mk II is now its own URL space at /dashboard/mk2/*.
 	// `?ui=mk2` redirects in +page.ts so this file is the legacy shell only.
@@ -185,58 +170,7 @@
 
 	{#snippet content()}
 		<div class="dashboard-content">
-			{#if $activeView === 'map'}
-				<DashboardMap />
-			{:else if $activeView === 'kismet'}
-				<KismetView />
-			{:else if $activeView === 'openwebrx'}
-				<OpenWebRXView />
-			{:else if $activeView === 'novasdr'}
-				<NovaSDRView />
-			{:else if $activeView === 'sdrpp'}
-				<SDRppView />
-			{:else if $activeView === 'gnu-radio'}
-				<GnuRadioView />
-			{:else if $activeView === 'wireshark'}
-				<WiresharkView />
-			{:else if $activeView === 'uas-scan'}
-				<UASScanView />
-			{:else if $activeView === 'bettercap'}
-				<ToolViewWrapper title="Bettercap" onBack={goBackToMap}>
-					<iframe src="http://localhost:80" title="Bettercap" class="tool-iframe"
-					></iframe>
-				</ToolViewWrapper>
-			{:else if $activeView === 'hackrf'}
-				<ToolUnavailableView title="HackRF Spectrum Analyzer" />
-			{:else if $activeView === 'rtl-433'}
-				<ToolUnavailableView title="RTL-433 Decoder" />
-			{:else if $activeView === 'btle'}
-				<ToolUnavailableView title="BTLE Scanner" />
-			{:else if $activeView === 'droneid'}
-				<ToolUnavailableView title="Drone ID" />
-			{:else if $activeView === 'pagermon'}
-				<ToolUnavailableView title="Pagermon" />
-			{:else if $activeView === 'rf-emitter'}
-				<ToolUnavailableView title="RF Emitter" />
-			{:else if $activeView === 'wifite'}
-				<ToolUnavailableView title="Wifite2" />
-			{:else if $activeView === 'wigletotak'}
-				<WigleToTAKView />
-			{:else if $activeView === 'bluehood'}
-				<BluehoodView />
-			{:else if $activeView === 'logs-analytics'}
-				<LogsAnalyticsView />
-			{:else if $activeView === 'sightline'}
-				<SightlineView />
-			{:else if $activeView === 'sparrow-wifi'}
-				<SparrowView />
-			{:else if $activeView === 'spiderfoot'}
-				<SpiderfootView />
-			{:else if $activeView === 'webtak'}
-				<WebTAKView />
-			{:else}
-				<ToolUnavailableView title={$activeView} />
-			{/if}
+			<DashboardViewRouter activeView={$activeView} onBackToMap={goBackToMap} />
 		</div>
 	{/snippet}
 
