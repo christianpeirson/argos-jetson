@@ -37,12 +37,9 @@
 		toggleTerminalPanel
 	} from '$lib/stores/dashboard/terminal-store';
 	import { uasStore } from '$lib/stores/dragonsync/uas-store';
-	import { startGpPolling, stopGpPolling } from '$lib/stores/globalprotect-store';
-	import { GPSService } from '$lib/tactical-map/gps-service';
-	import { KismetService } from '$lib/tactical-map/kismet-service';
-	import { TakService } from '$lib/tactical-map/tak-service';
 
 	import BottomPanelTabs from './BottomPanelTabs.svelte';
+	import { createDashboardServices } from './dashboard-services';
 	import DashboardViewRouter from './DashboardViewRouter.svelte';
 
 	// spec-024 PR6 — Mk II is now its own URL space at /dashboard/mk2/*.
@@ -55,9 +52,7 @@
 			: ('sidebar' as const)
 	);
 
-	const gpsService = new GPSService();
-	const kismetService = new KismetService();
-	const takService = new TakService();
+	const services = createDashboardServices();
 
 	let mountedTabs = $state(new Set<string>());
 
@@ -143,20 +138,10 @@
 
 	onMount(() => {
 		if (!browser) return;
-		gpsService.startPositionUpdates();
-		kismetService.startPeriodicStatusCheck();
-		kismetService.startPeriodicDeviceFetch();
-		void kismetService.fetchKismetDevices();
-		takService.startPeriodicStatusCheck();
-		startGpPolling();
+		services.start();
 	});
 
-	onDestroy(() => {
-		gpsService.stopPositionUpdates();
-		kismetService.stopPeriodicChecks();
-		takService.stopPeriodicChecks();
-		stopGpPolling();
-	});
+	onDestroy(() => services.stop());
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
